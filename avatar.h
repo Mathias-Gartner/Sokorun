@@ -1,0 +1,6 @@
+#ifndef AVATAR_H_INCLUDED
+#define AVATAR_H_INCLUDED
+
+
+
+#endif // AVATAR_H_INCLUDED
