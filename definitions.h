@@ -6,9 +6,11 @@
 
 
 /** EINSTELLUNGEN **/
-    #define AutoAdjustWindowSize 1 //Ob bei jeder Loop, in der die Anzeige aktualisiert wird, auch die Fenstergröße angepasst werden soll
+    #define AutoAdjustWindowSize 1 //Ob bei jeder Loop, in der die Anzeige aktualisiert wird, auch die FenstergrÃ¶ÃŸe angepasst werden soll
 
-
+    #define MaxXsize 20             //Maximale SpielfeldgrÃ¶ÃŸe in x-Richtung
+    #define MaxYsize 15             //Maximale SpielfeldgrÃ¶ÃŸe in y-Richtung
+    #define MaxSize POS{MaxXsize,MaxYsize}
 
 
 
@@ -52,11 +54,11 @@
 
 /** GLOBALE VARIABLEN **/
 
-    const POS windowSize={1200,900};      //Fenstergröße - Anzahl der Koordinatenpunkte die erreicht werden können
+    const POS windowSize={1200,680};      //FenstergrÃ¶ÃŸe - Anzahl der Koordinatenpunkte die erreicht werden kÃ¶nnen
     #define windX windowSize.x
     #define windY windowSize.y
 
-    float coordPixel=0.7;                 //Wieviele Pixel eine Koordinateneinheit am Bildschirm bekommt
+    float coordPixel=1;                 //Wieviele Pixel eine Koordinateneinheit am Bildschirm bekommt
 
 
 
@@ -65,10 +67,10 @@
 /** PROTOTYPEN **/
 
     POS transformY(POS position);                                                                   //Die Y-Koordinate wird gespiegelt (Ursprung oben/unten vertauscht)
-    bool coordInside(POS coord,AREA gebiet);                                                        //Meldet, ob sich die übergebenen Koordinaten innerhalb des übergebenen Gebiets befinden (zB. für "Maus über Bild?)
-    void getMousePos(POS *coord);                                                                   //Gibt die Position der Maus im Koordinatensystem zurück
-    void PosSizeToArea(AREA *data);                                                                 //Wandelt eine Struktur, die aus Position+Größe besteht um, in Startposition+Endposition
-    AREA PosSizeToArea(AREA data);                                                                  //Wandelt eine Struktur, die aus Position+Größe besteht um, in Startposition+Endposition
+    bool coordInside(POS coord,AREA gebiet);                                                        //Meldet, ob sich die Ã¼bergebenen Koordinaten innerhalb des Ã¼bergebenen Gebiets befinden (zB. fÃ¼r "Maus Ã¼ber Bild?)
+    void getMousePos(POS *coord);                                                                   //Gibt die Position der Maus im Koordinatensystem zurÃ¼ck
+    void PosSizeToArea(AREA *data);                                                                 //Wandelt eine Struktur, die aus Position+GrÃ¶ÃŸe besteht um, in Startposition+Endposition
+    AREA PosSizeToArea(AREA data);                                                                  //Wandelt eine Struktur, die aus Position+GrÃ¶ÃŸe besteht um, in Startposition+Endposition
 
 
 
