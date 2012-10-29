@@ -12,8 +12,8 @@ void init_window()//Initialisiert das Spiel
     glfwSetWindowTitle("SokoRun");          //Fenstername
     if(DEBUG)                                                       //Ändern in "main.h"
     {   system("title SokoRun Debug Window");                       //Konsolenfenstername
-        logger("Das Programm wurde im Debug-Modus gestartet");
-        logger("Versionsnummer: %s",VERSION);                       //Versionsnummer (Ändern in "main.h")
+        logger(1,"Das Programm wurde im Debug-Modus gestartet");
+        logger(1,"Versionsnummer: %s",VERSION);                       //Versionsnummer (Ändern in "main.h")
     }
 }
 
@@ -129,8 +129,8 @@ GLuint LoadTexture(char *TexName)//UP für das laden von Tga datein
         return -1;
 
     // Specify filtering and edge actions
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);//Wenn das Image > als der Screen ist (mehrere Image-Pixel = ein Screen-Pixel)
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);//ein Image-Pixel = mehrere Screen-Pixel
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
 
