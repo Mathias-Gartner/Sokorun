@@ -1,7 +1,7 @@
 //HAUPRPROGRAMM
 //KEINE VERSIONSNUMMER
-//jeder hat sein eigenes main() damit die Funktionen/Blöcke, die gerade programmiert werden, aufgerufen werden können
-//Versionsnummer gibts erst ab dem zusamenstellen von mehreren Blöcken
+//jeder hat sein eigenes main() damit die Funktionen/Blï¿½cke, die gerade programmiert werden, aufgerufen werden kï¿½nnen
+//Versionsnummer gibts erst ab dem zusamenstellen von mehreren Blï¿½cken
 
 
 
@@ -23,25 +23,25 @@ int main(int argc,char* argv[])
 ///             Variablendefinitionen und Initialisierungen
 ///---------------------------------------------------------------------
 
-    long loopStart=clock();             //für die gleichmäßige Geschwindigkeit
-    GLuint textur=LoadTexture("maxi.tga");//Ladend er Textur;
-    GLuint mainText=LoadTexture("daten/texturen/main.tga");//Laden der Textur;
-    GLuint fontText=LoadTexture("daten/texturen/font1.tga");//Laden der Textur;
+    long loopStart=clock();             //fÃ¼r die gleichmÃ¤ÃŸige Geschwindigkeit
+    GLuint textur=LoadTexture("maxi.tga");//Ladend er Textur
+    GLuint mainText=LoadTexture("daten/texturen/main.tga");//Laden der Textur
+    GLuint fontText=LoadTexture("daten/texturen/font1.tga");//Laden der Textur
     POS mouse;
     int x,y;                            //Temp. Variablen, frei verwendbar
     AREA picArea={{500,500},{600,700}};
 
-    setFont(&fontText);                 //Schriftart wählen
+    setFont(&fontText);                 //Schriftart wÃ¤hlen
 
      if(DEBUG)  printf("FUER JEDE KONSOLENAUSGABE UND DEBUG-FUNKTION: \"if(DEBUG){ ... }\" verwenden!!!\n");
      if(DEBUG)  printf("FUER WICHTIGE AUSGABEN logger() VERWENDEN, BEI FEHLERN error() VERWENDEN!!!!!!!\n");
 ///---------------------------------------------------------------------
 ///---------------------------------------------------------------------
 
-    prepare_GameLoop();                 //Für die Spiel-/Anzeigeschleife vorbereiten
+    prepare_GameLoop();                 //FÃ¼r die Spiel-/Anzeigeschleife vorbereiten
     do
     {
-        loopStart=clock();              //Zeitpunkt speichern (für eine gleichmäßige Spielgeschwindigkeit)
+        loopStart=clock();              //Zeitpunkt speichern (fÃ¼r eine gleichmÃ¤ÃŸige Spielgeschwindigkeit)
         prepare_graphics();             //Grafiken vorbereiten
         getMousePos(&mouse);            //Mausposition erhalten
 
@@ -50,7 +50,8 @@ int main(int argc,char* argv[])
 ///             HAUPTSCHLEIFE
 ///####################################################################################################################################################################################################
 
-        ///POSITION MIT TASTATUR VERÄNDERN:
+
+        ///POSITION MIT TASTATUR VERÃ„NDERN:
 
         if(glfwGetKey(GLFW_KEY_RIGHT))
             picArea.a.x+=10;
@@ -73,8 +74,7 @@ int main(int argc,char* argv[])
                 glVertex2f(windowSize.x,windowSize.y);
             glEnd();
 
-
-        ///VOLLSTÄNDIGES BILD IN LINKER, UNTERER ECKE
+        ///VOLLSTÃ„NDIGES BILD IN LINKER, UNTERER ECKE
         putImage(textur,{{0,0},{120,120}});
 
         ///HALBES BILD, RECHTS OBEN
@@ -84,9 +84,9 @@ int main(int argc,char* argv[])
         glLineWidth(2);
         markArea({{200,100},{400,300}});
 
-        ///HALBES BILD UMRAHMEN (farbe abhängig, ob sich die Maus innerhalb befindet)
+        ///HALBES BILD UMRAHMEN (farbe abhÃ¤ngig, ob sich die Maus innerhalb befindet)
         COLOR farbe;
-        if(coordInside(mouse,picArea))  farbe=RED;  //Maus über Bild
+        if(coordInside(mouse,picArea))  farbe=RED;  //Maus Ã¼ber Bild
         else                            farbe=BLUE;
         markArea(picArea,farbe);    //Halbes Bild umrahmen
 
@@ -100,7 +100,7 @@ int main(int argc,char* argv[])
         putSprite(mainText,{10,10},{6,2},PosSizeToArea({{9*50,8*50},{50,50}}));
 
 
-        ///GELBE LINIE, DIE DER MAUS FOLGT (wird als letztes ausgegeben --> Über allen anderen Elementen
+        ///GELBE LINIE, DIE DER MAUS FOLGT (wird als letztes ausgegeben --> Ãœber allen anderen Elementen
         switchGraphicMode(DRAWING);
         glColor3f(YELLOW.r,YELLOW.g,YELLOW.b);
             glBegin(GL_LINE_STRIP);
@@ -115,7 +115,7 @@ int main(int argc,char* argv[])
     putString("abcdefghijklmnopqrstuvwxyz",{0,windY-100},50,BLUE);
     putString("ABCDEFGHIJKLMNOPQRSTUVWXYZ",{0,windY-150},50,RED);
     putString("und das o! l? er. k, k:u; --> \"und ' (nicht) test! &%@\"",{0,windY-200},50,{1,0.5,0});
-    putString("<>\\//@€+*~'[]()|^?_,0123456789",{0,windY-250},50,BLUE);
+    putString("<>\\//@â‚¬+*~'[]()|^?_,0123456789",{0,windY-250},50,BLUE);
 
     putString("Bei einem Fehler \"error()\" aufrufen!",{0,windY-540},30,RED);
     putString("Bei einer Satus-Ausgabe in der Konsole: \"logger()\" verwenden!",{0,windY-570},30,RED);
@@ -129,7 +129,7 @@ int main(int argc,char* argv[])
 ///####################################################################################################################################################################################################
 ///####################################################################################################################################################################################################
 
-    }while(complete_graphics(loopStart,10));    //Abschlussarbeiten und Abbruch-Überprüfung
+    }while(complete_graphics(loopStart,10));    //Abschlussarbeiten und Abbruch-ÃœberprÃ¼fung
 
     cleanup();  //Abschlussarbeiten vor dem Programmende
     return 0;
