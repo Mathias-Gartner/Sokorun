@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Release" />
+	<File name="animation.cpp" open="1" top="0" tabpos="20">
+		<Cursor position="348" topLine="0" />
+	</File>
+	<File name="animation.h" open="1" top="0" tabpos="19">
+		<Cursor position="2756" topLine="48" />
+	</File>
+	<File name="avatar.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="1903" topLine="32" />
+	</File>
+	<File name="avatar.h" open="1" top="0" tabpos="1">
+		<Cursor position="1094" topLine="14" />
+	</File>
+	<File name="button.cpp" open="1" top="0" tabpos="21">
+		<Cursor position="131" topLine="0" />
+	</File>
+	<File name="definitions.cpp" open="1" top="0" tabpos="22">
+		<Cursor position="2325" topLine="57" />
+	</File>
+	<File name="definitions.h" open="1" top="0" tabpos="3">
+		<Cursor position="4714" topLine="95" />
+	</File>
+	<File name="display.h" open="0" top="0" tabpos="12">
+		<Cursor position="2502" topLine="0" />
+	</File>
+	<File name="editor.cpp" open="1" top="0" tabpos="23">
+		<Cursor position="57" topLine="0" />
+	</File>
+	<File name="game.cpp" open="1" top="0" tabpos="10">
+		<Cursor position="211" topLine="0" />
+	</File>
+	<File name="gameclass.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="5442" topLine="104" />
+	</File>
+	<File name="gameclass.h" open="1" top="0" tabpos="13">
+		<Cursor position="1151" topLine="9" />
+	</File>
+	<File name="gameguide.cpp" open="1" top="0" tabpos="24">
+		<Cursor position="17" topLine="0" />
+	</File>
+	<File name="gamelog.cpp" open="1" top="0" tabpos="18">
+		<Cursor position="3601" topLine="59" />
+	</File>
+	<File name="gamelog.h" open="1" top="0" tabpos="17">
+		<Cursor position="1549" topLine="73" />
+	</File>
+	<File name="graphics.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="21667" topLine="464" />
+	</File>
+	<File name="graphics.h" open="1" top="0" tabpos="12">
+		<Cursor position="4493" topLine="89" />
+	</File>
+	<File name="highscore.cpp" open="1" top="0" tabpos="25">
+		<Cursor position="122" topLine="0" />
+	</File>
+	<File name="kugel.cpp" open="1" top="1" tabpos="6">
+		<Cursor position="1982" topLine="53" />
+	</File>
+	<File name="kugel.h" open="1" top="0" tabpos="14">
+		<Cursor position="1302" topLine="15" />
+	</File>
+	<File name="levelclass.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="11731" topLine="224" />
+	</File>
+	<File name="levelclass.h" open="1" top="0" tabpos="9">
+		<Cursor position="5428" topLine="27" />
+	</File>
+	<File name="levelselect.cpp" open="1" top="0" tabpos="26">
+		<Cursor position="48" topLine="0" />
+	</File>
+	<File name="lock.cpp" open="1" top="0" tabpos="16">
+		<Cursor position="1131" topLine="17" />
+	</File>
+	<File name="lock.h" open="1" top="0" tabpos="15">
+		<Cursor position="759" topLine="4" />
+	</File>
+	<File name="logger.cpp" open="1" top="0" tabpos="27">
+		<Cursor position="958" topLine="0" />
+	</File>
+	<File name="logger.h" open="0" top="0" tabpos="11">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="main.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="1348" topLine="3" />
+	</File>
+	<File name="main.h" open="1" top="0" tabpos="8">
+		<Cursor position="321" topLine="0" />
+	</File>
+	<File name="mainmenue.cpp" open="1" top="0" tabpos="28">
+		<Cursor position="107" topLine="0" />
+	</File>
+	<File name="score.cpp" open="1" top="0" tabpos="29">
+		<Cursor position="95" topLine="0" />
+	</File>
+	<File name="tga.h" open="0" top="0" tabpos="13">
+		<Cursor position="8151" topLine="363" />
+	</File>
+</CodeBlocks_layout_file>

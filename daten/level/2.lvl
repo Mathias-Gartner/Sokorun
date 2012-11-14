@@ -1,0 +1,97 @@
+Goball														       © Ein Programm von Maier Jakob
+=====================================================================================================================================================
+Erstelldatum:		[07/25/09]
+Erstellzeitpunkt:	[21:50:08]				Weitere Informationen zu dieser Datei befinden sich unten
+=====================================================================================================================================================
+Rechte:			&§
+=====================================================================================================================================================
+
+Allgemein:
+**********
+
+Levelgroesse:		[14x14]					
+Goo-Position:		[01x01]					
+Kugel-Anzahl:		[01]					
+Kanonen-Anzahl:		[00]					
+Transporter-Anzahl:	[00]					
+Block-Anzahl (Gegner):	[00]	
+Schloesser:             [00]				
+
+=====================================================================================================================================================
+
+Kugel-Positionen:						(Anzahl der Datensätze: siehe Kugel-Anzahl oben)
+*****************
+
+Nr.: 	{01}	Pos.:	[11x06]
+
+=====================================================================================================================================================
+
+Level:
+******
+
+#25.25.25.25.25.25.25.25.25.25.25.25.25.25			(Anzahl: siehe Levelgroesse oben)
+#25.01.26.26.26.25.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.25.26.26.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.25.15.13.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.15.04.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.26.27.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.26.25.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.25.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.25.26.26.26.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.26.25.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.25.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.25.25.25.25.25.25.25.25.25.25.25.25.25			(Anzahl: siehe Levelgroesse oben)
+
+=====================================================================================================================================================
+
+Kanonen:							(Anzahl der Datensätze: siehe Kanonen-Anzahl oben)
+********
+
+
+Transporter:							(Anzahl der Datensätze: siehe Transporter-Anzahl oben)
+************
+
+
+Bloecke:							(Anzahl der Datensätze: siehe Block-Anzahl oben)
+********
+
+
+=====================================================================================================================================================
+
+Schlösser:							(Anzahl der Datensätze: siehe Schloss-Anzahl oben)
+**********
+
+
+=====================================================================================================================================================
+
+Auflösung:
+**********
+
+Beste Zeit:		[999999999]ms
+Wenigsten Bewegungen:	[999999999]
+
+=====================================================================================================================================================
+
+Zusatzinformationen:
+°°°°°°°°°°°°°°°°°°°°
+
+Levelname:		>A17
+Geschrieben mit:	>Editor (Ver. 1.0)
+Ersteller:		>maja
+Sonstiges:
+	>(c) Maier Jakob	
+	>all rights reserved	
+	>---
+
+
+
+=====================================================================================================================================================
+Diese Datei ist fuer das Programm >Gooball< von Maier Jakob. Sie beinhaltet ein gesamtes Spiellevel.
+Geschrieben am 28.03.2009
+Warning! This file is Auto-Generated!
+
+Alle Daten sind Eigentum des Programmierers.
+(c) Maier Jakob
+all rights reserved 
