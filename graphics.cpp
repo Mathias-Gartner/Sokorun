@@ -2,6 +2,11 @@
 //Jakob Maier
 //Grafikfunktionen
 
+extern TEXTURE boxTextures;
+extern POS mouse;
+//extern MOUSE mouse;
+
+
 void init_window()//Initialisiert das Spiel
 {
     glfwInit();                     //Initialisiert alles
@@ -25,6 +30,12 @@ void prepare_GameLoop()//Wird vor dem betreten der Spiele- und Anzeigeschleife a
     glAlphaFunc(GL_GREATER,0.1f);
     glEnable(GL_ALPHA_TEST);
 
+    int width, height;
+    glfwGetWindowSize(&width,&height);
+    glViewport( 0, 0, width, height );              //set Origin (außerhalb kann nicht gezeichnet werden)
+    glOrtho(0,windowSize.x,0,windowSize.y,0,128);   //2D-Modus; z-Koordinate wird nicht verwendet
+
+
     graphicMode=DRAWING;
 }
 
@@ -37,18 +48,24 @@ void prepare_graphics()//Wird zu beginn jedes Durchgangs in der Spiele- und Anze
         if((float)width/(float)height != ((float)windowSize.x / (float)windowSize.y))
         {   width = ((float)windowSize.x / (float)windowSize.y) * height;
             glfwSetWindowSize(width,height);
+
+            coordPixel=(float)width/windowSize.x;
+
+            glViewport( 0, 0, width, height );              //set Origin (außerhalb kann nicht gezeichnet werden)
         }
-        coordPixel=(float)width/windowSize.x;
+
     }
 
     height = height > 0 ? height : 1;
-    glViewport( 0, 0, width, height );              //set Origin (außerhalb kann nicht gezeichnet werden)
     glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );         //Hintergrundfarbe
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();                               //auf Standard-Matrix umschalten
-    glOrtho(0,windowSize.x,0,windowSize.y,0,128);   //2D-Modus; z-Koordinate wird nicht verwendet
     glMatrixMode(GL_MODELVIEW);
+
+    getMousePos(&mouse);                            //Mauskoordinaten erhalten
+    //mouse.run();                                    //Mausdaten aktualisieren
+
 }
 
 
@@ -60,8 +77,16 @@ void prepare_graphics()//Wird zu beginn jedes Durchgangs in der Spiele- und Anze
 int complete_graphics(long loopStart,unsigned int loopSpeed=10)//Wird am Ende jedes Durchgangs in der Spiele- und Anzeigeschleife aufgerufen
 {   if(kbhit()){getch();system("CLS");}             //Ein Tastendruck in der Konsole führt zum löschen des Inhalts
 
-    while(clock()-loopStart<loopSpeed){}            //gleichmäßige Geschwindigkeit
     glfwSwapBuffers();                              //erzeugte Grafikdaten ausgeben
+
+    if(TIMEDEBUGOUTPUT) printf("%4dms -> ",clock()-loopStart);
+
+    static int td;
+    td=loopSpeed-(clock()-loopStart);
+    if(td-3 > 0) _sleep(td-3);                      //Grob, Blockiert das Programm
+    while(clock()-loopStart<loopSpeed){}            //genaue, gleichmäßige Geschwindigkeit garantieren
+
+    if(TIMEDEBUGOUTPUT) printf("%4dms\n",clock()-loopStart);
 
     return (!glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED));//Abbruchbedingung
 }
@@ -72,6 +97,340 @@ void cleanup()//Wird beim beenden des Programms aufgerufen
     glDisable(GL_TEXTURE_2D);
     glfwTerminate();            //Fensters schließen
 }
+
+
+void winkelKorr(int& gamma)  //Winkelwert in einen gültigen Wert (0-359) umwandeln
+{
+    while(gamma<0)      gamma+=360;
+    while(gamma>=360)   gamma-=360;
+}
+
+
+///KLASSE TEXTURE
+/*private*/
+void TEXTURE::loadTexture()//TGA-Datei laden
+{
+    TGAImg Img;        // Image loader
+    // Load our Texture
+    if(Img.Load(path)!=IMG_OK)
+    {   error("TEXTURE::loadTexture()","Eine Bilddatei konnte nicht geladen werden. Pfad: \"%s\". Es wird stattdessen eine weisse Textur verwendet",path);
+        textur=-1;
+        loaded=1;
+        return;
+    }
+
+    glGenTextures(1,&textur);            // Allocate space for texture
+    bindTexture();                      // Set our Tex handle as current
+
+    // Create the texture
+    if(Img.GetBPP()==24)
+        glTexImage2D(GL_TEXTURE_2D,0,3,Img.GetWidth(),Img.GetHeight(),0,
+                    GL_RGB,GL_UNSIGNED_BYTE,Img.GetImg());
+    else if(Img.GetBPP()==32)
+        glTexImage2D(GL_TEXTURE_2D,0,4,Img.GetWidth(),Img.GetHeight(),0,
+                    GL_RGBA,GL_UNSIGNED_BYTE,Img.GetImg());
+    else
+    {   error("TEXTURE::loadTexture()","Eine Bilddatei konnte nicht geladen werden. Pfad: \"%s\". Es wird stattdessen eine weisse Textur verwendet",path);
+        textur=-1;
+        loaded=1;
+        return;
+    }
+
+    // Specify filtering and edge actions
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);//Wenn das Image > als der Screen ist (mehrere Image-Pixel = ein Screen-Pixel)
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);//ein Image-Pixel = mehrere Screen-Pixel
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+    loaded=1;
+    return;
+}
+
+
+TEXTURE::TEXTURE(const char* const imgPath, POS imgSize=POS{0,0}, POS imgSprites=POS{1,1})
+{   loaded=0;
+    strcpy(path,imgPath);
+    //size=imgSize;
+    sprites=imgSprites;
+    if((imgSize.x<1 || imgSize.y<1) && (imgSprites.x>1 || imgSprites.y>1))
+    {   error("TEXTURE::TEXTURE()","Schwerer Fehler: Es wurde eine Texture initialisiert, die weniger als 1 Pixel breit und/oder hoch ist. Bildpfad: \"%s\", imgSize: (%dx%d), Sprites: (%dx%d)",imgPath,imgSize.x,imgSize.y,imgSprites.x,imgSprites.y);
+        exit(1);
+    }
+    if(imgSprites.x<1 || imgSprites.y<1)
+    {   error("TEXTURE::TEXTURE()","Schwerer Fehler: Es wurde eine Texture initialisiert, die weniger als 1 Sprite in x und/oder y Richtung beinhaltet. Bildpfad: \"%s\", imgSize: (%dx%d), Sprites: (%dx%d)",imgPath,imgSize.x,imgSize.y,imgSprites.x,imgSprites.y);
+        exit(1);
+    }
+    halfTexelSize={(0.5/imgSize.x),(0.5/imgSize.y)};
+    spriteSize={(1.0f/sprites.x),(1.0f/sprites.y)};
+}
+
+void TEXTURE::print(AREA display,fAREA textArea=stdTextArea,COLOR overlay=WHITE)             //Ausgabe des gesamten Bildes
+{   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
+
+    switchGraphicMode(TEXTURES);
+    glColor3f(overlay.r,overlay.g,overlay.b);
+    bindTexture();
+    glBegin(GL_QUADS);
+        glTexCoord2f(textArea.a.x,textArea.b.y);glVertex2f(display.a.x,display.a.y);
+        glTexCoord2f(textArea.a.x,textArea.a.y);glVertex2f(display.a.x,display.b.y);
+        glTexCoord2f(textArea.b.x,textArea.a.y);glVertex2f(display.b.x,display.b.y);
+        glTexCoord2f(textArea.b.x,textArea.b.y);glVertex2f(display.b.x,display.a.y);
+    glEnd();
+}
+
+void TEXTURE::bindTexture() //Bindet eine Textur
+{
+    static GLint act;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D,&act);
+    if(act!=textur)
+        glBindTexture(GL_TEXTURE_2D,textur);
+}
+
+void TEXTURE::print(AREA display,POS spritePos,COLOR overlay=WHITE)                          //Ausgabe eines Sprites
+{   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
+
+    switchGraphicMode(TEXTURES);
+    glColor3f(overlay.r,overlay.g,overlay.b);
+    bindTexture();
+    glBegin(GL_QUADS);
+        glTexCoord2f(spriteSize.x* spritePos.x   +halfTexelSize.x,spriteSize.y*(spritePos.y+1)-halfTexelSize.y);   glVertex2f(display.a.x,display.a.y);
+        glTexCoord2f(spriteSize.x* spritePos.x   +halfTexelSize.x,spriteSize.y* spritePos.y   +halfTexelSize.y);   glVertex2f(display.a.x,display.b.y);
+        glTexCoord2f(spriteSize.x*(spritePos.x+1)-halfTexelSize.x,spriteSize.y* spritePos.y   +halfTexelSize.y);   glVertex2f(display.b.x,display.b.y);
+        glTexCoord2f(spriteSize.x*(spritePos.x+1)-halfTexelSize.x,spriteSize.y*(spritePos.y+1)-halfTexelSize.y);   glVertex2f(display.b.x,display.a.y);
+    glEnd();
+}
+void TEXTURE::print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay)      //Ausgabe eines Sprite-Teiles (zum drehen und spiegeln)
+{   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
+
+    switchGraphicMode(TEXTURES);
+    glColor3f(overlay.r,overlay.g,overlay.b);
+    bindTexture();
+
+    glBegin(GL_QUADS);
+        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.a.x)  +halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.b.y)  -halfTexelSize.y);   glVertex2f(display.a.x,display.a.y);
+        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.a.x)  +halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.a.y)  +halfTexelSize.y);   glVertex2f(display.a.x,display.b.y);
+        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.b.x)  -halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.a.y)  +halfTexelSize.y);   glVertex2f(display.b.x,display.b.y);
+        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.b.x)  -halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.b.y)  -halfTexelSize.y);   glVertex2f(display.b.x,display.a.y);
+    glEnd();
+}
+
+
+void TEXTURE::print(POS position,int size,POS spritePos,int angle,COLOR overlay=WHITE)                   //Ausgabe eines Sprites mit einer rotation
+{   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
+
+    switchGraphicMode(TEXTURES);
+    glColor3f(overlay.r,overlay.g,overlay.b);
+    bindTexture();
+
+
+
+    //POS size={display.b.x-display.a.x,display.b.y-display.a.y};     //Bildgröße ermitteln
+    //POS position={(position.x+size/2),(position.y+size/2)};   //Bildmittelpunkt ermitteln
+
+    POS ecke[4];        //Eckpunkte des neuen, gedrehten Bildes
+
+    double x,y;
+    double s=sqrt(size*size*2)/2;                   //Abstand (Außenradius) zu jeder Ecke
+
+    angle+=135;
+
+    for(int i=0;i<4;i++)                                            //Für jede Ecke durchgehen
+    {   winkelKorr(angle);
+
+        x=cos((double)angle/180*M_PI)*s;                            //Umrechnung auf Radiant + x-Abweichung vom Mittelpunkt zur neuen Position berrechnen
+        y=sin((double)angle/180*M_PI)*s;                            //Umrechnung auf Radiant + y-Abweichung vom Mittelpunkt zur neuen Position berrechnen
+
+        ecke[i]={position.x+x,position.y+y};                        //Position abspeichern
+        angle+=90;                                                  //Nächste Ecke um 90° verschoben
+    }
+
+//printf("%d x %d   %f--- (%dx%d) (%dx%d) (%dx%d) (%dx%d)\n",position.x,position.y,s,ecke[0].x,ecke[0].y,ecke[1].x,ecke[1].y,ecke[2].x,ecke[2].y,ecke[3].x,ecke[3].y);
+//markArea({ecke[0],ecke[1]},WHITE);
+    ///Ausgabe:
+    glBegin(GL_QUADS);
+        glTexCoord2f(spriteSize.x* spritePos.x   +halfTexelSize.x,spriteSize.y*(spritePos.y+1)-halfTexelSize.y);   glVertex2f(ecke[1].x,ecke[1].y);
+        glTexCoord2f(spriteSize.x* spritePos.x   +halfTexelSize.x,spriteSize.y* spritePos.y   +halfTexelSize.y);   glVertex2f(ecke[0].x,ecke[0].y);
+        glTexCoord2f(spriteSize.x*(spritePos.x+1)-halfTexelSize.x,spriteSize.y* spritePos.y   +halfTexelSize.y);   glVertex2f(ecke[3].x,ecke[3].y);
+        glTexCoord2f(spriteSize.x*(spritePos.x+1)-halfTexelSize.x,spriteSize.y*(spritePos.y+1)-halfTexelSize.y);   glVertex2f(ecke[2].x,ecke[2].y);
+    glEnd();
+}
+
+
+int TEXTURE::getSpriteAnz()     //Gibt die Anzahl der Sprites zurück die sich im Bild befinden
+{   return (sprites.x*sprites.y);
+}
+
+POS TEXTURE::getSprites()       //Die Anzahl der Sprites wird zurückgegeben
+{   return sprites;
+}
+
+///KLASSE FONT (abgeerbt von TEXTURE)
+
+FONT::FONT(int fontFamilyNum)
+{   loaded=0;
+
+    if(fontFamilyNum < 0 || fontFamilyNum >= fontFamilyAnzahl)    //fontFamilyAnzahl: definiert in definitions.h
+    {   error("FONT::FONT()","Die uebergene Schriftart ist ungueltig - Verwende Schriftart 0. fontFamily=%d",fontFamilyNum);
+        fontFamily=0;
+    }else
+        fontFamily=fontFamilyNum;
+
+    sprintf(path,"daten/texturen/font%d.tga",fontFamily);
+
+    sprites=fontTextureSpriteAnz;                                                   //Definition in definitions.h
+    halfTexelSize={(0.5/fontTextureImageSize.x),(0.5/fontTextureImageSize.y)};      //Definition in definitions.h
+    spriteSize={(1.0f/sprites.x),(1.0f/sprites.y)};
+    ratio=(fontTextureImageSize.y/sprites.y) / (fontTextureImageSize.x/sprites.x);
+
+    size=50;                    //Default-Schriftgröße
+    color={1.0,1.0,1.0};        //Default-Farbe = weiß
+}
+
+void FONT::setFontSize(const int newSize)//Schriftgröße ändern
+{   if(newSize>0)
+        size=newSize;
+    else
+        error("FONT::setFontSize()","Die Schriftgroesse ist ungueltig. newSize=%d",newSize);
+}
+
+void FONT::setFontColor(COLOR newColor)//Schriftfarbe ändern
+{   color=newColor;
+}
+
+int FONT::putLetter(char letter,POS position)//Gibt ein Zeichen am Bildschirm aus (A-Z, a-z, 0-9, Sonderzeichen)
+{   POS mat={-1,-1};//Position in der font-Tabelle
+
+    for(int y=0;y<11;y++)
+    {   for(int x=0;x<10;x++)
+        {   if(font[fontFamily][y][x].symbol==letter)    //gefunden
+            {   mat.x=x; mat.y=y;
+                y=11;
+                break;
+            }
+        }
+    }
+
+    if(mat.x>=0&&mat.y>=0)//Existiert
+    {   print(PosSizeToArea({position,{size*ratio,size}}),mat,color);
+        return position.x+size*ratio*(font[fontFamily][mat.y][mat.x].width+0.05); //Nächste Buchstabenposition
+    }
+    else
+    {   error("FONT::putLetter()","Unallowed Symbol '%c' - no output",letter);
+        return position.x;
+    }
+}
+
+int FONT::getFontWidth(const char *text)//Gibt zurück, wieviel Platz ein Text in x-Richtung am Bildschirm brauchen würde (zB. für Zentrierte und Rechtsbündige Texte)
+{   int width=0;
+    while(*text!=0)
+    {   for(int y=0;y<11;y++)
+        {   for(int x=0;x<10;x++)
+            {   if(font[fontFamily][y][x].symbol==*text)    //gefunden
+                {   width+=size*ratio*(font[fontFamily][y][x].width+0.05);
+                    y=11;
+                    break;
+                }
+            }
+        }
+        text++;
+    }
+    return width;
+}
+
+int FONT::putString(const char *text,POS position,TEXTALIGN ausrichtung=taLEFT)           //Gibt einen Text aus
+{   if(ausrichtung==taCENTER)   position.x-=getFontWidth(text)/2;
+    if(ausrichtung==taRIGHT)    position.x-=getFontWidth(text);
+
+    while(*text!=0)
+    {   position.x=putLetter(*text,position);
+        text++;
+    }
+    return position.x;
+}
+
+int FONT::printf(POS position,TEXTALIGN ausrichtung,const char *format,...)              //Printf für Grafikfenster - ACHTUNG: max. Textlänge!
+{
+    static char buffer[GPRINTF_BUFFER+1];											//Buffer
+    va_list  argptr;																//Argument-Liste
+    va_start( argptr, format );
+    vsprintf( buffer, format, argptr );												//Mit sprintf-Funktion in Buffer übertragen
+    va_end  ( argptr );
+    buffer[GPRINTF_BUFFER]=0;														//Zur Sicherheit
+    return putString(buffer,position,ausrichtung);
+}
+////Übergabeparameter:
+////  1.) textur          [GLuint]    Bereits zuvor geladene Textur
+////  2.) display         [AREA]      Koordinate a = linke,untere Position des Bildes
+////                                  Koordinate b = rechte, obere Position des Bildes
+////  (3) TexCoord        [AREA]      Zum zuschneiden des Bildes (Wertebereich 0.0f - 1.0f)
+////  (4) overlay         [COLOR]     zum einfärben der Textur
+//void putImage(GLuint textur,AREA display,fAREA TexCoord=stdTextArea,COLOR overlay=WHITE)//Textur ausgeben
+//{
+//    switchGraphicMode(TEXTURES);
+//    glColor3f(overlay.r,overlay.g,overlay.b);
+//    glBindTexture(GL_TEXTURE_2D,textur);
+//    glBegin(GL_QUADS);
+//        glTexCoord2f(TexCoord.a.x,TexCoord.b.y);glVertex2f(display.a.x,display.a.y);
+//        glTexCoord2f(TexCoord.a.x,TexCoord.a.y);glVertex2f(display.a.x,display.b.y);
+//        glTexCoord2f(TexCoord.b.x,TexCoord.a.y);glVertex2f(display.b.x,display.b.y);
+//        glTexCoord2f(TexCoord.b.x,TexCoord.b.y);glVertex2f(display.b.x,display.a.y);
+//    glEnd();
+//}
+//
+//
+////Übergabeparameter:
+////  1.) textur          [GLuint]    Bereits zuvor geladene Textur, die aus mehreren Teilelementen besteht
+////  2.) texSize         [POS]       Aus wievielen Teilelementen die Textur besteht (X,Y)
+////  3.) texPos          [POS]       An welcher Position sich das gewünschte Element befindet (ACHTUNG: es wird bei 0 losgezählt)
+////  4.) display         [AREA]      Bereich, wo das Bild ausgegeben wird
+////  (5) overlay         [COLOR]     zum einfärben der Textur
+//void putSprite(GLuint textur,POS texSize,POS texPos,AREA display,COLOR overlay=WHITE)//Teil einer Textur ausgeben (Wenn in einer Bilddatei mehrere Teillemente vorhanden sind)
+//{
+//    switchGraphicMode(TEXTURES);
+//    glColor3f(overlay.r,overlay.g,overlay.b);
+//    glBindTexture(GL_TEXTURE_2D,textur);
+//
+//    fPOS partSize={1.0f/texSize.x,1.0f/texSize.y};//Bildbereichsgröße eines Elements
+//    glBegin(GL_QUADS);
+//double x=0.5/2200,y=0.5/2200;
+//        glTexCoord2f(partSize.x*texPos.x    +x ,partSize.y*(texPos.y+1)-y);   glVertex2f(display.a.x,display.a.y);
+//        glTexCoord2f(partSize.x*texPos.x    +x ,partSize.y*texPos.y+y);       glVertex2f(display.a.x,display.b.y);
+//        glTexCoord2f(partSize.x*(texPos.x+1)-x ,partSize.y*texPos.y+y);       glVertex2f(display.b.x,display.b.y);
+//        glTexCoord2f(partSize.x*(texPos.x+1)-x ,partSize.y*(texPos.y+1)-y);   glVertex2f(display.b.x,display.a.y);
+//    glEnd();
+//}
+//
+////Übergabeparameter:
+////  1.) letter          [char]      Buchtstabe, der ausgegeben werden soll
+////  2.) position        [POS]       Position, wo der Buchstabe hingeschrieben werden soll
+////  3.) fontSize        [int]       Schriftgröße
+////  (4) fontColor       [COLOR]     Schriftfarbe
+////Rückgabewert:
+////  -)  neue x-Position für das nächste Zeichen
+//int putLetter(char letter,POS position,int fontSize,COLOR fontColor=WHITE)//Gibt ein Zeichen am Bildschirm aus (A-Z, a-z, 0-9, Sonderzeichen)
+//{   POS mat={-1,-1};//Position in der font-Tabelle
+//    for(int y=0;y<11;y++)
+//    {   for(int x=0;x<10;x++)
+//        {   if(font[y][x].symbol==letter)    //gefunden
+//            {   mat.x=x; mat.y=y;
+//                y=11;
+//                break;
+//            }
+//        }
+//    }
+//
+//    if(mat.x>=0&&mat.y>=0)//Existiert
+//    {   putSprite(*fontTextur,{10,11},mat,{position,{position.x+fontSize*0.775,position.y+fontSize}},fontColor);
+//        return position.x+fontSize*0.775*(font[mat.y][mat.x].width+0.05); //Nächste Buchstabenposition
+//    }
+//    else
+//    {   error("graphics.cpp / putLetter()","Unallowed Symbol '%c' - no output\n",letter);
+//        return position.x;
+//    }
+//}
+
+
+
+
 
 //Übergabeparameter:
 //  1.) target              Ob ab jetzt gezeichnet (DRAWING) werden soll, oder ob Texturem (TEXTURES) verwendet werden sollen
@@ -88,7 +447,6 @@ void switchGraphicMode(GRAPHICMODES target)//Schaltet den Grafikmodus um (Zeichn
     }
 }
 
-
 //Übergabeparameter:
 //  1.) gebiet          [AREA]      Gibt das Gebiet an, das umrandet werden soll
 //  (2) farbe           [COLOR]     Farbe, die der Strich haben soll
@@ -104,178 +462,35 @@ void markArea(AREA gebiet,COLOR farbe=WHITE)//Umrandet ein Gebiet
 }
 
 
-//Übergabeparameter:
-//  1.) *TexName            [string]    Pfad für die Bilddatei (.tga)
-GLuint LoadTexture(char *TexName)//UP für das laden von Tga datein
-{
-    TGAImg Img;        // Image loader
-    GLuint Texture;
 
-    // Load our Texture
-    if(Img.Load(TexName)!=IMG_OK)
-    return -1;
 
-    glGenTextures(1,&Texture);            // Allocate space for texture
-    glBindTexture(GL_TEXTURE_2D,Texture); // Set our Tex handle as current
 
-    // Create the texture
-    if(Img.GetBPP()==24)
-        glTexImage2D(GL_TEXTURE_2D,0,3,Img.GetWidth(),Img.GetHeight(),0,
-                    GL_RGB,GL_UNSIGNED_BYTE,Img.GetImg());
-    else if(Img.GetBPP()==32)
-        glTexImage2D(GL_TEXTURE_2D,0,4,Img.GetWidth(),Img.GetHeight(),0,
-                    GL_RGBA,GL_UNSIGNED_BYTE,Img.GetImg());
-    else
-        return -1;
 
-    // Specify filtering and edge actions
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);//Wenn das Image > als der Screen ist (mehrere Image-Pixel = ein Screen-Pixel)
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);//ein Image-Pixel = mehrere Screen-Pixel
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
 
-    return Texture;
+void drawBox(AREA gebiet,int borderWidth,int type,COLOR farbe=WHITE)        //Gibt eine Box aus
+{   if(ImgDebug)    markArea(gebiet,RED);
+
+    boxTextures.print({{gebiet.a.x,gebiet.b.y-borderWidth},{gebiet.a.x+borderWidth,gebiet.b.y}},{0,type},farbe);  //Ecke links oben
+    boxTextures.print({{gebiet.a.x,gebiet.a.y+borderWidth},{gebiet.a.x+borderWidth,gebiet.a.y}},{0,type},farbe);  //Ecke links unten
+    boxTextures.print({{gebiet.b.x,gebiet.b.y-borderWidth},{gebiet.b.x-borderWidth,gebiet.b.y}},{0,type},farbe);  //Ecke rechts oben
+    boxTextures.print({{gebiet.b.x,gebiet.a.y+borderWidth},{gebiet.b.x-borderWidth,gebiet.a.y}},{0,type},farbe);  //Ecke rechts unten
+
+    boxTextures.print({{gebiet.b.x-borderWidth,gebiet.b.y-borderWidth},{gebiet.a.x+borderWidth,gebiet.b.y}},{1,type},farbe);  //Rand oben
+    boxTextures.print({{gebiet.b.x-borderWidth,gebiet.a.y+borderWidth},{gebiet.a.x+borderWidth,gebiet.a.y}},{1,type},farbe);  //Rand unten
+    boxTextures.print({{gebiet.a.x,gebiet.a.y+borderWidth},{gebiet.a.x+borderWidth,gebiet.b.y-borderWidth}},{2,type},farbe);  //Rand links
+    boxTextures.print({{gebiet.b.x,gebiet.a.y+borderWidth},{gebiet.b.x-borderWidth,gebiet.b.y-borderWidth}},{2,type},farbe);  //Rand rechts
+
+    boxTextures.print({{gebiet.b.x-borderWidth,gebiet.b.y-borderWidth},{gebiet.a.x+borderWidth,gebiet.a.y+borderWidth}},{3,type},farbe);  //Inhalt
 }
 
 
-//Übergabeparameter:
-//  1.) textur          [GLuint]    Bereits zuvor geladene Textur
-//  2.) display         [AREA]      Koordinate a = linke,untere Position des Bildes
-//                                  Koordinate b = rechte, obere Position des Bildes
-//  (3) TexCoord        [AREA]      Zum zuschneiden des Bildes (Wertebereich 0.0f - 1.0f)
-//  (4) overlay         [COLOR]     zum einfärben der Textur
-void putImage(GLuint textur,AREA display,fAREA TexCoord=stdTextArea,COLOR overlay=WHITE)//Textur ausgeben
-{
-    switchGraphicMode(TEXTURES);
-    glColor3f(overlay.r,overlay.g,overlay.b);
-    glBindTexture(GL_TEXTURE_2D,textur);
-    glBegin(GL_QUADS);
-        glTexCoord2f(TexCoord.a.x,TexCoord.b.y);glVertex2f(display.a.x,display.a.y);
-        glTexCoord2f(TexCoord.a.x,TexCoord.a.y);glVertex2f(display.a.x,display.b.y);
-        glTexCoord2f(TexCoord.b.x,TexCoord.a.y);glVertex2f(display.b.x,display.b.y);
-        glTexCoord2f(TexCoord.b.x,TexCoord.b.y);glVertex2f(display.b.x,display.a.y);
-    glEnd();
-}
 
 
-//Übergabeparameter:
-//  1.) textur          [GLuint]    Bereits zuvor geladene Textur, die aus mehreren Teilelementen besteht
-//  2.) texSize         [POS]       Aus wievielen Teilelementen die Textur besteht (X,Y)
-//  3.) texPos          [POS]       An welcher Position sich das gewünschte Element befindet (ACHTUNG: es wird bei 0 losgezählt)
-//  4.) display         [AREA]      Bereich, wo das Bild ausgegeben wird
-//  (5) overlay         [COLOR]     zum einfärben der Textur
-void putSprite(GLuint textur,POS texSize,POS texPos,AREA display,COLOR overlay=WHITE)//Teil einer Textur ausgeben (Wenn in einer Bilddatei mehrere Teillemente vorhanden sind)
-{
-    switchGraphicMode(TEXTURES);
-    glColor3f(overlay.r,overlay.g,overlay.b);
-    glBindTexture(GL_TEXTURE_2D,textur);
-
-    fPOS partSize={1.0f/texSize.x,1.0f/texSize.y};//Bildbereichsgröße eines Elements
-    glBegin(GL_QUADS);
-        glTexCoord2f(partSize.x*texPos.x     ,partSize.y*(texPos.y+1));   glVertex2f(display.a.x,display.a.y);
-        glTexCoord2f(partSize.x*texPos.x     ,partSize.y*texPos.y);       glVertex2f(display.a.x,display.b.y);
-        glTexCoord2f(partSize.x*(texPos.x+1) ,partSize.y*texPos.y);       glVertex2f(display.b.x,display.b.y);
-        glTexCoord2f(partSize.x*(texPos.x+1) ,partSize.y*(texPos.y+1));   glVertex2f(display.b.x,display.a.y);
-    glEnd();
-}
-
-//Übergabeparameter:
-//  1.) letter          [char]      Buchtstabe, der ausgegeben werden soll
-//  2.) position        [POS]       Position, wo der Buchstabe hingeschrieben werden soll
-//  3.) fontSize        [int]       Schriftgröße
-//  (4) fontColor       [COLOR]     Schriftfarbe
-//Rückgabewert:
-//  -)  neue x-Position für das nächste Zeichen
-int putLetter(char letter,POS position,int fontSize,COLOR fontColor=WHITE)//Gibt ein Zeichen am Bildschirm aus (A-Z, a-z, 0-9, Sonderzeichen)
-{   POS mat={-1,-1};//Position in der font-Tabelle
-    for(int y=0;y<11;y++)
-    {   for(int x=0;x<10;x++)
-        {   if(font[y][x].symbol==letter)    //gefunden
-            {   mat.x=x; mat.y=y;
-                y=11;
-                break;
-            }
-        }
-    }
-
-    if(mat.x>=0&&mat.y>=0)//Existiert
-    {   putSprite(*fontTextur,{10,11},mat,{position,{position.x+fontSize*0.775,position.y+fontSize}},fontColor);
-        return position.x+fontSize*0.775*(font[mat.y][mat.x].width+0.05); //Nächste Buchstabenposition
-    }
-    else
-    {   error("graphics.cpp / putLetter()","Unallowed Symbol '%c' - no output\n",letter);
-        return position.x;
-    }
-}
 
 
-//Übergabeparameter:
-//  1.) text            [string]    Text, dessen Platzverbrauch berechnet werden soll
-//  2.) fontSize        [int]       Schriftgröße
-//Rückgabewert:
-//  -)  Platzverbrauch in x-Richtung
-int getFontWidth(const char *text,int fontSize)//Gibt zurück, wieviel Platz ein Text in x-Richtung am Bildschirm brauchen würde (zB. für Zentrierte und Rechtsbündige Texte)
-{   int width=0;
-    while(*text!=0)
-    {   for(int y=0;y<11;y++)
-        {   for(int x=0;x<10;x++)
-            {   if(font[y][x].symbol==*text)    //gefunden
-                {   width+=fontSize*0.775*(font[y][x].width+0.05);
-                    y=11;
-                    break;
-                }
-            }
-        }
-        text++;
-    }
-    return width;
-}
 
 
-//Übergabeparameter:
-//  1.) text            [string]    Text, der ausgegeben werden soll
-//  2.) position        [POS]       Position, wo der Text hingeschrieben werden soll
-//  3.) fontSize        [int]       Schriftgröße
-//  (4) fontColor       [COLOR]     Schriftfarbe
-//  (5) ausrichtung     [ALIGN]     Ausrichtung (taLEFT, taCENTER, taRIGHT)     (ta=text-align)
-//Rückgabewert:
-//  -)  neue x-Position für das nächste Zeichen/den nächsten Text
-int putString(const char *text,POS position,int fontSize,COLOR fontColor=WHITE,TEXTALIGN ausrichtung=taLEFT)//Gibt einen Text aus
-{
-    //markArea({position,{(position.x+getFontWidth(text,fontSize)),position.y+2}},MAGENTA);
-
-    if(ausrichtung==taCENTER)   position.x-=getFontWidth(text,fontSize)/2;
-    if(ausrichtung==taRIGHT)    position.x-=getFontWidth(text,fontSize);
-
-    while(*text!=0)
-    {   position.x=putLetter(*text,position,fontSize,fontColor);
-        text++;
-    }
-    return position.x;
-}
 
 
-//Übergabeparameter:
-//  1.) position        [POS]       Position, wo der Text hingeschrieben werden soll
-//  2.) fontSize        [int]       Schriftgröße
-//  3.) fontColor       [COLOR]     Schriftfarbe
-//  4.) ausrichtung     [ALIGN]     Ausrichtung (taLEFT, taCENTER, taRIGHT)     (ta=text-align)
-//  5.) Formatierter String
-//  6 - n)  Zusätzliche Daten
-//Rückgabewert:
-//  -)  neue x-Position für das nächste Zeichen/den nächsten Text
-int gprintf(POS position,int fontSize,COLOR fontColor,TEXTALIGN ausrichtung,const char *format,...)//Printf für Grafikfenster - ACHTUNG: max. Textlänge!
-{
-	static char buffer[GPRINTF_BUFFER+1];											//Buffer
-	va_list  argptr;																//Argument-Liste
-	va_start( argptr, format );
-	vsprintf( buffer, format, argptr );												//Mit sprintf-Funktion in Buffer übertragen
-	va_end  ( argptr );
-	buffer[GPRINTF_BUFFER]=0;														//Zur Sicherheit
-	return putString(buffer,position,fontSize,fontColor,ausrichtung);
-}
-//Übergabeparameter:
-//  1.) textur        [GLuint*]       Adresse der Textur, in der sich die Font-Bilddaten befinden (muss bereits geladen sein)
-void setFont(GLuint *textur)                                                        //Stellt die Schriftart ein
-{   fontTextur=textur;
-}
+
+

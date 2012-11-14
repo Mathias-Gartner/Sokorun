@@ -41,10 +41,22 @@
 			<Add library="gdi32" />
 			<Add directory="D:\Installierte Programme (x86)\CodeBlocks\MinGW\lib" />
 		</Linker>
+		<Unit filename="animation.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="animation.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="avatar.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="avatar.h" />
+		<Unit filename="button.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="button.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="definitions.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
@@ -58,10 +70,20 @@
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="game.h" />
+		<Unit filename="gameclass.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="gameclass.h" />
 		<Unit filename="gameguide.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="gameguide.h" />
+		<Unit filename="gamelog.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="gamelog.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="graphics.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
@@ -74,14 +96,20 @@
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="kugel.h" />
-		<Unit filename="level.cpp">
+		<Unit filename="levelclass.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="level.h" />
+		<Unit filename="levelclass.h" />
 		<Unit filename="levelselect.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="levelselect.h" />
+		<Unit filename="lock.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="lock.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="logger.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>

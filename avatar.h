@@ -2,5 +2,49 @@
 #define AVATAR_H_INCLUDED
 
 
+class AVATAR
+{
+    private:
+        ///Allgemeine Daten:
+            TEXTURE *levelSprites;
+            class GAME *game;           //Pointer auf das GAME-Objekt, dass den Avatar beinhaltet
+
+            //Zur Korrekten Darstellung:
+            POS *origin;                //Urpsrungs-Koordinaten des gesamten Levels (Ecke links-unten)
+            int *elsize;                //Größe eines Elements (Feldes)
+            POS *levelSize;             //Levelgröße
+
+        ///Daten:
+            int deathProgress;          //Wenn der Avatar Tot ist: Todes-Animation (1-100%)
+                //0: Der Avatar ist noch nicht Tot
+
+            POS position;
+            MOVEMENT movement;          //Bewegung des Avatars
+
+        ///Avatar-Einblende-Animation:
+            int buildupCounter;         //Fortschritts-zähler
+            int buildupImage;
+
+        ///Sonstiges:
+
+    public:
+        AVATAR(GAME *gamePointer,POS *originPointer,int *elsizePointer,POS *levelSizePointer,POS avatarOrigin);
+
+        //bool setupAnimation();                          //langsames Einblenden
+
+
+        void print();
+
+        void move(DIRECTION richtung,bool userinput);   //Der Avatar wird angestoßen (userinput=1: Benutzereigabe -nur wenn sich sonst nichts bewegt)
+        void stopMovementTo(POS pos,int limit);         //Wenn sich der Avatar gerade auf dieses Feld zubewegt: abprallen lassen
+
+        bool AvatarOnField(POS pos);                    //Überprüft, ob der Avatar dieses Feld blockiert
+
+        void run();                                     //Führt einen Simulationsschritt durch
+
+        bool isMoving();                                //gibt zurück, ob sich der Avatar gerade bewegt
+
+};
+
 
 #endif // AVATAR_H_INCLUDED

@@ -1,20 +1,20 @@
 //Version 0.2
 //Jakob Maier
-//Allg. Grundfunktionen fÃ¼rs Debugging
+//Allg. Grundfunktionen fürs Debugging
 
 
 
-//Ãœbergabeparameter:
+//Übergabeparameter:
 //  1.) mode                            Ob am Einde eine neue Zeile ausgegeben werden soll wenn keine vorhanden ist und die Farbe gewechselt werden soll (1); Wenn 0: Wie ein normales printf()
 //  1.) Formatierter String             Auszugebende Daten
-//  2 - n)  ZusÃ¤tzliche Daten
-void logger(bool mode,const char *format,...)                                       //Logger (Gibt Daten in der Konsole aus, um bestimmte ProgramzustÃ¤nde zu melden)
+//  2 - n)  Zusätzliche Daten
+void logger(bool mode,const char *format,...)                                       //Logger (Gibt Daten in der Konsole aus, um bestimmte Programzustände zu melden)
 {   if(!DEBUG) return;
 
 	static char buffer[logPRINTF_BUFFER+1];											//Buffer
 	va_list  argptr;																//Argument-Liste
 	va_start( argptr, format );
-	vsprintf( buffer, format, argptr );												//Mit sprintf-Funktion in Buffer Ã¼bertragen
+	vsprintf( buffer, format, argptr );												//Mit sprintf-Funktion in Buffer übertragen
 	va_end  ( argptr );
 	buffer[logPRINTF_BUFFER]=0;														//Zur Sicherheit
 	if(mode==1) textcolor(ccWHITE);
@@ -24,27 +24,15 @@ void logger(bool mode,const char *format,...)                                   
 }
 
 
-//Ãœbergabeparameter:
+//Übergabeparameter:
 //  1.) source        [string]          Wo das Fehler aufgetreten ist (zB. Unterprogramm-Name, Datei,...)
 //  2.) Formatierter String             Was pasiert ist
-//  3 - n)  ZusÃ¤tzliche Daten
+//  3 - n)  Zusätzliche Daten
 void error(const char *source,const char *format,...)                               //Error-Logger (Gibt eine Fehlermeldung aus)
-{   if(!DEBUG) return;
+{
+    static char buffer[logPRINTF_BUFFER+1];											//Buffer
+	time_t tt_date=time(NULL);
 
-	static char buffer[logPRINTF_BUFFER+1];											//Buffer
-	va_list  argptr;																//Argument-Liste
-	va_start( argptr, format );
-	vsprintf( buffer, format, argptr );												//Mit sprintf-Funktion in Buffer Ã¼bertragen
-	va_end  ( argptr );
-	buffer[logPRINTF_BUFFER]=0;														//Zur Sicherheit
-	textcolor(ccLIGHTRED);
-	printf("\nEs kam zu einem Programfehler!\n    Aufgetreten in: \"");
-	textcolor(ccRED); printf("%s",source); textcolor(ccLIGHTRED);
-	printf("\"\n    Fehlermeldung: \"");
-	textcolor(ccRED); printf("%s",buffer); textcolor(ccLIGHTRED);
-	printf("\"");
-
-    time_t tt_date=time(NULL);
 	tm *date=localtime(&tt_date);
 	//Abspeichern in Datei:
 	FILE *errorLog=fopen("errorlog.txt","a");
@@ -53,5 +41,19 @@ void error(const char *source,const char *format,...)                           
         fclose(errorLog);
 	}
 	else printf("\nError opening Errorlog");
+
+	if(!DEBUG) return;
+    //Ausgabe auf Konsole:
+	va_list  argptr;																//Argument-Liste
+	va_start( argptr, format );
+	vsprintf( buffer, format, argptr );												//Mit sprintf-Funktion in Buffer übertragen
+	va_end  ( argptr );
+	buffer[logPRINTF_BUFFER]=0;														//Zur Sicherheit
+	textcolor(ccLIGHTRED);
+	printf("\nEs kam zu einem Programfehler!\n    Aufgetreten in: \"");
+	textcolor(ccRED); printf("%s",source); textcolor(ccLIGHTRED);
+	printf("\"\n    Fehlermeldung: \"");
+	textcolor(ccRED); printf("%s",buffer); textcolor(ccLIGHTRED);
+	printf("\"");
 	textcolor(ccLIGHTGRAY);
 }

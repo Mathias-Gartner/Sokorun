@@ -4,7 +4,7 @@
   Date:     21.02.2008
   Description: Bildschirmfunktionen
 
-  Version:  1.0 (fÃ¼r gcc 4.2)
+  Version:  1.0 (für gcc 4.2)
 */
 
 // Cursorarten
@@ -12,7 +12,7 @@
 #define NORMALCURSOR    1
 #define SOLIDCURSOR     2
 
-// Farben fÃ¼r Text und Hintergrund
+// Farben für Text und Hintergrund
 typedef enum
 {
     ccBLACK,              // 0000
@@ -33,7 +33,7 @@ typedef enum
     ccWHITE               // 1111
 } COLORS;
 
-// Cursorposition am Bildschirm von 1,1 bis 80,25 (links oben bis rechts unten) [oder entsprechend der geÃ¤nderten GrÃ¶ÃŸe]
+// Cursorposition am Bildschirm von 1,1 bis 80,25 (links oben bis rechts unten) [oder entsprechend der geänderten Größe]
 void textcolor(COLORS color);       // setzen der Textfarbe
 void textbackground(COLORS color);  // setzen der Hintergrundfarbe bei der Textausgabe
 void setcursortype(int type);       // setzen, wie der Cursors ausschaut
@@ -42,9 +42,9 @@ int  whereX(void);                  // auf welcher Position ist der Cursor ?
 int  whereY(void);                  // in welcher Zeile ist der Cursor ?
 int  sizeX(void);                   // wie Breit ist das Fenster ?
 int  sizeY(void);                   // wie Hoch ist das Fenster ?
-void clrscr(void);                  // LÃ¶scht den gesamten Bildschirm
-void clreol(void);                  // LÃ¶scht vom Cursor bis zum Zeilenende
-void delline(void);                 // LÃ¶scht die Zeile, in der der Cursor steht
+void clrscr(void);                  // Löscht den gesamten Bildschirm
+void clreol(void);                  // Löscht vom Cursor bis zum Zeilenende
+void delline(void);                 // Löscht die Zeile, in der der Cursor steht
 int  getstr(int left, int top, int right, int bottom, char *str);// Liefert die angezeigten Zeichen aus dem angegebenen Fensterbereich
 int  putstr(int left, int top, int right, int bottom, char *str);// Schreibt den angegebenen STRING in den angebenen Fensterbereich und setzt die Hintergrundfarbe
 void txtcolor (int farbe);
@@ -54,7 +54,7 @@ void txtcolor (int farbe);
 
 static int __COLOR = ccLIGHTGRAY | (ccBLACK<<4);
 
-// Setzt Farben fÃ¼r Ausgabe am Bildschirm
+// Setzt Farben für Ausgabe am Bildschirm
 void textcolor(COLORS color)
 {
     __COLOR = (__COLOR & 0xf0) | (color & 0x0f);
@@ -92,7 +92,7 @@ void txtcolor (int farbe)
 
 
 
-// Ã„ndert die Anzeige des Cursors am Bildschirm
+// Ändert die Anzeige des Cursors am Bildschirm
 void setcursortype(int type)
 {
     CONSOLE_CURSOR_INFO info;
@@ -122,7 +122,7 @@ void gotoxy(int x, int y)
 }
 
 
-// Liefert die aktuelle Cursorposition zurÃ¼ck
+// Liefert die aktuelle Cursorposition zurück
 int whereX(void)
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
@@ -140,7 +140,7 @@ int whereY(void)
 }
 
 
-// Liefert die grÃ¶ÃŸe des Fensters zurÃ¼ck
+// Liefert die größe des Fensters zurück
 int sizeX(void)
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
@@ -158,7 +158,7 @@ int sizeY(void)
 }
 
 
-// BildschirmlÃ¶schfunktionen
+// Bildschirmlöschfunktionen
 void clrscr(void)
 {
     DWORD  dummy;
