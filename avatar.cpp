@@ -26,6 +26,7 @@ AVATAR::AVATAR(GAME *gamePointer,POS *originPointer,int *elsizePointer,POS *leve
     movement.progress=0;
     movement.lastRichtung=NONE;
     movement.blocking=0;
+    userinput=0;        //Nicht unbedingt notwendig, wird bei move() automatisch gesetzt
 
 }
 
@@ -61,7 +62,7 @@ void AVATAR::print()
 }*/
 
 
-void AVATAR::move(DIRECTION richtung,bool userinput=0)
+void AVATAR::move(DIRECTION richtung,bool _userinput=0)
 {   if(richtung==NONE)  return;                                         //Nicht bewegen (kommt vor, wenn der Avatar am Eis steht und nicht rutscht)
     if(deathProgress>0) return;                                         //Avatar bereits tot
 
@@ -71,7 +72,7 @@ void AVATAR::move(DIRECTION richtung,bool userinput=0)
     }
     if(game->getFieldProperty(OBJ_AVATAR,position)==fx)                 //Avatar fixiert
         return;
-    if(userinput && game->isMoving(OBJ_KUGEL))
+    if(_userinput && game->isMoving(OBJ_KUGEL))
     {   /*Avatar kann sich nicht bewegen weil Kugeln in bewegung sind*/
         return;
     }
@@ -83,11 +84,12 @@ void AVATAR::move(DIRECTION richtung,bool userinput=0)
     int limit=game->isWalkable(OBJ_AVATAR,next);                        //Nachbarfeld, auf das sich der Avatar bewegen soll überprüfen
 
     if(limit>0)
-    {   game->addGameLogEvent(userinput?USERAVATARMOVE:AVATARMOVE,richtung);     //Ereignis berichten
-        movement.moving=1;
+    {   movement.moving=1;
         movement.progress=0;
         movement.richtung=richtung;
         movement.limit=limit;                                           //Limit durch Feld selbst (Kugeln und andere Objekte in diesem Feld werden erst dann beachtet, wenn sie berührt werden können)
+
+        userinput=_userinput;                                           //Damit der Gamelog dann weiß wer dafür verantwortlich war
     }
 }
 
@@ -196,6 +198,8 @@ void AVATAR::run()                                                      //Führt 
         {   position=next;
             movement.moving=0;
             movement.lastRichtung=movement.richtung;
+            game->addGameLogEvent(userinput?USERAVATARMOVE:AVATARMOVE,movement.richtung);     //Ereignis berichten
+            userinput=0;
         }
     }
     if(movement.moving==0)                                              //Steht still --> prüfen, ob sich der Avatar auf einem Spezialfeld befindet

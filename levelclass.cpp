@@ -520,7 +520,7 @@ bool LEVEL::runBuildupAnimation()
                 }else
                 {   buildupAnimationCompleted=0;
                     if(spielfeld[y][x]!=0 && dist-1<=buildupAnimationProgress/2.5)    //Rotes Feld ausgeben
-                    {   printFloorElement(31,{x,y});
+                    {   printFloorElement(TILE_ANIMATIONFIELD,{x,y});
                     }
                 }
             }
@@ -550,7 +550,7 @@ bool LEVEL::runBuildupAnimation()
             if((variation&0x02) != 0)   x=size.x-x-1;   //Von rechts nach links
             if((variation&0x04) != 0)   y=size.y-y-1;   //Von unten nach oben
             if(i>=buildupAnimationProgress-4 && buildupAnimationProgress<size.x*size.y)
-                printFloorElement(31,{x,y});      //Rotes Feld
+                printFloorElement(TILE_ANIMATIONFIELD,{x,y});      //Rotes Feld
             else
                 printFloorElement(spielfeld[y][x],{x,y});
         }
@@ -658,8 +658,8 @@ void LEVEL::printFloor()
 void LEVEL::printKugelnAtOrigins()
 {   KUGELorigin *p=kugelOriginStart;
     while(p!=NULL)
-    {   if(p->type==0)  printFloorElement(28,{p->origin.x,p->origin.y});
-        else            printFloorElement(53,{p->origin.x,p->origin.y});
+    {   if(p->type==0)  printFloorElement(TILE_KUGEL,{p->origin.x,p->origin.y});
+        else            printFloorElement(TILE_KUGELBLOCK,{p->origin.x,p->origin.y});
         p=p->next;
     }
 }
@@ -667,14 +667,14 @@ void LEVEL::printKugelnAtOrigins()
 void LEVEL::printLocksAtOrigins()
 {   LOCKorigin *p=lockOriginStart;
     while(p!=NULL)
-    {   printFloorElement(33,{p->lock.x,p->lock.y},p->color);
-        printFloorElement(32,{p->key.x, p->key.y },p->color);
+    {   printFloorElement(TILE_LOCK,{p->lock.x,p->lock.y},p->color);
+        printFloorElement(TILE_KEY,{p->key.x, p->key.y },p->color);
         p=p->next;
     }
 }
 
 void LEVEL::printAvatarAtOrigin()
-{   printFloorElement(29,{avatarOrigin.x,avatarOrigin.y});
+{   printFloorElement(TILE_AVATAR,{avatarOrigin.x,avatarOrigin.y});
 }
 
 

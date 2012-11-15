@@ -20,6 +20,8 @@ class AVATAR
 
             POS position;
             MOVEMENT movement;          //Bewegung des Avatars
+            bool userinput;             //1: Der Avatar bewegt sich, weil der User das gewollt hat (Wird nur abgespeichert, damit der Gamelog nach dem erreichen des Zielfelds weiß, warum sich der Avatar bewegt hat. NICHT FÜR DIE PHYSIK notwendig)
+                                        //Befindet sich nicht der Struktur "movement", weil diese Variable nur für den Avatar wichtig ist
 
         ///Avatar-Einblende-Animation:
             int buildupCounter;         //Fortschritts-zähler

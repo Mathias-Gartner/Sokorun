@@ -203,15 +203,15 @@ int main(int argc,char* argv[])
 //
 // Entweder in gamlog.h und gamelog.cpp nachschauen oder Jakob fragen
 
-///ANIMATIONS-BEISPIELE:
-//    animationHandler.add(BASIC,/*T*/0,0, 10 , 90 ,3, 1 ,&levelsprites,{1,1}, {{0,0},{300,300}},BLACK);//Einfärben
-//    animationHandler.add(BASIC,1,0,  0,20  ,1,0.3, &levelsprites,{1,1}, {{450,150},{300,0}});//Drehen
-//    animationHandler.add(BASIC,2,0,  0,9  ,0,5, &coldAnimation,{-1,-1}, {{700,0},{700+50*1.323529,50}});//Texturen
+////ANIMATIONS-BEISPIELE:
+//    animationHandler.add(BASIC,/*T*/0,0, 10 , 90 ,3, 1 ,&leveltiles,{1,1}, {{0,0},{300,300}},BLACK);//Einfärben
+//    animationHandler.add(BASIC,1,0,  0,20  ,1,0.3, &leveltiles,{1,1}, {{450,150},{300,0}});//Drehen
+//    //animationHandler.add(BASIC,2,0,  0,9  ,0,5, &coldAnimation,{-1,-1}, {{700,0},{700+50*1.323529,50}});//Texturen
 //
-//    animationHandler.add(BASIC,2,0,  0,15  ,2,0.3, &lavaAnimation,{-1,-1}, {{800,0},{880,80}});//Texturen
-//    animationHandler.add(BASIC,2,0,  0,3  ,2,1.5, &lava,{-1,-1}, {{880,0},{960,80}});//Texturen
+//    //animationHandler.add(BASIC,2,0,  0,15  ,2,0.3, &lavaAnimation,{-1,-1}, {{800,0},{880,80}});//Texturen
+//    //animationHandler.add(BASIC,2,0,  0,3  ,2,1.5, &lava,{-1,-1}, {{880,0},{960,80}});//Texturen
 //
-//    int id=animationHandler.add(SINGLE,2,0,  0,3  ,0,4, &crashAnimationX,{-1,-1}, {{1040,0},{1055,80}});//Texturen
+//    int id=animationHandler.add(LEVELEFFECT,2,0,  0,3  ,0,4, &crashAnimationX,{-1,-1}, {{1040,0},{1055,80}});//Texturen
 //
 //
 //    int exit=0;
@@ -224,8 +224,9 @@ int main(int argc,char* argv[])
 //
 //        if(animationHandler.run(id)) //Fertig
 //        {   int x=rand()%windX,y=rand()%windY;
-//            id=animationHandler.add(SINGLE,2,0,  0,3  ,0,4, &crashAnimationX,{-1,-1}, {{x,y},{x+15,y+80}});
-//            //2. Bild in x-Richtung gespiegelt ausgeben:
+//        srand(clock());
+//            id=animationHandler.add(LEVELEFFECT,2,0,  0,3  ,0,4, &crashAnimationX,{-1,-1}, {{x,y},{x+15,y+80}});
+////            2. Bild in x-Richtung gespiegelt ausgeben:
 //            animationHandler.setSpriteArea(animationHandler.add(BASIC,2,0,  0,3  ,0,4, &crashAnimationX,{-1,-1}, {{x+50,y},{x+65,y+80}}),TextAreaXmirror);
 //
 //        }

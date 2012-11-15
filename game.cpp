@@ -24,51 +24,54 @@ int gameMain(GAME *game)
         long loopStart;
 
 
-
-
-//Preview:
-//        prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
-//        do
-//        {   loopStart=clock();
-//            prepare_graphics();                 //Grafiken vorbereiten
-//            game->printPreview();
-//        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
-//        exit=0;
-
-
-
-
-
-
-
-
-
     ///Builup-Animation durchführen:
-//        prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
-//        do
-//        {   loopStart=clock();
-//            prepare_graphics();                 //Grafiken vorbereiten
-//            if(game->runBuildupAnimation())
-//                exit=1;
-//        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
-//        exit=0;
-//
-//    ///Spezial-Elemnte einblenden:
-//
-//        game->initBuildupAnimationSpecialElements();        //Für jedes Objekt eine Einblendeanimation generieren und zum Animationshanlder hinzufügen
-//        prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
-//        do
-//        {   loopStart=clock();
-//            prepare_graphics();                 //Grafiken vorbereiten
-//            game->printFloor();
-//
-//            animationHandler.run(OBJECTBUILDUP);
-//            animationHandler.print(OBJECTBUILDUP);
-//            if(animationHandler.getActiveAnimationAnz(OBJECTBUILDUP)<=0)  //Alle Animationen abgeschlossen
-//                exit=1;
-//        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
-//        exit=0;
-//        animationHandler.remove(OBJECTBUILDUP); //Animationen löschen
+        prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
+        do
+        {   loopStart=clock();
+            prepare_graphics();                 //Grafiken vorbereiten
+            if(game->runBuildupAnimation())
+                exit=1;
+        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
+        exit=0;
+
+    ///Spezial-Elemnte einblenden:
+
+        game->initBuildupAnimationSpecialElements();        //Für jedes Objekt eine Einblendeanimation generieren und zum Animationshanlder hinzufügen
+        prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
+        do
+        {   loopStart=clock();
+            prepare_graphics();                 //Grafiken vorbereiten
+            game->printFloor();
+
+            animationHandler.run(OBJECTBUILDUP);
+            animationHandler.print(OBJECTBUILDUP);
+            if(animationHandler.getActiveAnimationAnz(OBJECTBUILDUP)<=0)  //Alle Animationen abgeschlossen
+                exit=1;
+        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
+        exit=0;
+        animationHandler.remove(OBJECTBUILDUP); //Animationen löschen
+
+    ///Preview:
+    {   BUTTON start({{windX/2-180,windY/2-20},{windX/2+180,windY/2+20}},0,3,10,CYAN,"Spiel starten",20,YELLOW);
+        prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
+        do
+        {   loopStart=clock();
+            prepare_graphics();                 //Grafiken vorbereiten
+            game->printPreview();
+            if(start.clicked()) exit=1;
+            start.print();
+
+        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
+        exit=0;
+    }
+
+
+
+
+
+
+
+
 
         logger(1,"Game starting...");
 
@@ -79,7 +82,6 @@ int gameMain(GAME *game)
         int help;
 
         movementInfoAniID=animationHandler.add(MOVEMENTINFO,1/*drehen*/,1,0,100,2,1,&levelanimations,{0,11},{{windX-movementInfoSize/2,windY-movementInfoSize/2},{movementInfoSize,-1}});
-
         prepare_GameLoop();                 //Für die Spiel-/Anzeigeschleife vorbereiten
         do
         {   loopStart=clock();
@@ -96,13 +98,7 @@ int gameMain(GAME *game)
             if(glfwGetKey(GLFW_KEY_DOWN))
                 game->move(DOWN);
 
-
             game->run();                    //Einen weiteren Simulationsschritt durchführen
-
-
-
-
-
             ///Animationen:
 
             //Movement-Info (drehende Animation) ausgeben:
@@ -124,8 +120,12 @@ int gameMain(GAME *game)
             game->print();                          //Level ausgeben
             animationHandler.print(0);              //Animationen ausgeben
 
+
         }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
 
+
+
+    logger(1,"Game ended\n");
 
     if(DEBUG)
     {   //für debugging-zwecke: warten, bis ESC gedrückt wurde

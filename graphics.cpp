@@ -30,11 +30,11 @@ void prepare_GameLoop()//Wird vor dem betreten der Spiele- und Anzeigeschleife a
     glAlphaFunc(GL_GREATER,0.1f);
     glEnable(GL_ALPHA_TEST);
 
-    int width, height;
+    /*int width, height;
     glfwGetWindowSize(&width,&height);
     glViewport( 0, 0, width, height );              //set Origin (außerhalb kann nicht gezeichnet werden)
     glOrtho(0,windowSize.x,0,windowSize.y,0,128);   //2D-Modus; z-Koordinate wird nicht verwendet
-
+    */
 
     graphicMode=DRAWING;
 }
@@ -48,20 +48,19 @@ void prepare_graphics()//Wird zu beginn jedes Durchgangs in der Spiele- und Anze
         if((float)width/(float)height != ((float)windowSize.x / (float)windowSize.y))
         {   width = ((float)windowSize.x / (float)windowSize.y) * height;
             glfwSetWindowSize(width,height);
-
             coordPixel=(float)width/windowSize.x;
-
             glViewport( 0, 0, width, height );              //set Origin (außerhalb kann nicht gezeichnet werden)
         }
 
     }
-
     height = height > 0 ? height : 1;
+
     glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );         //Hintergrundfarbe
     glClear(GL_COLOR_BUFFER_BIT);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();                               //auf Standard-Matrix umschalten
-    glMatrixMode(GL_MODELVIEW);
+    //glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0,windowSize.x,0,windowSize.y,0,128);   //2D-Modus; z-Koordinate wird nicht verwendet
+    glMatrixMode(GL_MODELVIEW);                     //auf Standard-Matrix umschalten
 
     getMousePos(&mouse);                            //Mauskoordinaten erhalten
     //mouse.run();                                    //Mausdaten aktualisieren
@@ -83,7 +82,7 @@ int complete_graphics(long loopStart,unsigned int loopSpeed=10)//Wird am Ende je
 
     static int td;
     td=loopSpeed-(clock()-loopStart);
-    if(td-3 > 0) _sleep(td-3);                      //Grob, Blockiert das Programm
+    if(td-1 > 0) _sleep(td-1);                      //Grob, Blockiert das Programm --> Statt 100% CPU-Auslasten nur noch 10% (Stand: Ver. 13.11.2012)
     while(clock()-loopStart<loopSpeed){}            //genaue, gleichmäßige Geschwindigkeit garantieren
 
     if(TIMEDEBUGOUTPUT) printf("%4dms\n",clock()-loopStart);

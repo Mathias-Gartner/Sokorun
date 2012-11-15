@@ -81,7 +81,6 @@ void KUGEL::move(DIRECTION richtung)
                                                     //          und darf nicht vom Avatar, der sich noch immer am Eis befindet und jetzt gegen die Kugel drückt, angestoßen werden. Der Avatar rutscht weiter und kommt zur gleichen zeit am Kugelförderband zu stehen,
                                                     //          wie die Kugel das nächste Feld nach dem Förderband betritt
 
-        game->addGameLogEvent(type==0?KUGELMOVE:KUGELBLOCKMOVE,richtung);         //Ereignis berichten
         movement.moving=1;
         movement.progress=0;
         movement.richtung=richtung;
@@ -159,6 +158,7 @@ void KUGEL::run()                                                       //Führt 
         }
         if(movement.moving==1 && movement.progress>=100)                //Im Zielfeld angekommen
         {   position=targetField;
+            game->addGameLogEvent(type==0?KUGELMOVE:KUGELBLOCKMOVE,movement.richtung);         //Ereignis berichten
             movement.moving=0;
             movement.lastRichtung=movement.richtung;
             int feld=game->getField(position);

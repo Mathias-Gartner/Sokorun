@@ -81,7 +81,6 @@
 
         bool blocking;          //1: Das Objekt blockiert  (Wird von einem Spezialfeld oder ähnlichem in ein anderes Feld geschoben dass aber nicht betreten werden kann. Dadurch ist das abprallen auch nicht möglich)
 
-
         DIRECTION lastRichtung; //Für Eis - welche Bewegungsrichtung zuletzt vollständig durchgeführt wurde (ohne abprallen usw.)
     };
 
@@ -114,6 +113,7 @@
     #define TILE_FIXEDTARGET    4
     #define TILE_TYPECHANGE     40
     #define TILE_TYPECHANGEICE  41
+    #define TILE_ANIMATIONFIELD 63 //Rotes Feld für Einblendeanimationen
 
 
 
