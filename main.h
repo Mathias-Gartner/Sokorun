@@ -12,7 +12,7 @@
     //#include "GLee/GLee.c"
 
     #include <GL/glfw.h>
-    //#include <windows.h>
+    #include <windows.h>
     #include <iostream>
     #include <conio.h>
     #include <string.h>
@@ -62,6 +62,8 @@
     #include "gameguide.h"          //Spielanleitung
 
     ///-----------------------------
+
+    #include "filesystemutility.cpp"
 
     #include "gamelog.cpp"          //Speichern und Anzeigen von Spieleereignissen (=Lösungsweg)
 
