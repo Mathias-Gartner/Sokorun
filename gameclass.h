@@ -51,6 +51,8 @@ class GAME : public LEVEL
 
         //void deleteKugel(KUGEL *pointer);               //Löscht eine Kugel aus der Liste
 
+        void printGameLogBackground();                  //Gibt nur den linken Rand und den Hintergrund des GameLog-Bereiches aus (wird von GAMELOG::print() auch erledigt)
+
         void printMovingObject(MOVEMENT *movement,POS position,int spriteNum);      //Gibt ein Objekt am Spielfeld aus, dass sich darauf bewegen kann
         void print();                                   //Ausgabe des Spielzustandes
         void run();                                     //Führt einen weiteren Simulationsschritt durch
@@ -58,6 +60,9 @@ class GAME : public LEVEL
         void move(DIRECTION richtung);                  //Der Avatar wird vom Spieler angestoßen
 
         void stopMovementsTo(POS pos,int limit);        //Objekte, die sich in dieses Feld bewegen wollen abprallen lassen, weil es ein anderes Objekt auf dieses Feld muss
+
+
+        int isPrepared();                               //Gibt zurück, ob das Spiel erfolgreich vorbereitet und gespielt werden kann
 
 
         KUGEL* KugelOnField(POS position,KUGEL* ignore);//Überprüft, ob sich eine Kugel auf diesem Feld befindet (zu mind. OccupiedLimit %). Wenn ja wird der Pointer auf diese Kugel zurückgegeben

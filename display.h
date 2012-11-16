@@ -7,8 +7,6 @@
   Version:  1.0 (für gcc 4.2)
 */
 
-#ifndef DISPLAY_H_INCLUDED
-#define DISPLAY_H_INCLUDED
 
 // Cursorarten
 #define NOCURSOR        0
@@ -245,5 +243,3 @@ int putstr(int left, int top, int right, int bottom, char *str)
         }
     return WriteConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), (PCHAR_INFO)buffer, info.dwSize, (COORD){0, 0}, &r);
 }
-
-#endif // DISPLAY_H_INCLUDED

@@ -37,9 +37,12 @@ enum GameEventType                                  //Alle Arten von Spieleevent
 struct GameEvent
 {
     GameEventType type;                             //Was passiert ist
-    unsigned long time;                             //Wann es passiert ist
 
-    DIRECTION richtung;                             //Für bewegungen
+
+
+    char size;                                      //Wieviele Daten in deisem Event gespeichet sind (1-7)
+    unsigned long time[7];                          //Wann es passiert ist
+    DIRECTION richtung[7];                          //Für bewegungen
 
     GameEvent *next;                                //Nächstes Element
 };
@@ -55,24 +58,18 @@ class GAMELOG
             unsigned long playtime;                     //Spielzeit: Anzahl der Schleifendurchläufe bis jetzt
             unsigned int events;                        //Anzahl der bisherigen Events
 
-            GameEvent *start;                           //Alle Events die je aufgetreten sind
+            GameEvent *start;                           //Alle Events die je aufgetreten sind (erstes Element=neuestes Element)
 
         ///Hilfsvariablen:
-
-            //Für die einzelnen Eventboxen:
-
             int x,y;                                    //Für Positionsberechnungnen
 
 
        ///Zustandsvariablen für die Ausgabe:
-            GameEventType type;                         //Typ der akt. Box
             int dispNum;                                //Die wievielte Box gerade ausgegeben wird
-            char title[128];                            //Boxtitel der akt. Box
-            COLOR farbe;                                //Boxfarbe der akt. Box
-            unsigned int time;                          //Die letzte Zeit der akt. Box
 
-            int icons;                                  //Anzahl der Icons in der akt. Box
-            POS iconSet[7];                             //Spritepositionen der Icons, die ausgegeben werden sollen (in Umgekehrter Reihenfolge)
+            //Für das nach-unten-schieben bei einem neuen Event:
+
+            int progress;                               //Scoll-Fortschritt ind % (0-100)
 
 
         ///BUTTONS:
@@ -82,8 +79,8 @@ class GAMELOG
 
 
         ///Sonstiges:
-            void setGameEventInformation();             //Gibt Titel und Farbe für ein GameEvent zurück
-            void printGameEventInformation();           //Gibt eine Informationsbox aus
+            void getGameEventInformation(int type,char *title,COLOR *farbe);                                 //Gibt Titel und Farbe für ein GameEvent zurück
+            //void printGameEventInformation();           //Gibt eine Informationsbox aus
     public:
         GAMELOG();                                      //Konstruktor
         ~GAMELOG();                                     //Destruktor
@@ -91,7 +88,7 @@ class GAMELOG
         void addEvent(GameEventType,DIRECTION richtung);//Event hinzufügen
 
 
-
+        void printBackground();                         //Gibt nur den Linken Rand und den Hintergrund aus (wird von GAMELOG::print() auch erledigt)
 
         void run();                                     //Muss bei jedem Schleifendurchlauf des Spieles aufgerufen werden
         void print();                                   //Kümmert sich um die Ausgabe
