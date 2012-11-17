@@ -2,3 +2,4 @@
 /obj/*
 *.layout
 
+/errorlog.txt
