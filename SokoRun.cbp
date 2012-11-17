@@ -67,7 +67,7 @@
 		</Unit>
 		<Unit filename="editor.h" />
 		<Unit filename="filesystemutility.cpp">
-			<Option target="Release" />
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="filesystemutility.h" />
 		<Unit filename="game.cpp">
