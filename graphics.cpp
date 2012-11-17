@@ -138,18 +138,25 @@ void TEXTURE::loadTexture()//TGA-Datei laden
     // Specify filtering and edge actions
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);//Wenn das Image > als der Screen ist (mehrere Image-Pixel = ein Screen-Pixel)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);//ein Image-Pixel = mehrere Screen-Pixel
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+    if(allowTextureRepeat)//Die Textur wird bei Texturkoordinaten > 1 wiederholt
+    {   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+    }else
+    {   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+    }
+
     loaded=1;
     return;
 }
 
 
-TEXTURE::TEXTURE(const char* const imgPath, POS imgSize=POS{0,0}, POS imgSprites=POS{1,1})
+TEXTURE::TEXTURE(const char* const imgPath, POS imgSize=POS{0,0}, POS imgSprites=POS{1,1},bool _allowTextureRepeat=0)
 {   loaded=0;
     strcpy(path,imgPath);
-    //size=imgSize;
     sprites=imgSprites;
+    allowTextureRepeat=_allowTextureRepeat; //Ob das Bild wiederholt werden soll, wenn die Texturkoordinaten >1 sind (zB. Hintergrundbild). Wenn nicht, sit 0 empfohlen.
+
     if((imgSize.x<1 || imgSize.y<1) && (imgSprites.x>1 || imgSprites.y>1))
     {   error("TEXTURE::TEXTURE()","Schwerer Fehler: Es wurde eine Texture initialisiert, die weniger als 1 Pixel breit und/oder hoch ist. Bildpfad: \"%s\", imgSize: (%dx%d), Sprites: (%dx%d)",imgPath,imgSize.x,imgSize.y,imgSprites.x,imgSprites.y);
         exit(1);
@@ -162,11 +169,11 @@ TEXTURE::TEXTURE(const char* const imgPath, POS imgSize=POS{0,0}, POS imgSprites
     spriteSize={(1.0f/sprites.x),(1.0f/sprites.y)};
 }
 
-void TEXTURE::print(AREA display,fAREA textArea=stdTextArea,COLOR overlay=WHITE)             //Ausgabe des gesamten Bildes
+void TEXTURE::print(AREA display,fAREA textArea=stdTextArea,COLOR overlay=WHITE,float alpha)             //Ausgabe des gesamten Bildes
 {   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
 
     switchGraphicMode(TEXTURES);
-    glColor3f(overlay.r,overlay.g,overlay.b);
+    glColor4f(overlay.r,overlay.g,overlay.b,alpha);
     bindTexture();
     glBegin(GL_QUADS);
         glTexCoord2f(textArea.a.x,textArea.b.y);glVertex2f(display.a.x,display.a.y);
@@ -184,11 +191,11 @@ void TEXTURE::bindTexture() //Bindet eine Textur
         glBindTexture(GL_TEXTURE_2D,textur);
 }
 
-void TEXTURE::print(AREA display,POS spritePos,COLOR overlay=WHITE)                          //Ausgabe eines Sprites
+void TEXTURE::print(AREA display,POS spritePos,COLOR overlay=WHITE,float alpha)                          //Ausgabe eines Sprites
 {   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
 
     switchGraphicMode(TEXTURES);
-    glColor3f(overlay.r,overlay.g,overlay.b);
+    glColor4f(overlay.r,overlay.g,overlay.b,alpha);
     bindTexture();
     glBegin(GL_QUADS);
         glTexCoord2f(spriteSize.x* spritePos.x   +halfTexelSize.x,spriteSize.y*(spritePos.y+1)-halfTexelSize.y);   glVertex2f(display.a.x,display.a.y);
@@ -197,11 +204,11 @@ void TEXTURE::print(AREA display,POS spritePos,COLOR overlay=WHITE)             
         glTexCoord2f(spriteSize.x*(spritePos.x+1)-halfTexelSize.x,spriteSize.y*(spritePos.y+1)-halfTexelSize.y);   glVertex2f(display.b.x,display.a.y);
     glEnd();
 }
-void TEXTURE::print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay)      //Ausgabe eines Sprite-Teiles (zum drehen und spiegeln)
+void TEXTURE::print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay,float alpha)      //Ausgabe eines Sprite-Teiles (zum drehen und spiegeln)
 {   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
 
     switchGraphicMode(TEXTURES);
-    glColor3f(overlay.r,overlay.g,overlay.b);
+    glColor4f(overlay.r,overlay.g,overlay.b,alpha);
     bindTexture();
 
     glBegin(GL_QUADS);
@@ -213,11 +220,11 @@ void TEXTURE::print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay)  
 }
 
 
-void TEXTURE::print(POS position,int size,POS spritePos,int angle,COLOR overlay=WHITE)                   //Ausgabe eines Sprites mit einer rotation
+void TEXTURE::print(POS position,int size,POS spritePos,int angle,COLOR overlay=WHITE,float alpha)                   //Ausgabe eines Sprites mit einer rotation
 {   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
 
     switchGraphicMode(TEXTURES);
-    glColor3f(overlay.r,overlay.g,overlay.b);
+    glColor4f(overlay.r,overlay.g,overlay.b,alpha);
     bindTexture();
 
 

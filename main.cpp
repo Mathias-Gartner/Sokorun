@@ -14,15 +14,20 @@
 
 
 
-TEXTURE leveltiles        ("daten/texturen/leveltiles.tga"                      ,{512,512},{8,8});      //Dieses Bild ist 512 512 groß und besteht aus 64 Teilbildern (8x8 Teilbilder) --> Jedes Teilbild ist 64x64 Pixel groß
-TEXTURE levelanimations     ("daten/texturen/animation/levelanimations.tga"     ,{256,768},{4,12});        //
+TEXTURE leveltiles          ("daten/texturen/leveltiles.tga"                    ,{512,512},{8,8});          //Dieses Bild ist 512 512 groß und besteht aus 64 Teilbildern (8x8 Teilbilder) --> Jedes Teilbild ist 64x64 Pixel groß
+TEXTURE levelanimations     ("daten/texturen/animation/levelanimations.tga"     ,{256,768},{4,12});         //
 TEXTURE crashAnimationX     ("daten/texturen/animation/crashAnimationX.tga"     ,{13,128},{1,4});           //Animationsdatei: Falls ein Objekt gegen en Hinderniss stößt (links/rechts)
 TEXTURE crashAnimationY     ("daten/texturen/animation/crashAnimationY.tga"     ,{128,13},{4,1});           //Animationsdatei: Falls ein Objekt gegen en Hinderniss stößt (oben/unten)
-TEXTURE lavafall            ("daten/texturen/animation/lavafall.tga"            ,{512,205},{5,2});         //Animationsdatei: Wenn ein Objekt in die Lava fällt
+TEXTURE lavafall            ("daten/texturen/animation/lavafall.tga"            ,{512,205},{5,2});          //Animationsdatei: Wenn ein Objekt in die Lava fällt
 
 TEXTURE boxTextures         ("daten/texturen/box.tga"                           ,{103,128},{4,5});          //Elemente zur Ausgabe von Boxen
 
 TEXTURE gamelogIcons        ("daten/texturen/gamelog.tga"                       ,{128,128},{4,4});          //Elemente zur Ausgabe von Boxen
+
+TEXTURE gamebackground      ("daten/texturen/gamebg.tga"                        ,{256,256},{1,1},true);     //Hintergrund für das Spiel
+TEXTURE shine               ("daten/texturen/shine.tga"                         ,{64,64},{1,1});            //Shein/Leuchten
+
+
 
 
 //TEXTURE coldAnimation       ("daten/texturen/animation/coldAnimation.tga"       ,{900,272},{5,2});          //Animationsdatei
@@ -244,7 +249,7 @@ int main(int argc,char* argv[])
 
 
 
-    GAME *game=new GAME({50,50},40,"daten/level/test.lvl");
+    GAME *game=new GAME({50,50},40,"daten/level/1.lvl");
     if(game->getStatus() != 0)
     {   char *dateP,*timeP;
         game->getMetaData(&dateP,&timeP);

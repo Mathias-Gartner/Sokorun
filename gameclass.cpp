@@ -1,4 +1,4 @@
-extern TEXTURE levelanimations,crashAnimationX,crashAnimationY,lavafall;
+extern TEXTURE levelanimations,crashAnimationX,crashAnimationY,lavafall,gamebackground,shine;
 extern ANIMATIONGROUP animationHandler;
 
 
@@ -184,6 +184,8 @@ void GAME::collision(POS position,DIRECTION richtung,COLOR color)               
 //    animationHandler.add(LEVELEFFECT,2,0,0,9,0,6/*speed*/,&lavafall,{-1,-1},{position,{position.x+elsize*2,position.y+elsize*2}});
 //}
 
+
+
 void GAME::print()
 {   if(!prepared)
     {   error("GAME::print()","Das Spiel darf nicht ausgegeben werden, da die Spieldaten noch nicht aufbereitet wurden");
@@ -344,4 +346,13 @@ void GAME::openLock(LOCK* lockAdr)                          //Öffnet (=löscht) d
         last=p;
         p=p->getNextObject();
     }
+}
+
+int GAME::isPrepared()                                      //Gibt zurück, ob das Spiel erfolgreich vorbereitet und gespielt werden kann
+{   return prepared;
+}
+
+void GAME::printGameLogBackground()                         //Gibt nur den linken Rand und den Hintergrund des GameLog-Bereiches aus (wird von GAMELOG::print() auch erledigt)
+{   gamelog->printBackground();                             //weiterleiten
+    return;
 }

@@ -26,6 +26,9 @@ GAMELOG::GAMELOG() :    show(GAMELOGshowBUTTONarea,0,&gamelogIcons,POS{0,3}),
 
     start=NULL;
 
+    if(progress>=100)                                       //Falls viele Boxen auf einmal kommen: mit diesem if wird die Darstellung schöner
+        progress=0;
+
     addEvent(GAMESTART,NONE);
 }
 
@@ -44,106 +47,90 @@ void GAMELOG::run()
 
 void GAMELOG::addEvent(GameEventType type,DIRECTION richtung=NONE)                 //Event hinzufügen
 {
+    events++;
+    if(start!=NULL)
+    {   if(start->type==type && start->size<7)//selber Typ + noch Platz
+        {   start->time[start->size]=playtime;
+            start->richtung[start->size]=richtung;
+            start->size++;
+            return;
+        }
+    }
+
+    //Neues Event erstellen:
+
     GameEvent *neu=(GameEvent*)malloc(sizeof(GameEvent));
 
     neu->type=type;
-    neu->time=playtime;
-    neu->richtung=richtung;
+    neu->time[0]=playtime;
+    neu->richtung[0]=richtung;
+    neu->size=1;
 
-    events++;
+
     neu->next=start;                                        //Am Anfang einfügen
     start=neu;
+
+    progress=0;
 }
 
 
 
-void GAMELOG::setGameEventInformation()                                                                 //Gibt Titel und Farbe für ein GameEvent zurück
+void GAMELOG::getGameEventInformation(int type,char *title,COLOR *farbe)                                 //Gibt Titel und Farbe für ein GameEvent zurück
 {
     switch(type)
-    {   case GAMESTART:             farbe=WHITE;            strcpy(title,"Spielstart"); break;          //Das Spiel wurde gestartet
-        case USERAVATARMOVE:        farbe=RED;              strcpy(title,"Spielerbewegung"); break;     //Der Benutzer hat den Avatar bewegt
-        case AVATARMOVE:            farbe={0.5,0.0,0.0};    strcpy(title,"Avatar"); break;              //der Avatar wird bewegt
-        case AVATARDEATH:           farbe=BLACK;            strcpy(title,"Avatar ist Tot"); break;      //Der Avatar ist gestorben
+    {   case GAMESTART:             *farbe=WHITE;            strcpy(title,"Spielstart"); break;          //Das Spiel wurde gestartet
+        case USERAVATARMOVE:        *farbe=RED;              strcpy(title,"Spielerbewegung"); break;     //Der Benutzer hat den Avatar bewegt
+        case AVATARMOVE:            *farbe={0.5,0.0,0.0};    strcpy(title,"Avatar"); break;              //der Avatar wird bewegt
+        case AVATARDEATH:           *farbe=BLACK;            strcpy(title,"Avatar ist Tot"); break;      //Der Avatar ist gestorben
 
-        case KUGELMOVE:             farbe=BLUE;             strcpy(title,"Kugel"); break;               //Eine Kugel (typ 0) wird bewegt
-        case KUGELBLOCKMOVE:        farbe={0.7,0.2,0.0};    strcpy(title,"Kugel"); break;               //Eine Kugel (typ 1) wird bewegt
-        case KUGELTYPECHANGED0:     farbe=BLUE;             strcpy(title,"Kugelumwandlung"); break;     //Eine Kugel ist jezt Typ 0
-        case KUGELTYPECHANGED1:     farbe={0.7,0.2,0.0};    strcpy(title,"Kugelumwandlung"); break;     //Eine Kugel ist jezt Typ 0
-        case KUGELBLOCKEDLAVA:      farbe={1.0,0.5,0.0};    strcpy(title,"Lava belegt"); break;         //Eine Kugel (typ 0) hat ein Lavafeld geblockt
-        case KUGELTARGET:           farbe=GREEN;            strcpy(title,"Zielfeld belegt"); break;     //Eine Kugel (typ 0) befindet sich jetzt auf einem Zielfeld
-        case KUGELDESTROYED:        farbe={1.0,0.0,0.3};    strcpy(title,"Kugel kaputt"); break;        //Eine Kugel (beide Typen) ist zerstört worden
+        case KUGELMOVE:             *farbe=BLUE;             strcpy(title,"Kugel"); break;               //Eine Kugel (typ 0) wird bewegt
+        case KUGELBLOCKMOVE:        *farbe={0.7,0.2,0.0};    strcpy(title,"Kugel"); break;               //Eine Kugel (typ 1) wird bewegt
+        case KUGELTYPECHANGED0:     *farbe=BLUE;             strcpy(title,"Kugelumwandlung"); break;     //Eine Kugel ist jezt Typ 0
+        case KUGELTYPECHANGED1:     *farbe={0.7,0.2,0.0};    strcpy(title,"Kugelumwandlung"); break;     //Eine Kugel ist jezt Typ 0
+        case KUGELBLOCKEDLAVA:      *farbe={1.0,0.5,0.0};    strcpy(title,"Lava belegt"); break;         //Eine Kugel (typ 0) hat ein Lavafeld geblockt
+        case KUGELTARGET:           *farbe=GREEN;            strcpy(title,"Zielfeld belegt"); break;     //Eine Kugel (typ 0) befindet sich jetzt auf einem Zielfeld
+        case KUGELDESTROYED:        *farbe={1.0,0.0,0.3};    strcpy(title,"Kugel kaputt"); break;        //Eine Kugel (beide Typen) ist zerstört worden
 
-        case LOCKOPENED:            farbe={0.0,0.6,0.0};    strcpy(title,"Schloss geöffnet"); break;    //Ein Schloss wurde mit einem Schlüssel geöffnet
+        case LOCKOPENED:            *farbe={0.0,0.6,0.0};    strcpy(title,"Schloss geöffnet"); break;    //Ein Schloss wurde mit einem Schlüssel geöffnet
 
-        case GAMEOVER:              farbe=BLACK;            strcpy(title,"GAME OVER"); break;           //Game Over
+        case GAMEOVER:              *farbe=BLACK;            strcpy(title,"GAME OVER"); break;           //Game Over
 
 
 
         default:    error("GAMELOG::print()","Unbekannter Event-Type. type=%d",type);
-                    farbe={0.3,0.2,0.2}; strcpy(title,"Ereignis");
+                    *farbe={0.3,0.2,0.2}; strcpy(title,"Ereignis");
     }
     //#define GAMELOGDARKNING 0.11
     //farbe={farbe.r-farbe.r*(GAMELOGDARKNING*dispNum),*farbe.g-*farbe.g*(GAMELOGDARKNING*dispNum),*farbe.b-*farbe.b*(GAMELOGDARKNING*dispNum)};
     return;
 }
 
-void GAMELOG::printGameEventInformation()                                                               //Gibt eine Informationsbox aus
+
+void GAMELOG::printBackground()                             //Gibt nur den Linken Rand und den Hintergrund aus
 {
-    #define GAMELOGBOXHEIGHT 58
-    if(colorcmp(farbe,BLACK))
-        farbe=WHITE;   //Schriftfarbe
-    else
-        drawBox({{GAMELOG_X,y-GAMELOGBOXHEIGHT},{windX-GAMELOGPADDING,y}},GAMELOGBORDERWITH,GAMELOGBOXTYPE,farbe);
-
-    ///Titel:
-            normalFont.setFontColor(farbe);
-            normalFont.setFontSize(GameLogTitleFontSize);
-        normalFont.printf({((windX-GAMELOGPADDING)-GAMELOG_X)/2+GAMELOG_X,y-(GAMELOGPADDING*1.5)-GameLogTitleFontSize},taCENTER,"%s",title);
-
-                normalFont.setFontSize(GameLogInfoFontSize);
-
-    ///Daten:
-        #define GameLogInfoColor COLOR{0.7,0.7,0.7}
-            normalFont.setFontColor(GameLogInfoColor);
-            //Mit abdunkeln:
-            //normalFont.setFontColor({GameLogInfoColor.r-GameLogInfoColor.r*(GAMELOGDARKNING*dispNum),GameLogInfoColor.g-GameLogInfoColor.g*(GAMELOGDARKNING*dispNum),GameLogInfoColor.b-GameLogInfoColor.b*(GAMELOGDARKNING*dispNum)});
-
-        if(coordInside(mouse,{{GAMELOG_X,y-GAMELOGBOXHEIGHT},{windX-GAMELOGPADDING,y}}))    //Maus in der Box
-        {   y=y-GAMELOGBOXHEIGHT+GAMELOGPADDING*1.5;
-            normalFont.printf({windX-GAMELOGPADDING-GAMELOGPADDING*2,y},taRIGHT,"%d",time);
-        }
-        else
-        {   y=y-GAMELOGBOXHEIGHT+GAMELOGPADDING*1.5;
-            normalFont.printf({windX-GAMELOGPADDING-GAMELOGPADDING*2,y},taRIGHT,"%.1f s",(time*GAMESPEED)/1000.0);
-        }
-
-    ///EVENT-ICONS:
-        x=GAMELOG_X+GAMELOGPADDING*2;
-        for(int i=icons-1;i>=0;i--)
-        {   gamelogIcons.print({{x,y},{x+20,y+20}},iconSet[i]);
-            x+=21;
-        }
-}
-
-
-
-void GAMELOG::print()                                       //Kümmert sich um die Ausgabe
-{
-
     if(!displayGameLog)
     {
         boxTextures.print({{windX-GAMELOGBORDERWITH-movementInfoSize,0},{windX-movementInfoSize,windY}},{2,2},GAMELOGMAINCOLOR);
         boxTextures.print({{windX-movementInfoSize,0},{windX,windY}},{3,GAMELOGBOXTYPE},GAMELOGMAINCOLOR);
+    }else
+    {   boxTextures.print({{windX-GameLogWidth,0},{windX-GameLogWidth+GAMELOGBORDERWITH,windY}},{2,2},GAMELOGMAINCOLOR);    //Linker Rand
+        boxTextures.print({{windX-GameLogWidth+GAMELOGBORDERWITH,0},{windX,windY}},{3,GAMELOGBOXTYPE},GAMELOGMAINCOLOR);    //Hindergrund
+    }
+}
+
+void GAMELOG::print()                                       //Kümmert sich um die Ausgabe
+{
+    //Abgrenzen des Loggers vom Spiel:
+        printBackground();
+
+
+    if(!displayGameLog)
+    {
         if(show.clicked())  displayGameLog=1;               //Wieder einblenden
         show.print();                                       //Show-Button ausgeben
         return;
     }
 
-
-
-    //Abgrenzen des Loggers vom Spiel:
-        boxTextures.print({{windX-GameLogWidth,0},{windX-GameLogWidth+GAMELOGBORDERWITH,windY}},{2,2},GAMELOGMAINCOLOR);    //Linker Rand
-        boxTextures.print({{windX-GameLogWidth+GAMELOGBORDERWITH,0},{windX,windY}},{3,GAMELOGBOXTYPE},GAMELOGMAINCOLOR);    //Hindergrund
     //Akt. Spielzeit ausgeben:
         normalFont.setFontSize(movementInfoSize-5);             //Schriftgröße ändern
         normalFont.setFontColor(YELLOW);                        //Schriftfarbe ändern
@@ -165,78 +152,101 @@ void GAMELOG::print()                                       //Kümmert sich um di
         if(save.clicked())  MessageBox(NULL,"Die Speicherfunktion kann derzeit leider noch nicht verwendet werden","Funktion noch nicht implementiert",MB_OK|MB_ICONWARNING);
         save.print();   //Save
 
-
-
     //Ausgabe vorbereiten:
-        y-=movementInfoSize;    //Y-Position der ersten Box:
-        dispNum=0;  //Nummeriert die Boxen durch
+        y-=movementInfoSize;    //Y-Position der ersten Box
+        dispNum=0;              //Nummeriert die Boxen durch
 
-        type=Gevt_NONE;//Zum zusammenfassen von Events
-        icons=0;
-        time=0;
+        //Zwischenspeicher:
+        char title[128];
+        COLOR farbe;
+        POS spritePos;
+        int ypos=y;   //Beginn der akt. Box
 
+
+    progress+=10;        //Scroll-Geschindigkeit
+    if(progress>100)    //Overflow vermeiden, wenn länger kein scrollen vorkommt
+        progress=100;
 
     //Für alle Events durchgehen:
     GameEvent *p=start;
-    type=p->type;
-    while(p!=NULL && y>0 && dispNum<8)
-    {
-        ///Ausgeben wenn notwendig:
-        if(p->type!=type || icons>=7)//Kann nicht mit alter Box zusamengefasst werden
-        {   //BOX-DATEN herausfinden:
-                dispNum++;      //Neue Box
-                setGameEventInformation();
-            //AUSGABE
-                printGameEventInformation();
-                y-=GAMELOGNOTICESPACING;
-            //Neue Event-Daten erstellen:
-                type=p->type;
-                icons=0;
+    while(p!=NULL && y>0 && dispNum<9)//Sonlange Elemente existieren und diese auch sichtbar wären. Max. 7 Boxen
+    {   dispNum++;
+        y=ypos;
 
-        }
+        getGameEventInformation(p->type,title,&farbe);                                 //Gibt Titel und Farbe für ein GameEvent zurück
 
-        ///aktuelles Event anhängen
-            //kann entweder das alte sein, oder ein neues das eben erst erstellt wurde
-            //ICONS:
-            switch(type)
-            {   case USERAVATARMOVE:
-                case AVATARMOVE:
-                case KUGELMOVE:
-                case KUGELBLOCKMOVE:    if(p->richtung==BEAM)
-                                        {   iconSet[icons]={0,1};
-                                        }else
-                                        if(p->richtung!=NONE)
-                                        {   iconSet[icons]={p->richtung-1,0};
-                                        }else icons--; //Es wird kein Icons ausgegeben, aber unten inkrementiert
-                                        break;
-                case KUGELTYPECHANGED0:
-                case KUGELTYPECHANGED1: iconSet[icons]={0,2};
-                                        break;
-                case KUGELTARGET:       iconSet[icons]={1,2};
-                                        break;
-                case GAMEOVER:          iconSet[icons]={2,2};
-                                        break;
-                case AVATARDEATH:       iconSet[icons]={1,1};
-                                        break;
+        #define GAMELOGBOXHEIGHT 58 //Höhe einer Event-Box
 
-                case KUGELDESTROYED:    iconSet[icons]={2,1};
-                                        break;
-                case LOCKOPENED:        iconSet[icons]={3,2};
-                                        break;
-                default: icons--;       //Es wird kein Icons ausgegeben, aber unten inkrementiert
+        if(p==start && progress<100)
+        {   ypos-=progress*(GAMELOGBOXHEIGHT+GAMELOGPADDING)/100;
+        }else
+            ypos-=GAMELOGBOXHEIGHT + GAMELOGPADDING;
+
+        ///BOX:
+            if(colorcmp(farbe,BLACK))
+                farbe=WHITE;   //Schriftfarbe
+            else //schwarze Box nicht ausgeben
+                drawBox({{GAMELOG_X,y-GAMELOGBOXHEIGHT},{windX-GAMELOGPADDING,y}},GAMELOGBORDERWITH,GAMELOGBOXTYPE,farbe);
+
+        ///Titel:
+            normalFont.setFontColor(farbe);
+            normalFont.setFontSize(GameLogTitleFontSize);
+                normalFont.printf({((windX-GAMELOGPADDING)-GAMELOG_X)/2+GAMELOG_X,y-(GAMELOGPADDING*1.5)-GameLogTitleFontSize},taCENTER,"%s",title);
+            normalFont.setFontSize(GameLogInfoFontSize);
+
+        ///Zeitpunkt:
+            #define GameLogInfoColor COLOR{0.7,0.7,0.7}
+            normalFont.setFontColor(GameLogInfoColor);
+            //Mit abdunkeln:   normalFont.setFontColor({GameLogInfoColor.r-GameLogInfoColor.r*(GAMELOGDARKNING*dispNum),GameLogInfoColor.g-GameLogInfoColor.g*(GAMELOGDARKNING*dispNum),GameLogInfoColor.b-GameLogInfoColor.b*(GAMELOGDARKNING*dispNum)});
+
+            if(coordInside(mouse,{{GAMELOG_X,y-GAMELOGBOXHEIGHT},{windX-GAMELOGPADDING,y}}))    //Maus in der Box
+            {   y=y-GAMELOGBOXHEIGHT+GAMELOGPADDING*1.5;
+                normalFont.printf({windX-GAMELOGPADDING-GAMELOGPADDING*2,y},taRIGHT,"%d",p->time[(p->size)-1]);
             }
-            icons++;
-            time=p->time,
+            else
+            {   y=y-GAMELOGBOXHEIGHT+GAMELOGPADDING*1.5;
+                normalFont.printf({windX-GAMELOGPADDING-GAMELOGPADDING*2,y},taRIGHT,"%.1f s",(p->time[(p->size)-1]*GAMESPEED)/1000.0);
+            }
+
+        ///Icons:
+            x=GAMELOG_X+GAMELOGPADDING*2;
+            //for(int i=(p->size)-1;i>=0;i--)
+            for(int i=0;i<p->size;i++)
+            {
+                spritePos.x=-1;//Kein Icon
+                switch(p->type)
+                {   case USERAVATARMOVE:
+                    case AVATARMOVE:
+                    case KUGELMOVE:
+                    case KUGELBLOCKMOVE:    if(p->richtung[i]==BEAM)
+                                            {   spritePos={0,1};
+                                            }else
+                                            if(p->richtung[i]!=NONE)
+                                            {   spritePos={p->richtung[i]-1,0};
+                                            }
+                                            break;
+                    case KUGELTYPECHANGED0:
+                    case KUGELTYPECHANGED1: spritePos={0,2};
+                                            break;
+                    case KUGELTARGET:       spritePos={1,2};
+                                            break;
+                    case GAMEOVER:          spritePos={2,2};
+                                            break;
+                    case AVATARDEATH:       spritePos={1,1};
+                                            break;
+
+                    case KUGELDESTROYED:    spritePos={2,1};
+                                            break;
+                    case LOCKOPENED:        spritePos={3,2};
+                                            break;
+                }
+                if(spritePos.x>=0)//Icon vorhanden
+                    gamelogIcons.print({{x,y},{x+20,y+20}},spritePos);
+                x+=21;
+            }
+
         p=p->next;
     }
-
-    ///Für die letzte Box:
-            //BOX-DATEN herausfinden:
-                dispNum++;      //Neue Box
-                setGameEventInformation();
-            //AUSGABE
-                printGameEventInformation();
-                y-=GAMELOGNOTICESPACING;
 
 }
 

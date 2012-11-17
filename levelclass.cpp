@@ -489,7 +489,9 @@ bool LEVEL::loadLevel(const char *LVLpath,const bool skipMinorErrors=0)//skipMin
 
 
 void LEVEL::printFloorElement(int element,POS coord,COLOR color=WHITE)
-{   POS pos;
+{   if(element==0)  return;
+
+    POS pos;
     pos.x=origin.x+coord.x*elsize;
     pos.y=origin.y+(size.y-coord.y-1)*elsize;
     leveltiles.print({pos,{pos.x+elsize,pos.y+elsize}},{element%8,element/8},color);
@@ -741,3 +743,4 @@ POS LEVEL::getTargetBeamer()                                //Gibt die Position 
 POS LEVEL::getSize()                                        //Gibt die Spielfeldgröße zurück
 {   return size;
 }
+

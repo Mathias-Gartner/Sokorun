@@ -64,22 +64,23 @@ class TEXTURE
         GLuint textur;
         bool loaded;            //Ob die Textur bereits geladen wurde
 
-        //POS size;
         POS  sprites;           //Anzahl der Sprites im Bild
         fPOS halfTexelSize;     //Größe eines halben Texels (0.0 - 1.0)
         fPOS spriteSize;        //Größe eines Sprites (0.0 - 1.0)
 
-        void loadTexture();                                                 //TGA-Datei laden
+        bool allowTextureRepeat;
+
+        void loadTexture();     //TGA-Datei laden
         TEXTURE(){}             //Nur für aberbende Klassen
         void bindTexture();     //Bindet eine Textur
 
     public:
-        TEXTURE(const char* const imgPath, POS imgSize, POS imgSprites);
-        void print(AREA display,fAREA textArea,COLOR overlay);              //Ausgabe des gesamten Bildes
-        void print(AREA display,POS spritePos,COLOR overlay);               //Ausgabe eines Sprites
-        void print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay);      //Ausgabe eines Sprite-Teiles (zum drehen und spiegeln)
+        TEXTURE(const char* const imgPath, POS imgSize, POS imgSprites,bool _allowTextureRepeat);
+        void print(AREA display,fAREA textArea,COLOR overlay,float alpha=1.0);              //Ausgabe des gesamten Bildes
+        void print(AREA display,POS spritePos,COLOR overlay,float alpha=1.0);               //Ausgabe eines Sprites
+        void print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay,float alpha=1.0);      //Ausgabe eines Sprite-Teiles (zum drehen und spiegeln)
 
-        void print(POS position,int size,POS spritePos,int angle,COLOR overlay);     //Ausgabe eines Sprites mit einer Rotation
+        void print(POS position,int size,POS spritePos,int angle,COLOR overlay,float alpha=1.0);     //Ausgabe eines Sprites mit einer Rotation
         int getSpriteAnz();     //Gibt die Anzahl der Sprites zurück die sich im Bild befinden
         POS getSprites();       //Die Anzahl der Sprites wird zurückgegeben
 };
