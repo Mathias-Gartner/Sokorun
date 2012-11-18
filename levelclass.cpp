@@ -538,7 +538,7 @@ bool LEVEL::runBuildupAnimation()
         {   srand(clock());                                         //Zufallszahlen generieren
             variation=rand()%8;
         }
-        buildupAnimationProgress+=2;
+        buildupAnimationProgress+=5;
         for(int i=0;i<buildupAnimationProgress;i++)
         {   int x,y;
             if((variation&0x01) != 0)   //Erst waagrecht, dann senkrecht
@@ -571,7 +571,7 @@ bool LEVEL::runBuildupAnimation()
             }
             srand(clock());                             //Zufallszahlen generieren
         }
-        buildupAnimationProgress++;
+        buildupAnimationProgress+=2;
         //weitere Felder, die angezeigt werde sollen, suchen:
         for(int i=0;i<3;i++)
         {   variation=0;                                //Verwendung als Timeout (um eine endlosschleife zu verhindern)

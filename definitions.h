@@ -6,25 +6,46 @@
 
 
 /** EINSTELLUNGEN **/
-    #define GAMESPEED 20            //Anz. der ms, die ein Spieleschleifendurchgang braucht
+    #define GAMESPEED 20                        //Anz. der ms, die ein Spieleschleifendurchgang braucht
 
-    #define AutoAdjustWindowSize 1 //Ob bei jeder Loop, in der die Anzeige aktualisiert wird, auch die Fenstergröße angepasst werden soll
+    #define AutoAdjustWindowSize 1              //Ob bei jeder Loop, in der die Anzeige aktualisiert wird, auch die Fenstergröße angepasst werden soll
 
     #define fontFamilyAnzahl 1
-    #define fontTextureImageSize POS{723,1024}      //Größe einer Font-Bilddatei in Pixel (verwendet in der Klasse FONT in der Datei graphics.cpp
-    #define fontTextureSpriteAnz POS{10,11}        //Anzahl der Buchstaben/Symbole in einer Font-Bilddatei
+    #define fontTextureImageSize POS{723,1024}  //Größe einer Font-Bilddatei in Pixel (verwendet in der Klasse FONT in der Datei graphics.cpp
+    #define fontTextureSpriteAnz POS{10,11}     //Anzahl der Buchstaben/Symbole in einer Font-Bilddatei
 
-    #define MaxXsize 20             //Maximale Spielfeldgröße in x-Richtung
-    #define MaxYsize 15             //Maximale Spielfeldgröße in y-Richtung
+    #define MaxXsize 20                         //Maximale Spielfeldgröße in x-Richtung
+    #define MaxYsize 15                         //Maximale Spielfeldgröße in y-Richtung
     #define MaxSize POS{MaxXsize,MaxYsize}
 
-    #define movementInfoSize 40     //Größe der Bewegungsinformation (Drehende Animation)
-    #define GameLogWidth 250        //Breite des Game-Log Feldes
+    #define movementInfoSize 40                 //Größe der Bewegungsinformation (Drehende Animation)
+    #define GameLogWidth 250                    //Breite des Game-Log Feldes
+
+
+/** GAMELOG-Eigenschaften und Positionierungen: **/
+    #define GAMELOGBOXTYPE 3                    //Boxtyp der Eventboxen
+    #define GAMELOGBORDERWITH 20                //Rahmenstärke der Eventboxen
+    #define GAMELOGPADDING 5                    //Abstände
+    #define GAMELOGMAINCOLOR COLOR{0,0.3,0}     //Hauptfarbe
+    //#define GAMELOGNOTICESPACING 10
+    #define GAMELOGBOXHEIGHT 58                 //Höhe einer Event-Box
+
+    #define GameLogTitleFontSize 24             //Schriftgröße des Titels
+    #define GameLogInfoFontSize 20              //Schriftgröße der Zeitangabe
+    #define GameLogInfoColor COLOR{0.7,0.7,0.7} //Schriftfarbe der Zeitangabe
+
+    #define GAMELOG_X (windX-GameLogWidth+GAMELOGBORDERWITH/4+GAMELOGPADDING)       //Position, ab der Ausgaben erlaubt sind
+
+    #define GAMELOGBUTTONS_Y windY-movementInfoSize/2-(movementInfoSize-5)/2        //Y-Position für die Gamelog-Buttons
+    #define GAMELOGshowBUTTONarea AREA{{windX-movementInfoSize,GAMELOGBUTTONS_Y-50},{windX-movementInfoSize+25,GAMELOGBUTTONS_Y-25}}    //Show-Button AREA
+    #define GAMELOGhideBUTTONarea AREA{{GAMELOG_X,GAMELOGBUTTONS_Y-30},{GAMELOG_X+25,GAMELOGBUTTONS_Y-5}}                               //Hide-Button AREA
+    #define GAMELOGsaveBUTTONarea AREA{{GAMELOG_X+30,GAMELOGBUTTONS_Y-30},{GAMELOG_X+55,GAMELOGBUTTONS_Y-5}}                            //Save-Button AREA
+
 
 /** GAME-EINSTELLUNGEN **/
-    #define WALKING_SPEED  10//7        //Wieviele % innerhalb eines Simulationszyklusses zurückgelegt werden (Um ein Objekt von einem Feld in ein anderes zu bewegen sind 100% notwendig) bei 2 sind also 50 Simulationszyklen notwendig, bis das Objekt von einem Feld ins nächste kommt
-    #define OccupiedLimit Wkgl      //Zuwieviel % sich ein Objekt in einem Feld befinden muss, damit dieses belegt ist (MUSS Wkgl sein: falls sich 2 Objekte in ein gleiches Feld zum gleichen Zeitpunkt bewegen kommt es sonst zu einer Überlagerung)
-    #define DIEINGSPEED 5           //Wenn der Avatar tot ist: wie lange das Spiel noch fortgesetzt werden soll und wie lange die Todes-Animation angezeigt werden soll (1-100%, dieser Wert gibt an wie große die Schritte sein sollen)
+    #define WALKING_SPEED  10//7                //Wieviele % innerhalb eines Simulationszyklusses zurückgelegt werden (Um ein Objekt von einem Feld in ein anderes zu bewegen sind 100% notwendig) bei 2 sind also 50 Simulationszyklen notwendig, bis das Objekt von einem Feld ins nächste kommt
+    #define OccupiedLimit Wkgl                  //Zuwieviel % sich ein Objekt in einem Feld befinden muss, damit dieses belegt ist (MUSS Wkgl sein: falls sich 2 Objekte in ein gleiches Feld zum gleichen Zeitpunkt bewegen kommt es sonst zu einer Überlagerung)
+    #define DIEINGSPEED 5                       //Wenn der Avatar tot ist: wie lange das Spiel noch fortgesetzt werden soll und wie lange die Todes-Animation angezeigt werden soll (1-100%, dieser Wert gibt an wie große die Schritte sein sollen)
 
 /** TYPE DEFINITIONS **/
 

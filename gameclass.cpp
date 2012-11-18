@@ -191,6 +191,9 @@ void GAME::print()
     {   error("GAME::print()","Das Spiel darf nicht ausgegeben werden, da die Spieldaten noch nicht aufbereitet wurden");
         return;
     }
+
+    gamebackground.print();
+
     gamelog->print();               //Logger ausgeben
 
     printFloor();
@@ -355,4 +358,111 @@ int GAME::isPrepared()                                      //Gibt zurück, ob da
 void GAME::printGameLogBackground()                         //Gibt nur den linken Rand und den Hintergrund des GameLog-Bereiches aus (wird von GAMELOG::print() auch erledigt)
 {   gamelog->printBackground();                             //weiterleiten
     return;
+}
+
+void GAME::setGameBackgroundColor(COLOR target)             //Setzt die Farbe des Leuchtens im Spielhintergrund
+{   gamebackground.setColor(target);                        //Weiterleiten
+}
+
+void GAME::printPreview()
+{   gamebackground.print();                                 //Hintergrund auch ausgeben
+    LEVEL::printPreview();
+}
+
+bool GAME::runBuildupAnimation()
+{   gamebackground.print(false);                            //Hintergrund auch ausgeben
+    return LEVEL::runBuildupAnimation();
+}
+
+void GAME::printFloor()                                     //Spielfläche ausgeben (inkl. Levelhintergrund)
+{   gamebackground.print();                                 //Hintergrund auch ausgeben
+    LEVEL::printFloor();
+}
+
+void GAME::setGameBackgroundSplashColor(COLOR splash)       //kurzfristige Farbe setzen
+{   gamebackground.setSplashColor(splash);
+}
+
+/// ==================================================================================================================================
+/// KLASSE GAMEBACKGROUND ************************************************************************************************************
+/// ==================================================================================================================================
+
+
+
+
+
+
+GAMEBACKGROUND::GAMEBACKGROUND(AREA _area)
+{   area=_area;
+
+    alpha=0;
+
+    final=WHITE;
+    old=final;
+
+    splashProgress=0;   //Keine Splash-Farbe
+}
+
+void GAMEBACKGROUND::print(bool printshine)
+{   gamebackground.print(area,{{0.0,0.0},{(area.b.x-area.a.x)/128,(area.b.y-area.a.y)/128}},WHITE); //Hintergrundbild ausgeben
+
+    if(printshine)
+    {   colorProgress+=5;
+        if(colorProgress>100)
+        {   colorProgress=100;
+        }
+
+        if(splashProgress>0)
+        {   if(splashDirection==0)
+            {   splashProgress+=2;
+                if(splashProgress>=100)
+                {   splashProgress=100;
+                    splashDirection=1;
+                }
+            }else
+            {   splashProgress-=1;
+                if(splashProgress<0)    //Fertig
+                    splashProgress=0;
+            }
+        }
+
+
+        //Zielfarbe bestimmen:
+        COLOR target=final;
+        if(splashProgress>0)//Farben mischen
+        {   target={final.r+(splash.r-final.r)*splashProgress/100.0,final.g+(splash.g-final.g)*splashProgress/100.0,final.b+(splash.b-final.b)*splashProgress/100.0};
+        }
+
+
+        COLOR current;
+        if(colorProgress<100 || splashProgress>0)//Noch nicht die neue Farbe
+            current={old.r+(target.r-old.r)*colorProgress/100.0,old.g+(target.g-old.g)*colorProgress/100.0,old.b+(target.b-old.b)*colorProgress/100.0};
+        else current=target;
+
+        alpha+=0.005;
+        if(alpha>1.0)   alpha=1.0;
+
+        shine.print(area,stdTextArea,current,alpha);
+    }
+}
+void GAMEBACKGROUND::setColor(COLOR _final)             //Neue, endgültige Farbe wählen
+{   //Zielfarbe bestimmen
+    COLOR target=final;
+    if(splashProgress>0)//Farben mischen
+    {   target={final.r+(splash.r-final.r)*splashProgress/100.0,final.g+(splash.g-final.g)*splashProgress/100.0,final.b+(splash.b-final.b)*splashProgress/100.0};
+    }
+
+    old={old.r+(target.r-old.r)*colorProgress/100.0,old.g+(target.g-old.g)*colorProgress/100.0,old.b+(target.b-old.b)*colorProgress/100.0};
+
+    final=_final;
+    colorProgress=0;
+}
+
+void GAMEBACKGROUND::setSplashColor(COLOR _splash)      //Farbe einstellen, die kurzfristig verwendet werden soll
+{
+    if(splashProgress<=0 || !colorcmp(splash,_splash))
+    {   splash=_splash;
+        splashProgress=1;
+    }
+    splashDirection=0;
 }

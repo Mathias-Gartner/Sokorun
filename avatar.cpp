@@ -84,7 +84,8 @@ void AVATAR::move(DIRECTION richtung,bool _userinput=0)
     int limit=game->isWalkable(OBJ_AVATAR,next);                        //Nachbarfeld, auf das sich der Avatar bewegen soll überprüfen
 
     if(limit>0)
-    {   movement.moving=1;
+    {   //game->setGameBackgroundSplashColor(RED);                        //Rot werden
+        movement.moving=1;
         movement.progress=0;
         movement.richtung=richtung;
         movement.limit=limit;                                           //Limit durch Feld selbst (Kugeln und andere Objekte in diesem Feld werden erst dann beachtet, wenn sie berührt werden können)

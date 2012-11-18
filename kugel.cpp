@@ -80,6 +80,7 @@ void KUGEL::move(DIRECTION richtung)
                                                     //Beispiel: Ein Avatar schieb eine Kugel über mehrere Eis-Felder. Danach kommt ein Kugel-förderband in eine andere Richtung. Daher muss die Kugel in eine andere Richtung weitergeschoben werden
                                                     //          und darf nicht vom Avatar, der sich noch immer am Eis befindet und jetzt gegen die Kugel drückt, angestoßen werden. Der Avatar rutscht weiter und kommt zur gleichen zeit am Kugelförderband zu stehen,
                                                     //          wie die Kugel das nächste Feld nach dem Förderband betritt
+        game->setGameBackgroundSplashColor({0,0.6,1});   //Blau werden
 
         movement.moving=1;
         movement.progress=0;
@@ -170,6 +171,7 @@ void KUGEL::run()                                                       //Führt 
 
             if(type==0 && (feld==TILE_TARGET || feld==TILE_FIXEDTARGET))                       //Zielfeld
             {   game->addGameLogEvent(KUGELTARGET);                     //Ereignis berichten
+                game->setGameBackgroundSplashColor(GREEN);        //Rot werden
             }
         }
     }
@@ -194,6 +196,7 @@ void KUGEL::run()                                                       //Führt 
                             default:        error("KUGEL::run()","Ubekanntes, toedliches Feld. Es wird keine Animations ausgegeben. feld: %d",feld);
                         }
                         game->addGameLogEvent(KUGELDESTROYED);          //Ereignis berichten
+                        game->setGameBackgroundSplashColor(RED);        //Rot werden
                         position={-1,-1};
                         type=-1;                                        //Diese Kugel zum löschen markieren
                     }break;

@@ -6,14 +6,6 @@ extern TEXTURE gamelogIcons;
 extern FONT normalFont;
 
 
-#define GAMELOG_X (windX-GameLogWidth+GAMELOGBORDERWITH/4+GAMELOGPADDING)    //Position, ab der Ausgaben erlaubt sind
-
-
-#define GAMELOGBUTTONS_Y windY-movementInfoSize/2-(movementInfoSize-5)/2    //Y-Position für die Gamelog-Buttons
-#define GAMELOGshowBUTTONarea AREA{{windX-movementInfoSize,GAMELOGBUTTONS_Y-50},{windX-movementInfoSize+25,GAMELOGBUTTONS_Y-25}}       //Show-Button AREA
-#define GAMELOGhideBUTTONarea AREA{{GAMELOG_X,GAMELOGBUTTONS_Y-30},{GAMELOG_X+25,GAMELOGBUTTONS_Y-5}}       //Hide-Button AREA
-#define GAMELOGsaveBUTTONarea AREA{{GAMELOG_X+30,GAMELOGBUTTONS_Y-30},{GAMELOG_X+55,GAMELOGBUTTONS_Y-5}}    //Save-Button AREA
-
 
 GAMELOG::GAMELOG() :    show(GAMELOGshowBUTTONarea,0,&gamelogIcons,POS{0,3}),
                         hide(GAMELOGhideBUTTONarea,0,&gamelogIcons,POS{0,3}),
@@ -160,7 +152,9 @@ void GAMELOG::print()                                       //Kümmert sich um di
         char title[128];
         COLOR farbe;
         POS spritePos;
-        int ypos=y;   //Beginn der akt. Box
+        int ypos=y;                         //Beginn der akt. Box
+        int xpos=GAMELOG_X;                 //Beginn der Box
+        int endXpos=windX-GAMELOGPADDING;   //Ende der Box
 
 
     progress+=10;        //Scroll-Geschindigkeit
@@ -169,13 +163,18 @@ void GAMELOG::print()                                       //Kümmert sich um di
 
     //Für alle Events durchgehen:
     GameEvent *p=start;
-    while(p!=NULL && y>0 && dispNum<9)//Sonlange Elemente existieren und diese auch sichtbar wären. Max. 7 Boxen
+    while(p!=NULL && y>0 && dispNum<((progress>=100)?9:10))//Sonlange Elemente existieren und diese auch sichtbar wären. Max. 7 Boxen
     {   dispNum++;
         y=ypos;
 
         getGameEventInformation(p->type,title,&farbe);                                 //Gibt Titel und Farbe für ein GameEvent zurück
 
-        #define GAMELOGBOXHEIGHT 58 //Höhe einer Event-Box
+        if(dispNum>9)
+        {   xpos=GAMELOG_X + GameLogWidth*progress/100;
+            endXpos=windX-GAMELOGPADDING + GameLogWidth*progress/100;
+            y+=progress*(GAMELOGBOXHEIGHT+GAMELOGPADDING)/100;
+        }
+
 
         if(p==start && progress<100)
         {   ypos-=progress*(GAMELOGBOXHEIGHT+GAMELOGPADDING)/100;
@@ -186,30 +185,29 @@ void GAMELOG::print()                                       //Kümmert sich um di
             if(colorcmp(farbe,BLACK))
                 farbe=WHITE;   //Schriftfarbe
             else //schwarze Box nicht ausgeben
-                drawBox({{GAMELOG_X,y-GAMELOGBOXHEIGHT},{windX-GAMELOGPADDING,y}},GAMELOGBORDERWITH,GAMELOGBOXTYPE,farbe);
+                drawBox({{xpos,y-GAMELOGBOXHEIGHT},{endXpos,y}},GAMELOGBORDERWITH,GAMELOGBOXTYPE,farbe);
 
         ///Titel:
             normalFont.setFontColor(farbe);
             normalFont.setFontSize(GameLogTitleFontSize);
-                normalFont.printf({((windX-GAMELOGPADDING)-GAMELOG_X)/2+GAMELOG_X,y-(GAMELOGPADDING*1.5)-GameLogTitleFontSize},taCENTER,"%s",title);
+                normalFont.printf({((endXpos)-xpos)/2+xpos,y-(GAMELOGPADDING*1.5)-GameLogTitleFontSize},taCENTER,"%s",title);
             normalFont.setFontSize(GameLogInfoFontSize);
 
         ///Zeitpunkt:
-            #define GameLogInfoColor COLOR{0.7,0.7,0.7}
             normalFont.setFontColor(GameLogInfoColor);
             //Mit abdunkeln:   normalFont.setFontColor({GameLogInfoColor.r-GameLogInfoColor.r*(GAMELOGDARKNING*dispNum),GameLogInfoColor.g-GameLogInfoColor.g*(GAMELOGDARKNING*dispNum),GameLogInfoColor.b-GameLogInfoColor.b*(GAMELOGDARKNING*dispNum)});
 
-            if(coordInside(mouse,{{GAMELOG_X,y-GAMELOGBOXHEIGHT},{windX-GAMELOGPADDING,y}}))    //Maus in der Box
+            if(coordInside(mouse,{{xpos,y-GAMELOGBOXHEIGHT},{endXpos,y}}))    //Maus in der Box
             {   y=y-GAMELOGBOXHEIGHT+GAMELOGPADDING*1.5;
-                normalFont.printf({windX-GAMELOGPADDING-GAMELOGPADDING*2,y},taRIGHT,"%d",p->time[(p->size)-1]);
+                normalFont.printf({endXpos-GAMELOGPADDING*2,y},taRIGHT,"%d",p->time[(p->size)-1]);
             }
             else
             {   y=y-GAMELOGBOXHEIGHT+GAMELOGPADDING*1.5;
-                normalFont.printf({windX-GAMELOGPADDING-GAMELOGPADDING*2,y},taRIGHT,"%.1f s",(p->time[(p->size)-1]*GAMESPEED)/1000.0);
+                normalFont.printf({endXpos-GAMELOGPADDING*2,y},taRIGHT,"%.1f s",(p->time[(p->size)-1]*GAMESPEED)/1000.0);
             }
 
         ///Icons:
-            x=GAMELOG_X+GAMELOGPADDING*2;
+            x=xpos+GAMELOGPADDING*2;
             //for(int i=(p->size)-1;i>=0;i--)
             for(int i=0;i<p->size;i++)
             {

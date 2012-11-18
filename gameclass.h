@@ -1,7 +1,36 @@
 #ifndef GAMECLASS_H_INCLUDED
 #define GAMECLASS_H_INCLUDED
 
+extern TEXTURE gamebackground,shine;
 
+class GAMEBACKGROUND
+{
+    private:
+        AREA area;              //Soll-Ausgabefläche
+
+
+        float alpha;
+
+        int colorProgress;      //Zu wieviel % die neue Farbe g=nommen wird
+
+        COLOR old;              //Letze Farbe
+        COLOR final;            //Soll-Farbe
+
+        COLOR splash;           //Kurzzeitige Soll-Farbe
+        //bool splashEnabled;     //1: Die Splashfarbe=Zielfarbe
+        int splashProgress;     //1-100% - zu wieviel % die Splash-Farbe eingeblendet werden soll; 0=keine Splahfarbe
+        bool splashDirection;   //0: Die Splashfarbe wird eingeblendet; 1: Die Splashfarbe wird ausgeblendet
+
+        //bool colorVariation;     //0: Ziel = target-Farbe    1: Ziel = abgedunkelte Target-Farbe
+
+
+    public:
+        GAMEBACKGROUND(AREA _area);
+
+        void print(bool printshine=1);
+        void setColor(COLOR _target);           //Neue, endgültige Farbe wählen
+        void setSplashColor(COLOR _splash);     //Farbe einstellen, die kurzfristig verwendet werden soll
+};
 
 class GAME : public LEVEL
 {
@@ -14,7 +43,8 @@ class GAME : public LEVEL
             class LOCK   *lockStartPointer;                 //Verkettete Klasse
 
 
-
+        ///Hintergrund:
+            GAMEBACKGROUND gamebackground;                  //Hintergrund bestehend aus Hintergrundbild + Leuchten
 
 
         ///Einblende-Animation für spez. Elemente:      (Avatar, Kugeln, Schienen, Transporter, Schlösser,...)
@@ -28,7 +58,8 @@ class GAME : public LEVEL
             void collision(POS position,DIRECTION richtung,COLOR color);                        //Erzeugt eine Aufprall-Animation
 
     public:
-        GAME(POS origin,int elsize,const char *LVLpath,const bool skipMinorErrors=0):LEVEL(origin,elsize,LVLpath,skipMinorErrors)//Konstruktor der Oberklasse "LEVEL"
+        GAME(POS origin,int elsize,const char *LVLpath,const bool skipMinorErrors=0):   LEVEL(origin,elsize,LVLpath,skipMinorErrors), //Konstruktor der Oberklasse "LEVEL"
+                                                                                        gamebackground(AREA{{0,0},{windX-GameLogWidth,windY}})
         {   prepared=0;
             avatar=NULL;
             kugelStartPointer=NULL;                                                 //Verkettete Kugel-Klasse beinhaltet keine Elemente
@@ -61,6 +92,12 @@ class GAME : public LEVEL
 
         void stopMovementsTo(POS pos,int limit);        //Objekte, die sich in dieses Feld bewegen wollen abprallen lassen, weil es ein anderes Objekt auf dieses Feld muss
 
+        void printPreview();                            //Vorschau anzeigen (inkl. Levelhintergrund)
+        bool runBuildupAnimation();                     //Level aufbauen (inkl. Levelhintergrund)
+        void printFloor();                              //Spielfläche ausgeben (inkl. Levelhintergrund)
+        void setGameBackgroundSplashColor(COLOR splash);//kurzfristige Farbe setzen
+
+        void setGameBackgroundColor(COLOR target);      //Setzt die Farbe des Leuchtens im Spielhintergrund
 
         int isPrepared();                               //Gibt zurück, ob das Spiel erfolgreich vorbereitet und gespielt werden kann
 
@@ -82,5 +119,6 @@ class GAME : public LEVEL
         void cleanupKugeln();                           //Alle Kugeln, die zum löschen markiert wurden jetzt löschen
 
 };
+
 
 #endif // GAMECLASS_H_INCLUDED
