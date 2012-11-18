@@ -249,7 +249,7 @@ int main(int argc,char* argv[])
 
 
 
-    GAME *game=new GAME({50,50},40,"daten/level/1.lvl");
+    GAME *game=new GAME({50,50},40,"daten/level/transporter.lvl");
     if(game->getStatus() != 0)
     {   char *dateP,*timeP;
         game->getMetaData(&dateP,&timeP);
@@ -258,7 +258,7 @@ int main(int argc,char* argv[])
 
     gameMain(game);
 
-
+for(;;);
     cleanup();  //Abschlussarbeiten vor dem Programmende
     return 0;
 

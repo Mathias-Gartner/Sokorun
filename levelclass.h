@@ -2,19 +2,6 @@
 #define LEVELCLASS_H_INCLUDED
 
 
-struct KUGELorigin      //Verkettete Liste mit allen Kugel-Daten die aus der Level-Datei geladen werden
-{   POS origin;
-    int type;           //Kugeltyp
-    KUGELorigin *next;
-};
-
-
-struct LOCKorigin       //Verkettete Liste mit allen Schloss-Daten die aus der Level-Datei geladen werden
-{   POS lock;
-    POS key;
-    COLOR color;
-    LOCKorigin *next;
-};
 
 
 ///SPIELFELDWERTE: VERALTET
@@ -81,25 +68,19 @@ class LEVEL{
             POS origin;                         //Urpsrungs-Koordinate, an denen das Level ausgegebenw wird (links-unten)
             int elsize;                         //Größe eines Feldes bei der Ausgabe
 
-
-   //GLuint gamefloor;
-   //bool gamefloorPrepared;
-
-
         ///Level-Metadaten:
             char path[256];                     //Pfad der Leveldatei (falls das Level aus dem Editor kommt: kein Pfad)
             char CreateDate[256];               //Erstelldatum der Leveldatei
             char CreateTime[256];               //Erstellzeitpunkt der Leveldatei
 
-
         ///Leveldaten:
             POS size;                           //Größe des Spielfeldes
 
-
             char spielfeld[MaxYsize][MaxXsize]; //Spielfeld
-            POS avatarOrigin;                   //Startposition der Spielfigur
-            KUGELorigin *kugelOriginStart;      //Start der Verketteten Liste mit allen Kugel-Startpositionen
-            LOCKorigin  *lockOriginStart;       //Start der Verketteten Liste mit allen Schloss-Daten
+            POS avatarOrigin;                                   //Startposition der Spielfigur
+            struct KUGELorigin *kugelOriginStart;               //Start der Verketteten Liste mit allen Kugel-Startpositionen
+            struct LOCKorigin  *lockOriginStart;                //Start der Verketteten Liste mit allen Schloss-Daten
+            struct TRANSPORTERorigin *transporterOriginStart;   //Liste mit den Leveldaten aller Transporter
 
 
         ///Level-Einblende-Animation:
@@ -112,12 +93,17 @@ class LEVEL{
             bool buildupAnimationCompleted;     //Zur Überprüfung, ob die Animation fertig ist
 
         ///Sonstiges:
-            bool loadLevel(const char *LVLpath,const bool skipMinorErrors);//Lädt ein Level aus einer Datei
+            int levelloader(const char *LVLpath,const bool skipMinorErrors);//Lädt ein Level aus einer Datei; Kann ungueltige Daten erzeugen wenn die Daten fehlerhaft ist
+            void cleanup();                     //Setzt alle Leveldaten zurück und gibt den Speicher wieder frei der reserviert wurde
             int convertLevel();                 //Konvertiert die Daten eines veralteten Levelformates
 
             void printFloorElement(int element,POS coord,COLOR color);  //Ein einzelnes Feld der Spielfläche ausgeben
     public:
         LEVEL(POS origin,int elsize,const char *LVLpath,const bool skipMinorErrors);
+
+
+        void loadLevel(const char *LVLpath,const bool skipMinorErrors);    //Setzt die Daten im Speicher zurück und lädt ein anderes Level. Diese Methode ist sicher und erzeugt keinen Datenmüll
+
 
         char* getLevelPath();                               //Gibt den Pfad der Leveldatei zurück, die geladen wurde
         void getMetaData(char **dateP,char **timeP);        //Gibt Metadaten wie Erstelldatum und Erstellzeitpunkt zurück

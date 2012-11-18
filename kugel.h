@@ -1,7 +1,11 @@
 #ifndef KUGEL_H_INCLUDED
 #define KUGEL_H_INCLUDED
 
-
+struct KUGELorigin              //Verkettete Liste mit allen Kugel-Daten die aus der Level-Datei geladen werden
+{   POS origin;                 //Startposition
+    int type;                   //Kugeltyp
+    KUGELorigin *next;          //Nächste Kugel
+};
 
 class KUGEL
 {

@@ -27,7 +27,7 @@ class GAMEBACKGROUND
     public:
         GAMEBACKGROUND(AREA _area);
 
-        void print(bool printshine=1);
+        void print(int bx,bool printshine=1);   //Ausgabe. bx = X-position, bis zu der der Hintergrund ausgegeben werden soll (gilt nicht für shine)
         void setColor(COLOR _target);           //Neue, endgültige Farbe wählen
         void setSplashColor(COLOR _splash);     //Farbe einstellen, die kurzfristig verwendet werden soll
 };

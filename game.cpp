@@ -40,33 +40,33 @@ int gameMain(GAME *game)
         bool exit=0;
         long loopStart;
 
-    ///Builup-Animation durchführen:
-        prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
-        do
-        {   loopStart=clock();
-            prepare_graphics();                 //Grafiken vorbereiten
-            game->printGameLogBackground();     //Gamelog-Bereich markieren
-            if(game->runBuildupAnimation())
-                exit=1;
-        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
-        exit=0;
-
-    ///Spezial-Elemnte einblenden:
-        game->initBuildupAnimationSpecialElements();        //Für jedes Objekt eine Einblendeanimation generieren und zum Animationshanlder hinzufügen
-        prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
-        do
-        {   loopStart=clock();
-            prepare_graphics();                 //Grafiken vorbereiten
-            game->printGameLogBackground();     //Gamelog-Bereich markieren
-            game->printFloor();
-
-            animationHandler.run(OBJECTBUILDUP);
-            animationHandler.print(OBJECTBUILDUP);
-            if(animationHandler.getActiveAnimationAnz(OBJECTBUILDUP)<=0)  //Alle Animationen abgeschlossen
-                exit=1;
-        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
-        exit=0;
-        animationHandler.remove(OBJECTBUILDUP); //Animationen löschen
+//    ///Builup-Animation durchführen:
+//        prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
+//        do
+//        {   loopStart=clock();
+//            prepare_graphics();                 //Grafiken vorbereiten
+//            game->printGameLogBackground();     //Gamelog-Bereich markieren
+//            if(game->runBuildupAnimation())
+//                exit=1;
+//        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
+//        exit=0;
+//
+//    ///Spezial-Elemnte einblenden:
+//        game->initBuildupAnimationSpecialElements();        //Für jedes Objekt eine Einblendeanimation generieren und zum Animationshanlder hinzufügen
+//        prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
+//        do
+//        {   loopStart=clock();
+//            prepare_graphics();                 //Grafiken vorbereiten
+//            game->printGameLogBackground();     //Gamelog-Bereich markieren
+//            game->printFloor();
+//
+//            animationHandler.run(OBJECTBUILDUP);
+//            animationHandler.print(OBJECTBUILDUP);
+//            if(animationHandler.getActiveAnimationAnz(OBJECTBUILDUP)<=0)  //Alle Animationen abgeschlossen
+//                exit=1;
+//        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
+//        exit=0;
+//        animationHandler.remove(OBJECTBUILDUP); //Animationen löschen
 
     ///Preview:
     {   bool pressed=glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN)||glfwGetKey(GLFW_KEY_SPACE);

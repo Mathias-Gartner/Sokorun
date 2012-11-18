@@ -79,6 +79,7 @@ class GAMELOG
 
 
         void printBackground();                         //Gibt nur den Linken Rand und den Hintergrund aus (wird von GAMELOG::print() auch erledigt)
+        int getxpos();                                  //Gibt die X-Position zurück, ab der sich der Gamelog befindet
 
         void run();                                     //Muss bei jedem Schleifendurchlauf des Spieles aufgerufen werden
         void print();                                   //Kümmert sich um die Ausgabe

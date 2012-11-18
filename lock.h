@@ -1,6 +1,15 @@
 #ifndef LOCK_H_INCLUDED
 #define LOCK_H_INCLUDED
 
+
+struct LOCKorigin               //Verkettete Liste mit allen Schloss-Daten die aus der Level-Datei geladen werden
+{   POS lock;                   //Position des Schlosses
+    POS key;                    //Position des Schlüssels
+    COLOR color;                //Farbe
+    LOCKorigin *next;           //Nächstes Element
+};
+
+
 class LOCK
 {
     private:

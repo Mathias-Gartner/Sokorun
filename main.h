@@ -49,6 +49,7 @@
     #include "avatar.h"             //Spielfiguren-Klasse
     #include "kugel.h"              //Kugel-Klasse
     #include "lock.h"               //Schloss-Klasse
+    #include "transporter.h"        //Transporter-Klasse
     #include "gameclass.h"          //Spiel-Klasse
 
     ///-----------------------------
@@ -71,6 +72,7 @@
     #include "avatar.cpp"           //Spielfiguren-Klasse
     #include "lock.cpp"             //Schloss-Klasse
     #include "kugel.cpp"            //Kugel-Klasse
+    #include "transporter.cpp"      //Transporter-Klasse
 
     ///-----------------------------
 

@@ -192,7 +192,7 @@ void GAME::print()
         return;
     }
 
-    gamebackground.print();
+    gamebackground.print(gamelog->getxpos());
 
     gamelog->print();               //Logger ausgeben
 
@@ -365,17 +365,17 @@ void GAME::setGameBackgroundColor(COLOR target)             //Setzt die Farbe de
 }
 
 void GAME::printPreview()
-{   gamebackground.print();                                 //Hintergrund auch ausgeben
+{   gamebackground.print(gamelog->getxpos());               //Hintergrund auch ausgeben
     LEVEL::printPreview();
 }
 
 bool GAME::runBuildupAnimation()
-{   gamebackground.print(false);                            //Hintergrund auch ausgeben
+{   gamebackground.print(gamelog->getxpos(),false);         //Hintergrund auch ausgeben
     return LEVEL::runBuildupAnimation();
 }
 
 void GAME::printFloor()                                     //Spielfläche ausgeben (inkl. Levelhintergrund)
-{   gamebackground.print();                                 //Hintergrund auch ausgeben
+{   gamebackground.print(gamelog->getxpos());               //Hintergrund auch ausgeben
     LEVEL::printFloor();
 }
 
@@ -383,10 +383,12 @@ void GAME::setGameBackgroundSplashColor(COLOR splash)       //kurzfristige Farbe
 {   gamebackground.setSplashColor(splash);
 }
 
+
+
+
 /// ==================================================================================================================================
 /// KLASSE GAMEBACKGROUND ************************************************************************************************************
 /// ==================================================================================================================================
-
 
 
 
@@ -403,9 +405,8 @@ GAMEBACKGROUND::GAMEBACKGROUND(AREA _area)
     splashProgress=0;   //Keine Splash-Farbe
 }
 
-void GAMEBACKGROUND::print(bool printshine)
-{   gamebackground.print(area,{{0.0,0.0},{(area.b.x-area.a.x)/128,(area.b.y-area.a.y)/128}},WHITE); //Hintergrundbild ausgeben
-
+void GAMEBACKGROUND::print(int bx,bool printshine)
+{   gamebackground.print({area.a,{bx,area.b.y}},{{0.0,0.0},{(bx-area.a.x)/128.0f,(area.b.y-area.a.y)/128.0f}},WHITE); //Hintergrundbild ausgeben
     if(printshine)
     {   colorProgress+=5;
         if(colorProgress>100)

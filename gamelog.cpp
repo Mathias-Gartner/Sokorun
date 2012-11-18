@@ -157,7 +157,7 @@ void GAMELOG::print()                                       //Kümmert sich um di
         int endXpos=windX-GAMELOGPADDING;   //Ende der Box
 
 
-    progress+=10;        //Scroll-Geschindigkeit
+    progress+=15;        //Scroll-Geschindigkeit
     if(progress>100)    //Overflow vermeiden, wenn länger kein scrollen vorkommt
         progress=100;
 
@@ -248,7 +248,12 @@ void GAMELOG::print()                                       //Kümmert sich um di
 
 }
 
-
-
+int GAMELOG::getxpos()                                 //Gibt die X-Position zurück, ab der sich der Gamelog befindet
+{
+    if(!displayGameLog)
+        return windX-GAMELOGBORDERWITH-movementInfoSize;
+    else
+        return windX-GameLogWidth;
+}
 
 
