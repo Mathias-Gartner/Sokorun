@@ -2,6 +2,8 @@
 #define GAMELOG_H_INCLUDED
 
 
+<<<<<<< HEAD
+=======
 
 #define GAMELOGBOXTYPE 3
 #define GAMELOGBORDERWITH 20
@@ -13,6 +15,7 @@
 #define GameLogInfoFontSize 20
 
 
+>>>>>>> parent of 7add9e9... Gamelog verbessert
 enum GameEventType                                  //Alle Arten von Spieleevents die es gibt
 {   Gevt_NONE=-1,                                   //Gamelog-Intern (=type nicht zugewiesen/unbekannt)
     GAMESTART,

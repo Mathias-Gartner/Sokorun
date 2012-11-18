@@ -1,8 +1,5 @@
 // TGA Loader - 16/11/04 Codehead
 
-#ifndef TGA_H_INCLUDED
-#define TGA_H_INCLUDED
-
 #include <iostream>
 #include <fstream>
 #include <memory.h>
@@ -473,5 +470,3 @@ unsigned char* TGAImg::GetPalette()
  {
   return pPalette;
  }
-
-#endif // TGA_H_INCLUDED
