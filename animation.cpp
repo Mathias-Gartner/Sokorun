@@ -17,7 +17,7 @@ ANIMATION::ANIMATION(ANITYPE _anitype,int _identification,int _type,bool _richtu
     type=_type;
     richtung=_richtung;
     texture=_texture;
-    spriteArea=stdTextArea;
+    //spriteArea=stdTextArea;
 
     if(type!=2 && (_spritePos.x<0 || _spritePos.y<0 || _spritePos.x>=(texture->getSprites()).x || _spritePos.y>=(texture->getSprites()).y ))
     {   error("ANIMATION::ANIMATION()","Ungueltigen Wert fuer die Spriteposition uebergeben. _spritePos=(%dx%d)",_spritePos.x,_spritePos.y);
@@ -98,7 +98,7 @@ void ANIMATION::print()                                         //Ausgabe
 
 void ANIMATION::print_T0()                                      //Ausgabe für Typ 0
 {   /** EINFÄRBEN **/
-    texture->print(output,spritePos,spriteArea,COLOR{overlay.r*progress/100,overlay.g*progress/100,overlay.b*progress/100});
+    texture->print(output,spritePos,COLOR{overlay.r*progress/100,overlay.g*progress/100,overlay.b*progress/100});
 
     if(ImgDebug)    markArea(output,MAGENTA);
 }
@@ -119,7 +119,7 @@ void ANIMATION::print_T2()                                      //Ausgabe für Ty
 
     //Sprite-Position ermitteln:
     POS sp=texture->getSprites();
-    texture->print(output,{spriteNum%sp.x,spriteNum/sp.x},spriteArea,overlay);
+    texture->print(output,{spriteNum%sp.x,spriteNum/sp.x},overlay);
 
     if(ImgDebug)    markArea(output,MAGENTA);
 }
@@ -187,9 +187,9 @@ ANITYPE ANIMATION::getAnitype()                                 //Gibt den Anima
 {   return anitype;
 }
 
-void ANIMATION::setSpriteArea(fAREA _spriteArea)                //spriteArea setzen
-{   spriteArea=_spriteArea;
-}
+//void ANIMATION::setSpriteArea(fAREA _spriteArea)                //spriteArea setzen
+//{   spriteArea=_spriteArea;
+//}
 
 void ANIMATION::setSpritePos(POS _spritePos)                    //Sprite ändern
 {   spritePos=_spritePos;
@@ -235,17 +235,17 @@ ANIMATIONGROUP::~ANIMATIONGROUP()                               //Destruktor - L
     }
 }
 
-void ANIMATIONGROUP::setSpriteArea(int identification,fAREA _spriteArea)        //spriteArea setzen (zB. zum spiegeln)
-{
-    ANIMATION *p=start;
-    while(p!=NULL)
-    {   if(identification==0 || p->getIdentification()==identification)
-        {   p->setSpriteArea(_spriteArea);
-            return;
-        }
-        p=p->getNextPointer();                                  //Nächstes Element
-    }
-}
+//void ANIMATIONGROUP::setSpriteArea(int identification,fAREA _spriteArea)        //spriteArea setzen (zB. zum spiegeln)
+//{
+//    ANIMATION *p=start;
+//    while(p!=NULL)
+//    {   if(identification==0 || p->getIdentification()==identification)
+//        {   p->setSpriteArea(_spriteArea);
+//            return;
+//        }
+//        p=p->getNextPointer();                                  //Nächstes Element
+//    }
+//}
 
 void ANIMATIONGROUP::setSpritePos(int identification,POS _spritePos)        //spritePosition ändern
 {

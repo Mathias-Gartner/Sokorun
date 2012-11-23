@@ -5,7 +5,7 @@
 #define MAIN_H_INCLUDED
     #define DEBUG 1                 //OB DEBUG-BEFEHLE DURCHGEFÜHRT WERDEN SOLLEN
     #define ImgDebug 0              //Ob Debug-Funktionen, die im Grafik-Fenster ausgegeben werden angewandt werden sollen
-    #define TIMEDEBUGOUTPUT 0       //Ob die Zeit/Spielschleifenruchlauf ausgegeben werden soll
+    #define TIMEDEBUGOUTPUT 1       //Ob die Zeit/Spielschleifenruchlauf ausgegeben werden soll
     const char* const VERSION={"Ver. 0.0"};
 
     //#include "GLee/GLee.h"

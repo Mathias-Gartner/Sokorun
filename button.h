@@ -125,9 +125,9 @@ class BUTTON//Ein Button, den man drücken kann
 
         BUTTON(AREA _output,char _clickable);                                                                //Typ 0 initialisieren
         BUTTON(AREA _output,char _clickable,TEXTURE *_textur,POS _spritePos);                                //Typ 1 initialisieren
-        BUTTON(AREA _output,char _clickable,TEXTURE *_textur,POS _spritePos,char *value,int _fontSize,COLOR _fontcolor);   //Typ 2 initialisieren
+        BUTTON(AREA _output,char _clickable,TEXTURE *_textur,POS _spritePos,const char* const value,int _fontSize,COLOR _fontcolor);   //Typ 2 initialisieren
         BUTTON(AREA _output,char _clickable,int _boxtype,int _borderWidth,COLOR _color);                                      //Typ 3 initialisieren
-        BUTTON(AREA _output,char _clickable,int _boxtype,int _borderWidth,COLOR _color,char *value,int _fontSize,COLOR _fontcolor);         //Typ 4 initialisieren
+        BUTTON(AREA _output,char _clickable,int _boxtype,int _borderWidth,COLOR _color,const char* const value,int _fontSize,COLOR _fontcolor);         //Typ 4 initialisieren
 
         char clicked();     //Gibt zurück ob, und welche Maustatste diesen Button geklickt hat (muss VOR pint() aufgerufen werden)
         void print();       //Button ausgeben

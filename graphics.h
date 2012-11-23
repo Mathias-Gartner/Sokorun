@@ -7,10 +7,11 @@
 
 /** Konstanten und Defines: **/
     #define stdTextArea         fAREA{{0.0f,0.0f},{1.0f,1.0f}}
-    #define TextAreaXmirror     fAREA{{1.0f,0.0f},{0.0f,1.0f}}
+    /*#define TextAreaXmirror     fAREA{{1.0f,0.0f},{0.0f,1.0f}}
     #define TextAreaYmirror     fAREA{{0.0f,1.0f},{1.0f,0.0f}}
     #define TextAreaXYmirror    fAREA{{1.0f,1.0f},{0.0f,0.0f}}
     #define TextArea180deg      TextAreaXYmirror
+    */
 
 
 /** EINSTELLUNGEN **/
@@ -78,7 +79,16 @@ class TEXTURE
         TEXTURE(const char* const imgPath, POS imgSize, POS imgSprites,bool _allowTextureRepeat);
         void print(AREA display,fAREA textArea,COLOR overlay,float alpha=1.0);              //Ausgabe des gesamten Bildes
         void print(AREA display,POS spritePos,COLOR overlay,float alpha=1.0);               //Ausgabe eines Sprites
-        void print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay,float alpha=1.0);      //Ausgabe eines Sprite-Teiles (zum drehen und spiegeln)
+
+        void print(AREA display,POS spritePos,COLOR overlay,float alo,float aro, float alu,float aru);               //Ausgabe eines Sprites; Jede Texturkoordinate hat einen andren Alpha-Wert
+
+
+
+
+        //void print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay,float alpha=1.0);      //Ausgabe eines Sprite-Teiles (zum drehen und spiegeln)
+
+
+
 
         void print(POS position,int size,POS spritePos,int angle,COLOR overlay,float alpha=1.0);     //Ausgabe eines Sprites mit einer Rotation
         int getSpriteAnz();     //Gibt die Anzahl der Sprites zurück die sich im Bild befinden

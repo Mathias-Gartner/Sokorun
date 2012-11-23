@@ -25,6 +25,12 @@ void GAME::setupGameData()
         {   lockStartPointer=new class LOCK(this,&origin,&elsize,&size,l->lock,l->key,l->color,/*next-pointer=startpointer*/lockStartPointer);   //Am Anfang einfügen
             l=l->next;
         }
+    ///Verkettete Transporterklasse generieren:
+        TRANSPORTERorigin *t=transporterOriginStart;
+        while(t!=NULL)
+        {   transporterStartPointer=new class TRANSPORTER(this,&origin,&elsize,&size,t,/*next-pointer=startpointer*/transporterStartPointer);    //Am Anfang einfügen
+            t=t->next;
+        }
 
     prepared=1;
 }
@@ -72,6 +78,14 @@ GAME::~GAME()
                 l=ll;
             }
             lockStartPointer=NULL;
+        ///Die verketteten Objekte der Klasse TRANSPORTER löschen:
+            TRANSPORTER *t=transporterStartPointer,*lt;
+            while(t!=NULL)
+            {   lt=t->getNextObject();
+                delete t;
+                t=lt;
+            }
+            transporterStartPointer=NULL;
     }
 }
 
@@ -139,10 +153,11 @@ void GAME::addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung=NON
     ///Effekte, die durch eigene Unterprogramme realisiert wurden:
     switch(effect)
     {   case COLLISION:     collision(position,richtung,color); return;
+        default: break;
     }
 
-    AREA fieldCoord={origin.x+(position.x)*elsize,origin.y+(size.y-position.y-1)*elsize,{0,0}};
-    AREA fieldCoordDouble={{origin.x+(position.x-0.5)*elsize,origin.y+(size.y-position.y-0.5-1)*elsize},{0,0}};  //Für eine doppelt so große Ausgabe
+    AREA fieldCoord={{origin.x+(position.x)*elsize,origin.y+(size.y-position.y-1)*elsize},{0,0}};
+    AREA fieldCoordDouble={{(int)(origin.x+(position.x-0.5f)*elsize),(int)(origin.y+(size.y-position.y-0.5f-1)*elsize)},{0,0}};  //Für eine doppelt so große Ausgabe
     fieldCoord.b        ={fieldCoord.a.x        +elsize     ,fieldCoord.a.y         +elsize     };
     fieldCoordDouble.b  ={fieldCoordDouble.a.x  +elsize*2   ,fieldCoordDouble.a.y   +elsize*2   };
 
@@ -197,7 +212,7 @@ void GAME::print()
     gamelog->print();               //Logger ausgeben
 
     printFloor();
-    //Transportert
+    if(transporterStartPointer!=NULL)  transporterStartPointer->print();      //Gibt alle Transporter (und deren Schienennetz) aus
     if(kugelStartPointer!=NULL) kugelStartPointer->print();     //Gibt alle Kugeln aus der Liste aus
     avatar->print();                //Gibt die Spielfigur aus
     if(lockStartPointer!=NULL)  lockStartPointer->print();      //Gibt alle Schlösser (und Schlüssel) aus der Liste aus
@@ -299,8 +314,9 @@ bool GAME::isMoving(OBJEKT object)                            //Gibt zurück, ob 
     if(object==OBJ_AVATAR)
         return avatar->isMoving();
     if(object==OBJ_KUGEL)
-        if(kugelStartPointer!=NULL) return kugelStartPointer->isMoving();
+    {   if(kugelStartPointer!=NULL) return kugelStartPointer->isMoving();
         else return 0;
+    }
     error("GAME::isMoving()","Das Objekt, dass ueberprueft werden soll ist ungueltig. Es wird 0 (not moving) zurueckgegeben. object=%d",object);
     return 0;
 }
@@ -323,7 +339,7 @@ int GAME::isWalkable(OBJEKT object,POS position)            //Ob ein bestimmtes 
 {
     static int limit;
 
-    limit=walkable[object][spielfeld[position.y][position.x]];
+    limit=walkable[object][(int)spielfeld[position.y][position.x]];
     if(lockStartPointer!=NULL && lockStartPointer->isLocked(position))                //Das Feld ist von einem Schloss blockiert
     {   if(limit>Wlock)
             return Wlock;
@@ -431,13 +447,13 @@ void GAMEBACKGROUND::print(int bx,bool printshine)
         //Zielfarbe bestimmen:
         COLOR target=final;
         if(splashProgress>0)//Farben mischen
-        {   target={final.r+(splash.r-final.r)*splashProgress/100.0,final.g+(splash.g-final.g)*splashProgress/100.0,final.b+(splash.b-final.b)*splashProgress/100.0};
+        {   target={final.r+(splash.r-final.r)*splashProgress/100.0f,final.g+(splash.g-final.g)*splashProgress/100.0f,final.b+(splash.b-final.b)*splashProgress/100.0f};
         }
 
 
         COLOR current;
         if(colorProgress<100 || splashProgress>0)//Noch nicht die neue Farbe
-            current={old.r+(target.r-old.r)*colorProgress/100.0,old.g+(target.g-old.g)*colorProgress/100.0,old.b+(target.b-old.b)*colorProgress/100.0};
+            current={old.r+(target.r-old.r)*colorProgress/100.0f,old.g+(target.g-old.g)*colorProgress/100.0f,old.b+(target.b-old.b)*colorProgress/100.0f};
         else current=target;
 
         alpha+=0.005;
@@ -450,10 +466,10 @@ void GAMEBACKGROUND::setColor(COLOR _final)             //Neue, endgültige Farbe
 {   //Zielfarbe bestimmen
     COLOR target=final;
     if(splashProgress>0)//Farben mischen
-    {   target={final.r+(splash.r-final.r)*splashProgress/100.0,final.g+(splash.g-final.g)*splashProgress/100.0,final.b+(splash.b-final.b)*splashProgress/100.0};
+    {   target={final.r+(splash.r-final.r)*splashProgress/100.0f,final.g+(splash.g-final.g)*splashProgress/100.0f,final.b+(splash.b-final.b)*splashProgress/100.0f};
     }
 
-    old={old.r+(target.r-old.r)*colorProgress/100.0,old.g+(target.g-old.g)*colorProgress/100.0,old.b+(target.b-old.b)*colorProgress/100.0};
+    old={old.r+(target.r-old.r)*colorProgress/100.0f,old.g+(target.g-old.g)*colorProgress/100.0f,old.b+(target.b-old.b)*colorProgress/100.0f};
 
     final=_final;
     colorProgress=0;

@@ -93,42 +93,52 @@ class LEVEL{
             bool buildupAnimationCompleted;     //Zur Überprüfung, ob die Animation fertig ist
 
         ///Sonstiges:
-            int levelloader(const char *LVLpath,const bool skipMinorErrors);//Lädt ein Level aus einer Datei; Kann ungueltige Daten erzeugen wenn die Daten fehlerhaft ist
-            void cleanup();                     //Setzt alle Leveldaten zurück und gibt den Speicher wieder frei der reserviert wurde
-            int convertLevel();                 //Konvertiert die Daten eines veralteten Levelformates
+            int levelloader(const char *LVLpath,const bool skipMinorErrors);    //Lädt ein Level aus einer Datei; Kann ungueltige Daten erzeugen wenn die Daten fehlerhaft ist
+            void cleanup();                                                     //Setzt alle Leveldaten zurück und gibt den Speicher wieder frei der reserviert wurde
+            int convertLevel();                                                 //Konvertiert die Daten eines veralteten Levelformates
 
-            void printFloorElement(int element,POS coord,COLOR color);  //Ein einzelnes Feld der Spielfläche ausgeben
+            void printRail(TRANSPORTERorigin *transp);                          //Gibt den Schienenweg eines Transporters aus
+
+            void printFloorElement(int element,POS coord,COLOR color);          //Ein einzelnes Feld der Spielfläche ausgeben
+
+            bool calculateRailOutputType(struct RAIL *start);//Setzt die Outputtypes für jedes Schienenelement (Ecke/Linie/Endstück/...)
+            DIRECTION getRailDirection(POS a,POS b);                            //Gibt zurück in welche Richtung man sich von a aus bewegen muss, damit man b erreicht
     public:
-        LEVEL(POS origin,int elsize,const char *LVLpath,const bool skipMinorErrors);
 
+        ///Level laden:
+            LEVEL(POS origin,int elsize,const char *LVLpath,const bool skipMinorErrors);
+            void loadLevel(const char *LVLpath,const bool skipMinorErrors);    //Setzt die Daten im Speicher zurück und lädt ein anderes Level. Diese Methode ist sicher und erzeugt keinen Datenmüll
+        ///Levelinformationen abfragen:
+            //--- Status
+            int getStatus();                                    //Statusinformationen erhalten
+            //--- Informationen aus der Leveldatei
+            char* getLevelPath();                               //Gibt den Pfad der Leveldatei zurück, die geladen wurde
+            void getMetaData(char **dateP,char **timeP);        //Gibt Metadaten wie Erstelldatum und Erstellzeitpunkt zurück
+            POS getSize();                                      //Gibt die Spielfeldgröße zurück
+            //--- Sonstiges
+            int getField(POS position);                         //Gibt den Wert des Spielfeldes zurück
+        ///Ausgabe:
+            //--- Einstellungen
+            void setDisplayOptions(POS _origin,int _elsize);    //Darstellungsoptionen ändern
+            //--- Komplette Ausgabe
+            void printPreview();                                //Ausgabe des gesametem Levels
+            //--- Teile der Ausgabe
+            void printFloor();                                  //Spielfläche ausgeben
+            void printTransporter();                            //Gibt alle Schienenwege aus
+            void printKugelnAtOrigins();                        //Kugeln an den Startpositionen ausgeben
+            void printAvatarAtOrigin();                         //Speilfigur an der Startposition ausgeben
+            void printLocksAtOrigins();                         //Schlösser und Schlüssel an deren Position ausgeben
+            //--- Animation für den Levelaufbau
+            bool runBuildupAnimation();                         //Animation für das Einblenden des Levels
+            //--- Debug
+            void marker(POS position,COLOR color);              //Umrahmt ein bestimmtes Feld (Für debugging-Zwecke)
+        ///Sonstiges
+            bool checkPos(const POS position);                  //Überprüft, ob sich die aktuelle Position auf dem Spielfeld befindet (0=ja) (position muss >=0 und <size sein)
+            POS getTargetBeamer();                              //Gibt die Position des Zielbeamers zurück
+            FIELDPROPERTY getFieldProperty(OBJEKT object,POS position);       //Gibt die Eigenschaften eines Feldes für ein bestimmtes Objekt zurück
 
-        void loadLevel(const char *LVLpath,const bool skipMinorErrors);    //Setzt die Daten im Speicher zurück und lädt ein anderes Level. Diese Methode ist sicher und erzeugt keinen Datenmüll
-
-
-        char* getLevelPath();                               //Gibt den Pfad der Leveldatei zurück, die geladen wurde
-        void getMetaData(char **dateP,char **timeP);        //Gibt Metadaten wie Erstelldatum und Erstellzeitpunkt zurück
-        POS getSize();                                      //Gibt die Spielfeldgröße zurück
-
-        void printPreview();                                //Ausgabe des gesametem Levels
-        void printFloor();                                  //Spielfläche ausgeben
-        void printKugelnAtOrigins();                        //Kugeln an den Startpositionen ausgeben
-        void printAvatarAtOrigin();                         //Speilfigur an der Startposition ausgeben
-        void printLocksAtOrigins();                         //Schlösser und Schlüssel an deren Position ausgeben
-        void marker(POS position,COLOR color);              //Umrahmt ein bestimmtes Feld (Für debugging-Zwecke)
-
-        bool runBuildupAnimation();                         //Animation für das Einblenden des Levels
-
-        void setDisplayOptions(POS _origin,int _elsize);    //Darstellungsoptionen ändern
-        int getStatus();                                    //Statusinformationen erhalten
-
-        int getField(POS position);                         //Gibt den Wert des Spielfeldes zurück
-
-        bool checkPos(const POS position);                  //Überprüft, ob sich die aktuelle Position auf dem Spielfeld befindet (0=ja) (position muss >=0 und <size sein)
-
-        POS getTargetBeamer();                              //Gibt die Position des Zielbeamers zurück
-
-        FIELDPROPERTY getFieldProperty(OBJEKT object,POS position);       //Gibt die Eigenschaften eines Feldes für ein bestimmtes Objekt zurück
-        ~LEVEL();                                           //Destruktor - Speicher wieder freigeben
+        ///Destruktor
+            ~LEVEL();                                           //Destruktor - Speicher wieder freigeben
 
 };
 #endif // LEVEL_H_INCLUDED

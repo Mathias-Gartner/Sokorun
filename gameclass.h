@@ -41,6 +41,7 @@ class GAME : public LEVEL
             class AVATAR *avatar;
             class KUGEL  *kugelStartPointer;                //Verkettete Klasse
             class LOCK   *lockStartPointer;                 //Verkettete Klasse
+            class TRANSPORTER *transporterStartPointer;
 
 
         ///Hintergrund:

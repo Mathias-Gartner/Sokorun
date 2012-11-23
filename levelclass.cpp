@@ -98,7 +98,7 @@ void LEVEL::cleanup()   //Setzt alle Leveldaten zurück und gibt den Speicher wie
         while(p!=NULL)
         {   //Rail freigeben:
             RAIL *r=p->start,*s;
-            while(r!=NULL)
+            while(r!=NULL && r!=p->start)
             {   s=(r->next);
                 free(r);
                 r=s;
@@ -283,7 +283,8 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
             for(int y=0;y<size.y;y++)
             {   if(freadToChar(level,'#'))  return 1;
                 for(int x=0;x<size.x;x++)
-                {   if(fscanf(level,"%d",&spielfeld[y][x]) != 1)  { error("LEVEL::loadLevel()","Spielfeld konnte nicht geladen werden. Position: (%dx%d)",x,y); return 1; }
+                {   if(fscanf(level,"%d",&help) != 1)  { error("LEVEL::loadLevel()","Spielfeld konnte nicht geladen werden. Position: (%dx%d)",x,y); return 1; }
+                    spielfeld[y][x]=help;
                     if(x!=size.x-1 && fgetc(level)!='.'){ error("LEVEL::loadLevel()","Spielfeld konnte nicht geladen werden. Position: (%dx%d); (beginnend bei 0)",x,y); return 1; }
                 }
             }
@@ -347,55 +348,79 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
 
             for(int i=0;i<DtransAnz;i++)//Tödliche Transporter
             {   TRANSPORTERorigin *p=(TRANSPORTERorigin*)malloc(sizeof(TRANSPORTERorigin));
+
                 p->next=transporterOriginStart;
+
                 p->start=NULL;  //Noch unbekannt
 
                 if(freadToChar(level,'[')) {free(p);return 1;} if(fscanf(level,"%d]",&length) != 1){ error("LEVEL::loadLevel()","Transporter: Anzahl der Positionsdaten konnte nicht geladen werden. Nummer: %d",i+1);free(p);return 1; }   //Anzahl der Positionsdaten
-                if(freadToChar(level,'[')) {free(p);return 1;} if(fscanf(level,"%d]",&help)  != 1){ error("LEVEL::loadLevel()","Transporter: Bewegungsart (Typ) konnte nicht geladen werden. Nummer: %d",i+1); free(p);return 1; }           //1: hin+zurück;	2: im Kreis
-                        if(help==1) p->bidirectional=1; else if(help==2) p->bidirectional=0;
-                        else {error("LEVEL::loadLevel()","Transporter: Bewegungsart (Typ) ist ungueltig.. Nummer: %d; Typ: %d; (Erlaubt: 1-2)",i+1,help); free(p);return 11; }//Falscher Bewegungstyp-Wert
+                        if(length<2) {error("LEVEL::loadLevel()","Transporter: Das Schienennetz (Laenge) ist zu kurz. Nummer: %d; Laenge: %d",i+1,length); free(p); return 11;}         //zu Kurzes Schienennetz
 
-                if(freadToChar(level,'[')) {free(p);return 1;} if(fscanf(level,"%]",&help) != 1){ error("LEVEL::loadLevel()","Transporter: Index der Startposition konnte nicht geladen werden. Nummer: %d",i+1); free(p);return 1; }      //Startpositions-Index
-                        if(help<0 || help>=length) {error("LEVEL::loadLevel()","Transporter: Index der Startposition ungueltig. Nummer: %d; Geladener Startpositionsindex: %d; Laenge: %d",i+1,help,length); free(p); return 12;}             //Falscher Startpositionsindex
+                bool bidirectional;
+                if(freadToChar(level,'[')) {free(p);return 1;} if(fscanf(level,"%d]",&help)  != 1){ error("LEVEL::loadLevel()","Transporter: Bewegungsart (Typ) konnte nicht geladen werden. Nummer: %d",i+1); free(p);return 1; }           //1: hin+zurück;	2: im Kreis
+                        if(help==1) bidirectional=1; else if(help==2) bidirectional=0;
+                        else {error("LEVEL::loadLevel()","Transporter: Bewegungsart (Typ) ist ungueltig.. Nummer: %d; Typ: %d; (Erlaubt: 1-2)",i+1,help); free(p);return 12; }//Falscher Bewegungstyp-Wert
+
+                if(freadToChar(level,'[')) {free(p);return 1;} if(fscanf(level,"%d]",&help) != 1){ error("LEVEL::loadLevel()","Transporter: Index der Startposition konnte nicht geladen werden. Nummer: %d",i+1); free(p);return 1; }      //Startpositions-Index
+                        if(help<0 || help>=length) {error("LEVEL::loadLevel()","Transporter: Index der Startposition ungueltig. Nummer: %d; Geladener Startpositionsindex: %d; Laenge: %d",i+1,help,length); free(p); return 13;}             //Falscher Startpositionsindex
 
 
                 ///Positionen/Schienenstrecke laden:
+                //DIE SCHIENENELEMENTE MÜSSEN IN EINE DOPPELT VERKETETTE LISTE GEPACKT WERDEN. In Abhängigkeit von unidirektionalen und birdirektionalen Transportern sollen das letzte und erste Element wieder aufeinander verweisen (Ring)
+                    RAIL *start=NULL;               //Adresse des ersten Elements in der Liste
                     RAIL *last=NULL;                //Adresse des zuletzt geladenen Schienenstücks (das letzte Element in der Liste)
                     for(int j=0;j<length;j++)
                     {   RAIL *r=(RAIL*)malloc(sizeof(RAIL));
-                        r->next=NULL;               //(noch) kein weiteres Element
+                        r->next=NULL;
+                        r->prev=NULL;
 
-                        if(last==NULL)      //Erstes Element
-                        {   p->start=r;
+                        if(start==NULL)             //Erstes Element (auch der last-Pointer ist NULL)
+                        {   start=r;
+                            p->start=r;
+                            //next und prev-Pointer sind bereits NULL
                         }else
-                        {   last->next=r;   //Hinten anhängen
+                        {   ///Pointer, der nach vorne zeigt muss befüllt werden:
+                            last->next=r;           //Hinten anhängen
+                            r->prev=last;
                         }
+                        ///Pointer der aufs nächste Element zeigt muss befüllt werden
+                        if(bidirectional)//Es muss ein Ring gebildet werden (letztes Element zeigt aufs erste, erstes aufs letzte
+                        {   r->next=start;           //aufs erste Element zeigen (falls noch weitere Elemente angehägt werden, wird dieser Pointer wieder überschrieben)
+                            start->prev=r;         //Das erste Element zeigt aufs letzte Element zurück
+                        }else
+                        {   r->next=NULL;               //(noch) kein weiteres Element
+                            //start-prev beinhaltet bereits NULL
+                        }
+
                         if(j==help)//Das ist das Feld der Startposition
                         {   p->origin=r;    //Startposition setzen
                         }
+
                         if(freadToChar(level,'[')) {free(p);return 1;} if(freadPos(&(r->position),level))  {free(p);return 1;}  //Position
                         if(checkPos(r->position)&&!skipMinorErrors)                                                             //Verbotene Kugelposition
                         {   error("LEVEL::loadLevel()","Ein Transporterfeld befindet sich auszerhalb des Spielfeldes. Levelgroesze: (%dx%d); Position: (%dx%d); Transporternummernummer: %d; Positionsindex: %d",size.x,size.y,r->position.x,r->position.y,i+1,r+1);
                             //Rail wieder löschen (befindet sich nicht in der Transporter-liste weil der aktuelle Transporter fehlerhaft ist und entfernt werden muss)
                                 RAIL *R=p->start,*S;
-                                while(R!=NULL)
+                                while(R!=NULL && R!=p->start)//solange die Liste nicht zu Ende ist oder von vorne Beginnt
                                 {   S=(R->next);
                                     free(R);
                                     R=S;
                                 }
                                 p->start=NULL;
+                                free(r);
                             //---
                             free(p);
-                            return 13;//Verbotene Transporterposition
+                            return 14;//Verbotene Transporterposition
                         }
+                        r->outputType=-1;
                         last=r;
                     }
 
                 if(p->start==NULL)//Kann eigentlich nicht vorkommen, weil oben bereits auf einen gültigen Wert überprüft wird. Wenn er ungültig ist, sollte mit 12 abgebrochen worden sein
-                {   error("LEVEL::loadLevel()","Die Transporter-Startposition wurde nickt erkannt. Fehlerabfrage Nr. 12 ist fehlgeschlagen. Transporternummernummer: %d;",i+1);
+                {   error("LEVEL::loadLevel()","Die Transporter-Startposition wurde nickt erkannt. Fehlerabfrage Nr. 13 ist fehlgeschlagen. Transporternummernummer: %d;",i+1);
                     //Rail wieder löschen (befindet sich nicht in der Transporter-liste weil der aktuelle Transporter fehlerhaft ist und entfernt werden muss)
                         RAIL *R=p->start,*S;
-                        while(R!=NULL)
+                        while(R!=NULL && R!=p->start)
                         {   S=(R->next);
                             free(R);
                             R=S;
@@ -403,13 +428,18 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
                         p->start=NULL;
                     //---
                     free(p);
-                    return 14;//Startposition wurde nicht erkannt
+                    return 16;//Startposition wurde nicht erkannt
                 }
 
                 p->type=1;      //Tödlicher Transporter
                 p->speed=10;
 
                 transporterOriginStart=p;   //Transporter am Anfang anhängen
+                //outputType aller Elemente berechnen:
+                if(calculateRailOutputType(p->start))
+                {   return 17;  //Fehler im Schienennetz
+                }
+
             }
 
 
@@ -441,7 +471,7 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
 
 
 
-                if(fscanf(level,"]*RGB(%1.3f,%1.3f,%1.3f)*",&r,&g,&b)==3)//Es wurde eine Farbe angegeben
+                if(fscanf(level,"]*RGB(%f,%f,%f)*",&r,&g,&b)==3)//Es wurde eine Farbe angegeben
                 {   if(r<0||r>1 || g<0||g>1 || b<0||b>1)
                     {   error("LEVEL::loadLevel()","Ein Schloss hat eine ungueltigen Farbwert. Farbe: (%f, %f, %f) Schlossnummer: %d.",r,g,b,i);
                         free(p);
@@ -481,7 +511,94 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
     status=1;
     fclose(level);
     return 0;
-};
+}
+
+bool LEVEL::calculateRailOutputType(RAIL *start)         //Setzt die Outputtypes für jedes Schienenelement (Ecke/Linie/Endstück/...)
+{
+    RAIL *p=start;
+    //Zum berechnen sind das Element und dessen Nachbarelemente notwendig. Beide mit next- und prev-Pointer erreichbar
+
+    ///Werte setzen
+        while(p!=NULL)
+        {   //Schienentyp feststellen:
+                DIRECTION in,out;
+                if(p->prev!=NULL)//Es gibt ein vorheriges Element
+                    in=getRailDirection((p->prev)->position,p->position);
+                else in=BEAM;
+                if(p->next!=NULL)//Es gibt ein nächstes Element
+                    out=getRailDirection(p->position,(p->next)->position);
+                else out=BEAM;
+
+
+                if(in==NONE || out==NONE)
+                {   error("LEVEL::calculateRailOutputType()","Im Schienennetz befindet sich ein Fehler. 2 aufeinanderfolgende Schienenstuecke sind an der selben Position. in: %d, out: %d; position: (%dx%d)",in,out,p->position.x,p->position.y);
+                    return -1;
+                }
+                else
+                {       switch(in)
+                        {   case UP:    switch(out)
+                                        {   case UP:    p->outputType=4; break; //gerade
+                                            case DOWN:  p->outputType=1; break; //umkehren
+                                            case LEFT:  p->outputType=7; break;
+                                            case RIGHT: p->outputType=6; break;
+                                            case BEAM:  p->outputType=1; break;
+                                            default:    break;
+                                        }break;
+                            case DOWN:  switch(out)
+                                        {   case UP:    p->outputType=0; break; //umkehren
+                                            case DOWN:  p->outputType=4; break; //gerade
+                                            case LEFT:  p->outputType=8; break;
+                                            case RIGHT: p->outputType=9; break;
+                                            case BEAM:  p->outputType=0; break;
+                                            default:    break;
+                                        }break;
+                            case LEFT:  switch(out)
+                                        {   case UP:    p->outputType=9; break;
+                                            case DOWN:  p->outputType=6; break;
+                                            case LEFT:  p->outputType=5; break; //gerade
+                                            case RIGHT: p->outputType=3; break; //umkehren
+                                            case BEAM:  p->outputType=3; break;
+                                            default:    break;
+                                        }break;
+                            case RIGHT:  switch(out)
+                                        {   case UP:    p->outputType=8; break;
+                                            case DOWN:  p->outputType=7; break;
+                                            case LEFT:  p->outputType=2; break; //umkehren
+                                            case RIGHT: p->outputType=5; break; //gerade
+                                            case BEAM:  p->outputType=2; break;
+                                            default:    break;
+                                        }break;
+                            case BEAM:  switch(out)
+                                        {   case UP:    p->outputType=0; break;
+                                            case DOWN:  p->outputType=1; break;
+                                            case LEFT:  p->outputType=3; break;
+                                            case RIGHT: p->outputType=2; break;
+                                            case BEAM:  error("LEVEL::calculateRailOutputType()","Im Schienennetz befindet sich ein Fehler. Ein Schienenstueck hat gar keinen Nachbarn");return -1;
+                                            default:    break;
+                                        }break;
+                            default:    break;
+                        }
+
+                }
+            p=p->next;
+        }
+    return 0;
+}
+
+DIRECTION LEVEL::getRailDirection(POS a,POS b)  //Gibt zurück in welche Richtung man sich von a aus bewegen muss, damit man b erreicht
+{   if(a.x==b.x)
+    {   if(a.y+1==b.y)  return DOWN;
+        if(a.y-1==b.y)  return UP;
+        if(a.y==b.y)    return NONE;    //a und b haben die gleichen Werte
+        return BEAM;
+    }
+    if(a.y==b.y)
+    {   if(a.x+1==b.x)  return RIGHT;
+        if(a.x-1==b.x)  return LEFT;
+        return BEAM;
+    }
+    return BEAM;
+}
 
 
 void LEVEL::printFloorElement(int element,POS coord,COLOR color=WHITE)
@@ -615,12 +732,64 @@ void LEVEL::printPreview()
     //Danach:
     //*******
     //
+    printTransporter();
     //Transporter
     printKugelnAtOrigins();
     printAvatarAtOrigin();
     printLocksAtOrigins();//Schlösser
     //Kanonen
 }
+
+void LEVEL::printRail(TRANSPORTERorigin *transp)            //Gibt den Schienenweg eines Transporters aus
+{
+    char num;
+    bool mirrorX,mirrorY;
+    POS pos;
+
+    RAIL *r=transp->start;
+    while(r!=NULL)
+    {   num=0;
+        mirrorX=0;
+        mirrorY=0;
+        switch(r->outputType)
+        {   case  0:    num=TILE_RAIL_VEND;       mirrorX=0; mirrorY=1; break;
+            case  1:    num=TILE_RAIL_VEND;       mirrorX=0; mirrorY=0; break;
+            case  2:    num=TILE_RAIL_HEND;       mirrorX=1; mirrorY=0; break;
+            case  3:    num=TILE_RAIL_HEND;       mirrorX=0; mirrorY=0; break;
+            case  4:    num=TILE_RAIL_VERT;       mirrorX=0; mirrorY=0; break;
+            case  5:    num=TILE_RAIL_HORI;       mirrorX=0; mirrorY=0; break;
+            case  6:    num=TILE_RAIL_EDGE;       mirrorX=0; mirrorY=0; break;
+            case  7:    num=TILE_RAIL_EDGE;       mirrorX=1; mirrorY=0; break;
+            case  8:    num=TILE_RAIL_EDGE;       mirrorX=1; mirrorY=1; break;
+            case  9:    num=TILE_RAIL_EDGE;       mirrorX=0; mirrorY=1; break;
+            default:    error("LEVEL::printRail()","Unbekannter Schienentyp entdeckt. Der Wert wird auf 0 (Beginn nach oben) zurueckgesetzt. outputType: %d",r->outputType);
+                        r->outputType=0;
+        }
+
+        pos.x=origin.x+r->position.x*elsize;
+        pos.y=origin.y+(size.y-r->position.y-1)*elsize;
+
+             if(!mirrorX && !mirrorY)/*Normal*/  leveltiles.print({{pos.x,pos.y},{pos.x+elsize,pos.y+elsize}},{num%8,num/8},((transp->type==0)?TRANSPORTER_COLOR:DEATHTRANSPORTER_COLOR));
+        else if(!mirrorX &&  mirrorY)/* >Y < */  leveltiles.print({{pos.x,pos.y+elsize},{pos.x+elsize,pos.y}},{num%8,num/8},((transp->type==0)?TRANSPORTER_COLOR:DEATHTRANSPORTER_COLOR));
+        else if( mirrorX && !mirrorY)/* >X < */  leveltiles.print({{pos.x+elsize,pos.y},{pos.x,pos.y+elsize}},{num%8,num/8},((transp->type==0)?TRANSPORTER_COLOR:DEATHTRANSPORTER_COLOR));
+        else                         /* >XY< */  leveltiles.print({{pos.x+elsize,pos.y+elsize},{pos.x,pos.y}},{num%8,num/8},((transp->type==0)?TRANSPORTER_COLOR:DEATHTRANSPORTER_COLOR));
+
+
+
+        r=r->next;
+    }
+}
+
+void LEVEL::printTransporter()                              //Gibt alle Schienenwege aus
+{
+    TRANSPORTERorigin *p=transporterOriginStart;
+    while(p!=NULL)
+    {   printRail(p);
+        p=p->next;
+    }
+}
+
+
 
 void LEVEL::printFloor()
 {
@@ -717,7 +886,7 @@ void LEVEL::marker(POS position,COLOR color)                //Umrahmt ein bestim
 }
 
 FIELDPROPERTY LEVEL::getFieldProperty(OBJEKT object,POS position)         //Gibt die Eigenschaften eines Feldes zurück
-{   return fieldproperty[object][spielfeld[position.y][position.x]];
+{   return fieldproperty[object][(int)spielfeld[position.y][position.x]];
 }
 
 POS LEVEL::getTargetBeamer()                                //Gibt die Position des Zielbeamers zurück

@@ -118,7 +118,7 @@ BUTTON::BUTTON(AREA _output,char _clickable,TEXTURE *_textur,POS _spritePos)    
     type=1;                                                             //Textur
 }
 
-BUTTON::BUTTON(AREA _output,char _clickable,TEXTURE *_textur,POS _spritePos,char *value,int _fontSize,COLOR _fontcolor)    //Typ 2 initialisieren
+BUTTON::BUTTON(AREA _output,char _clickable,TEXTURE *_textur,POS _spritePos,const char* const value,int _fontSize,COLOR _fontcolor)    //Typ 2 initialisieren
 {
     active=0;
     output=_output;
@@ -126,8 +126,9 @@ BUTTON::BUTTON(AREA _output,char _clickable,TEXTURE *_textur,POS _spritePos,char
     textur=_textur;
     color={0.7,0.7,0.7};
     spritePos=_spritePos;
-    if(strlen(value)>127) value[127]=0;//bufoverflow vermeiden
-    strcpy(buttonText,value);
+    if(strlen(value)>127)//bufoverflow vermeiden
+            error("BUTTON::BUTTON()","Der uebergebene String ist zu lange. Max. Laenge=126+1 Zeichen");
+    else    strcpy(buttonText,value);
     fontcolor=_fontcolor;
     fontSize=_fontSize;
     type=2;                                                             //Textur+Text
@@ -144,7 +145,7 @@ BUTTON::BUTTON(AREA _output,char _clickable,int _boxtype,int _borderWidth,COLOR 
     type=3;                                                             //Box
 }
 
-BUTTON::BUTTON(AREA _output,char _clickable,int _boxtype,int _borderWidth,COLOR _color,char *value,int _fontSize,COLOR _fontcolor)              //Typ 4 initialisieren
+BUTTON::BUTTON(AREA _output,char _clickable,int _boxtype,int _borderWidth,COLOR _color,const char* const value,int _fontSize,COLOR _fontcolor)              //Typ 4 initialisieren
 {
     active=0;
     output=_output;
@@ -152,8 +153,9 @@ BUTTON::BUTTON(AREA _output,char _clickable,int _boxtype,int _borderWidth,COLOR 
     boxtype=_boxtype;
     borderWidth=_borderWidth;
     color=_color;
-    if(strlen(value)>127) value[127]=0;//bufoverflow vermeiden
-    strcpy(buttonText,value);
+    if(strlen(value)>127)//bufoverflow vermeiden
+            error("BUTTON::BUTTON()","Der uebergebene String ist zu lange. Max. Laenge=126+1 Zeichen");
+    else    strcpy(buttonText,value);
     fontcolor=_fontcolor;
     fontSize=_fontSize;
     type=4;                                                             //Box+Text

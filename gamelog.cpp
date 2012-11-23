@@ -42,8 +42,8 @@ void GAMELOG::addEvent(GameEventType type,DIRECTION richtung=NONE)              
     events++;
     if(start!=NULL)
     {   if(start->type==type && start->size<7)//selber Typ + noch Platz
-        {   start->time[start->size]=playtime;
-            start->richtung[start->size]=richtung;
+        {   start->time[(int)(start->size)]=playtime;
+            start->richtung[(int)(start->size)]=richtung;
             start->size++;
             return;
         }
@@ -190,7 +190,7 @@ void GAMELOG::print()                                       //Kümmert sich um di
         ///Titel:
             normalFont.setFontColor(farbe);
             normalFont.setFontSize(GameLogTitleFontSize);
-                normalFont.printf({((endXpos)-xpos)/2+xpos,y-(GAMELOGPADDING*1.5)-GameLogTitleFontSize},taCENTER,"%s",title);
+                normalFont.printf({(int)(((endXpos)-xpos)/2+xpos),(int)(y-(GAMELOGPADDING*1.5f)-GameLogTitleFontSize)},taCENTER,"%s",title);
             normalFont.setFontSize(GameLogInfoFontSize);
 
         ///Zeitpunkt:
@@ -237,6 +237,7 @@ void GAMELOG::print()                                       //Kümmert sich um di
                                             break;
                     case LOCKOPENED:        spritePos={3,2};
                                             break;
+                    default:                break;
                 }
                 if(spritePos.x>=0)//Icon vorhanden
                     gamelogIcons.print({{x,y},{x+20,y+20}},spritePos);

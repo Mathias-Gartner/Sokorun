@@ -2,6 +2,8 @@
 //Jakob Maier
 //Grafikfunktionen
 
+#define M_PI		3.14159265358979323846
+
 extern TEXTURE boxTextures;
 extern POS mouse;
 //extern MOUSE mouse;
@@ -78,14 +80,14 @@ int complete_graphics(long loopStart,unsigned int loopSpeed=10)//Wird am Ende je
 
     glfwSwapBuffers();                              //erzeugte Grafikdaten ausgeben
 
-    if(TIMEDEBUGOUTPUT) printf("%4dms -> ",clock()-loopStart);
+    if(TIMEDEBUGOUTPUT) printf("%4dms -> ",(int)(clock()-loopStart));
 
     static int td;
     td=loopSpeed-(clock()-loopStart);
-    if(td-1 > 0) _sleep(td-1);                      //Grob, Blockiert das Programm --> Statt 100% CPU-Auslasten nur noch 10% (Stand: Ver. 13.11.2012)
-    while(clock()-loopStart<loopSpeed){}            //genaue, gleichmäßige Geschwindigkeit garantieren
+    if(td-1 > 0) Sleep(td-1);                      //Grob, Blockiert das Programm --> Statt 100% CPU-Auslasten nur noch 10% (Stand: Ver. 13.11.2012)
+    while(clock()-loopStart<(int)loopSpeed){}            //genaue, gleichmäßige Geschwindigkeit garantieren
 
-    if(TIMEDEBUGOUTPUT) printf("%4dms\n",clock()-loopStart);
+    if(TIMEDEBUGOUTPUT) printf("%4dms (soll: %4dms)\n",(int)(clock()-loopStart),loopSpeed);
 
     return (!glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED));//Abbruchbedingung
 }
@@ -165,7 +167,7 @@ TEXTURE::TEXTURE(const char* const imgPath, POS imgSize=POS{0,0}, POS imgSprites
     {   error("TEXTURE::TEXTURE()","Schwerer Fehler: Es wurde eine Texture initialisiert, die weniger als 1 Sprite in x und/oder y Richtung beinhaltet. Bildpfad: \"%s\", imgSize: (%dx%d), Sprites: (%dx%d)",imgPath,imgSize.x,imgSize.y,imgSprites.x,imgSprites.y);
         exit(1);
     }
-    halfTexelSize={(0.5/imgSize.x),(0.5/imgSize.y)};
+    halfTexelSize={(0.5f/imgSize.x),(0.5f/imgSize.y)};
     spriteSize={(1.0f/sprites.x),(1.0f/sprites.y)};
 }
 
@@ -187,13 +189,12 @@ void TEXTURE::bindTexture() //Bindet eine Textur
 {
     static GLint act;
     glGetIntegerv(GL_TEXTURE_BINDING_2D,&act);
-    if(act!=textur)
+    if(act!=(int)textur)
         glBindTexture(GL_TEXTURE_2D,textur);
 }
 
 void TEXTURE::print(AREA display,POS spritePos,COLOR overlay=WHITE,float alpha)                          //Ausgabe eines Sprites
 {   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
-
     switchGraphicMode(TEXTURES);
     glColor4f(overlay.r,overlay.g,overlay.b,alpha);
     bindTexture();
@@ -204,18 +205,41 @@ void TEXTURE::print(AREA display,POS spritePos,COLOR overlay=WHITE,float alpha) 
         glTexCoord2f(spriteSize.x*(spritePos.x+1)-halfTexelSize.x,spriteSize.y*(spritePos.y+1)-halfTexelSize.y);   glVertex2f(display.b.x,display.a.y);
     glEnd();
 }
-void TEXTURE::print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay,float alpha)      //Ausgabe eines Sprite-Teiles (zum drehen und spiegeln)
+
+//void TEXTURE::print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay,float alpha)      //Ausgabe eines Sprite-Teiles (zum drehen und spiegeln)
+//{   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
+//
+//    switchGraphicMode(TEXTURES);
+//    glColor4f(overlay.r,overlay.g,overlay.b,alpha);
+//    bindTexture();
+//
+//    glBegin(GL_QUADS);
+//        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.a.x)  +halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.b.y)  -halfTexelSize.y);   glVertex2f(display.a.x,display.a.y);
+//        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.a.x)  +halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.a.y)  +halfTexelSize.y);   glVertex2f(display.a.x,display.b.y);
+//        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.b.x)  -halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.a.y)  +halfTexelSize.y);   glVertex2f(display.b.x,display.b.y);
+//        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.b.x)  -halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.b.y)  -halfTexelSize.y);   glVertex2f(display.b.x,display.a.y);
+//    glEnd();
+//}
+
+
+
+
+
+void TEXTURE::print(AREA display,POS spritePos,COLOR overlay,float alo,float aro, float alu,float aru)               //Ausgabe eines Sprites; Jede Texturkoordinate hat einen andren Alpha-Wert
 {   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
 
     switchGraphicMode(TEXTURES);
-    glColor4f(overlay.r,overlay.g,overlay.b,alpha);
     bindTexture();
 
     glBegin(GL_QUADS);
-        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.a.x)  +halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.b.y)  -halfTexelSize.y);   glVertex2f(display.a.x,display.a.y);
-        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.a.x)  +halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.a.y)  +halfTexelSize.y);   glVertex2f(display.a.x,display.b.y);
-        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.b.x)  -halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.a.y)  +halfTexelSize.y);   glVertex2f(display.b.x,display.b.y);
-        glTexCoord2f(spriteSize.x*(spritePos.x+spriteArea.b.x)  -halfTexelSize.x,spriteSize.y*(spritePos.y+spriteArea.b.y)  -halfTexelSize.y);   glVertex2f(display.b.x,display.a.y);
+        glColor4f(overlay.r,overlay.g,overlay.b,alo);
+        glTexCoord2f(spriteSize.x* spritePos.x   +halfTexelSize.x,spriteSize.y*(spritePos.y+1)-halfTexelSize.y);   glVertex2f(display.a.x,display.a.y);
+        glColor4f(overlay.r,overlay.g,overlay.b,alu);
+        glTexCoord2f(spriteSize.x* spritePos.x   +halfTexelSize.x,spriteSize.y* spritePos.y   +halfTexelSize.y);   glVertex2f(display.a.x,display.b.y);
+        glColor4f(overlay.r,overlay.g,overlay.b,aru);
+        glTexCoord2f(spriteSize.x*(spritePos.x+1)-halfTexelSize.x,spriteSize.y* spritePos.y   +halfTexelSize.y);   glVertex2f(display.b.x,display.b.y);
+        glColor4f(overlay.r,overlay.g,overlay.b,aro);
+        glTexCoord2f(spriteSize.x*(spritePos.x+1)-halfTexelSize.x,spriteSize.y*(spritePos.y+1)-halfTexelSize.y);   glVertex2f(display.b.x,display.a.y);
     glEnd();
 }
 
@@ -234,7 +258,7 @@ void TEXTURE::print(POS position,int size,POS spritePos,int angle,COLOR overlay=
 
     POS ecke[4];        //Eckpunkte des neuen, gedrehten Bildes
 
-    double x,y;
+    int x,y;
     double s=sqrt(size*size*2)/2;                   //Abstand (Außenradius) zu jeder Ecke
 
     angle+=135;
@@ -283,7 +307,7 @@ FONT::FONT(int fontFamilyNum)
     sprintf(path,"daten/texturen/font%d.tga",fontFamily);
 
     sprites=fontTextureSpriteAnz;                                                   //Definition in definitions.h
-    halfTexelSize={(0.5/fontTextureImageSize.x),(0.5/fontTextureImageSize.y)};      //Definition in definitions.h
+    halfTexelSize={(0.5f/fontTextureImageSize.x),(0.5f/fontTextureImageSize.y)};      //Definition in definitions.h
     spriteSize={(1.0f/sprites.x),(1.0f/sprites.y)};
     ratio=(fontTextureImageSize.y/sprites.y) / (fontTextureImageSize.x/sprites.x);
 
@@ -316,7 +340,7 @@ int FONT::putLetter(char letter,POS position)//Gibt ein Zeichen am Bildschirm au
     }
 
     if(mat.x>=0&&mat.y>=0)//Existiert
-    {   print(PosSizeToArea({position,{size*ratio,size}}),mat,color);
+    {   print(PosSizeToArea({position,{(int)(size*ratio),size}}),mat,color);
         return position.x+size*ratio*(font[fontFamily][mat.y][mat.x].width+0.05); //Nächste Buchstabenposition
     }
     else

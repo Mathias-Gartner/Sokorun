@@ -258,7 +258,6 @@ int main(int argc,char* argv[])
 
     gameMain(game);
 
-for(;;);
     cleanup();  //Abschlussarbeiten vor dem Programmende
     return 0;
 

@@ -81,8 +81,9 @@
     #define KUGELCOLLISIONCOLOR         COLOR{0.2,0.2,0.7}
     #define KUGELBLOCKCOLLISIONCOLOR    COLOR{0.5,0.25,0 }   //Kugel des Typs 1 (braun)
     #define AVATARCOLLITIONCOLOR        COLOR{1.0,0.2,0}
-
-
+    //Farben für Schienen:
+    #define TRANSPORTER_COLOR           COLOR{1.0,0.7,0.15}
+    #define DEATHTRANSPORTER_COLOR      COLOR{0.6,0.2,0.8}
 
     enum DIRECTION{
         NONE=0,
@@ -90,7 +91,7 @@
         DOWN=2,
         LEFT=3,
         RIGHT=4,
-        BEAM
+        BEAM=5
     };
 
     //Bewegungseigenschaften für ein sich bewegendes Objekt:
@@ -135,6 +136,13 @@
     #define TILE_TYPECHANGE     40
     #define TILE_TYPECHANGEICE  41
     #define TILE_ANIMATIONFIELD 63 //Rotes Feld für Einblendeanimationen
+    #define TILE_RAIL_VERT      50
+    #define TILE_RAIL_HORI      51
+    #define TILE_RAIL_EDGE      52
+    #define TILE_RAIL_HEND      54
+    #define TILE_RAIL_VEND      53
+    #define TILE_TRANSPORTER    61
+    #define TILE_DEATHTRANSPORTER 62
 
 
 

@@ -56,13 +56,13 @@ class ANIMATION
             TEXTURE *texture;           //Welche Textur für die Animation verwendet wird
             POS spritePos;              //Welches Sprite dieser Textur verwendet wird
                     //type=2: Wert wird ignoriert
-            fAREA spriteArea;               //Um nur den Ausschnitt eines Sprites zu zeigen bzw. ein Sprite zu spiegeln
+            //fAREA spriteArea;               //Um nur den Ausschnitt eines Sprites zu zeigen bzw. ein Sprite zu spiegeln
 
             COLOR overlay;
                 //type=0:   Farbe in der die Animation eingefärbt wird
                 //rest:     Overlay-Farbe
 
-            AREA output;                    //Gebiet für die Ausgabe
+            AREA output;                    //Gebiet für die Ausgabe - dient auch zum spiegeln eines Bildes
                 //type=1 (drehen):  Nur Quadratische Bilder möglich
                 //                  --> a =     Position (Bildmittelpunkt)
                 //                      b.x =   size (Bildgrößé)
@@ -82,7 +82,7 @@ class ANIMATION
         void setProgress(int newProgress);                  //Fortschritt manuell ändern
         void setSpritePos(POS _spritePos);                  //Sprite ändern
 
-        void setSpriteArea(fAREA _spriteArea);              //spriteArea setzen
+        //void setSpriteArea(fAREA _spriteArea);              //spriteArea setzen
 
         int getIdentification();                            //Gibt die Identifikationsnummer zurück
         ANITYPE getAnitype();                               //Gibt den Animationstypen zurück
@@ -107,7 +107,7 @@ class ANIMATIONGROUP                                        //Verwaltet mehrere 
     public:
         ANIMATIONGROUP();                                   //Konstruktor
         int add(ANITYPE _anitype,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay);//Hinzufügen einer neuen Animation
-        void setSpriteArea(int identification,fAREA _spriteArea);   //spriteArea setzen (zB. zum spiegeln)
+        //void setSpriteArea(int identification,fAREA _spriteArea);   //spriteArea setzen (zB. zum spiegeln)
         void setSpritePos(int identification,POS _spritePos);        //Sprite ändern
 
         //int getAnimationAnz(ANITYPE group);                 //Gibt die Anzahl der Animationen mit diesem Typ zurück

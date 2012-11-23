@@ -74,6 +74,7 @@ DIRECTION turnRight(DIRECTION richtung)                                 //Gibt d
         case RIGHT: return DOWN;
         case DOWN:  return LEFT;
         case LEFT:  return UP;
+        default:    return NONE;
     }
     return NONE;
 }
@@ -84,6 +85,7 @@ DIRECTION turnLeft(DIRECTION richtung)                                 //Gibt di
         case RIGHT: return UP;
         case DOWN:  return RIGHT;
         case LEFT:  return DOWN;
+        default:    return NONE;
     }
     return NONE;
 }

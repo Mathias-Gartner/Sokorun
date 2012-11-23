@@ -110,136 +110,136 @@ void setcursortype(int type)
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
 }
 
-
-// Cursor am Bildschirm setzen (return 1 bei OK und 0 bei Fehler)
-int gotoXY(int x, int y)
-{
-    return SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), (COORD){x-1, y-1});
-}
-
-void gotoxy(int x, int y)
-{
-    gotoXY(x+3,y+3);
-}
-
-
-// Liefert die aktuelle Cursorposition zurück
-int whereX(void)
-{
-    CONSOLE_SCREEN_BUFFER_INFO info;
-
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-    return info.dwCursorPosition.X+1;
-}
-
-int whereY(void)
-{
-    CONSOLE_SCREEN_BUFFER_INFO info;
-
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-    return info.dwCursorPosition.Y+1;
-}
-
-
-// Liefert die größe des Fensters zurück
-int sizeX(void)
-{
-    CONSOLE_SCREEN_BUFFER_INFO info;
-
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-    return info.srWindow.Right-info.srWindow.Left+1;
-}
-
-int sizeY(void)
-{
-    CONSOLE_SCREEN_BUFFER_INFO info;
-
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-    return info.srWindow.Bottom-info.srWindow.Top+1;
-}
-
-
-// Bildschirmlöschfunktionen
-void clrscr(void)
-{
-    DWORD  dummy;
-    int    size;
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    HANDLE hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    GetConsoleScreenBufferInfo(hConsoleOut, &info);
-    size = (info.srWindow.Right-info.srWindow.Left+1) * (info.srWindow.Bottom-info.srWindow.Top+1);
-
-    FillConsoleOutputAttribute(hConsoleOut, 0 /*__COLOR*/, size, (COORD){0, 0}, &dummy);
-    FillConsoleOutputCharacter(hConsoleOut, '\0', size, (COORD){0, 0}, &dummy);
-    SetConsoleCursorPosition(hConsoleOut, (COORD){0, 0});
-}
-
-void clreol(void)
-{
-    DWORD  dummy;
-    int    size;
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    HANDLE hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    GetConsoleScreenBufferInfo(hConsoleOut, &info);
-    size = (info.srWindow.Right-info.srWindow.Left+1) - info.dwCursorPosition.X;
-
-    FillConsoleOutputAttribute(hConsoleOut, 0 /*__COLOR*/, size, info.dwCursorPosition, &dummy);
-    FillConsoleOutputCharacter(hConsoleOut, '\0', size, info.dwCursorPosition, &dummy);
-    SetConsoleCursorPosition(hConsoleOut, info.dwCursorPosition);
-}
-
-void delline(void)
-{
-    DWORD  dummy;
-    int    size;
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    HANDLE hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    GetConsoleScreenBufferInfo(hConsoleOut, &info);
-    size = (info.srWindow.Right-info.srWindow.Left+1);
-
-    FillConsoleOutputAttribute(hConsoleOut, 0 /*__COLOR*/, size, (COORD){0,info.dwCursorPosition.Y}, &dummy);
-    FillConsoleOutputCharacter(hConsoleOut, '\0', size, (COORD){0, info.dwCursorPosition.Y}, &dummy);
-    SetConsoleCursorPosition(hConsoleOut, (COORD){0, info.dwCursorPosition.Y});
-}
-
-
-// Liest oder Schreibt Text in einen Bildschirmbereich
-int getstr(int left, int top, int right, int bottom, char *str)
-{
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-
-    int i, j, n=0;
-    SMALL_RECT r = (SMALL_RECT){left-1, top-1, right-1, bottom-1};
-    CHAR_INFO buffer[info.dwSize.Y][info.dwSize.X];
-
-    if(ReadConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), (PCHAR_INFO)buffer, info.dwSize, (COORD){0, 0}, &r))
-    {
-        for(i=0; i<=bottom-top; i++)
-            for(j=0; j<=right-left; j++)
-                str[n++] = buffer[i][j].Char.AsciiChar;
-    }
-    str[n] = '\0';
-    return n;
-}
-
-int putstr(int left, int top, int right, int bottom, char *str)
-{
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-
-    int i, j, n=0;
-    SMALL_RECT r = (SMALL_RECT){left-1, top-1, right-1, bottom-1};
-    CHAR_INFO buffer[info.dwSize.Y][info.dwSize.X];
-
-    for(i=0; i<=bottom-top; i++)
-        for(j=0; j<=right-left;  j++)
-        {
-            buffer[i][j].Attributes     = /*str[n]=='\0' ? 0 :*/ __COLOR;
-            buffer[i][j].Char.AsciiChar = str[n]=='\0' ? '\0' : str[n++];
-        }
-    return WriteConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), (PCHAR_INFO)buffer, info.dwSize, (COORD){0, 0}, &r);
-}
+//
+//// Cursor am Bildschirm setzen (return 1 bei OK und 0 bei Fehler)
+//int gotoXY(int x, int y)
+//{
+//    return SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), (COORD){x-1, y-1});
+//}
+//
+//void gotoxy(int x, int y)
+//{
+//    gotoXY(x+3,y+3);
+//}
+//
+//
+//// Liefert die aktuelle Cursorposition zurück
+//int whereX(void)
+//{
+//    CONSOLE_SCREEN_BUFFER_INFO info;
+//
+//    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+//    return info.dwCursorPosition.X+1;
+//}
+//
+//int whereY(void)
+//{
+//    CONSOLE_SCREEN_BUFFER_INFO info;
+//
+//    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+//    return info.dwCursorPosition.Y+1;
+//}
+//
+//
+//// Liefert die größe des Fensters zurück
+//int sizeX(void)
+//{
+//    CONSOLE_SCREEN_BUFFER_INFO info;
+//
+//    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+//    return info.srWindow.Right-info.srWindow.Left+1;
+//}
+//
+//int sizeY(void)
+//{
+//    CONSOLE_SCREEN_BUFFER_INFO info;
+//
+//    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+//    return info.srWindow.Bottom-info.srWindow.Top+1;
+//}
+//
+//
+//// Bildschirmlöschfunktionen
+//void clrscr(void)
+//{
+//    DWORD  dummy;
+//    int    size;
+//    CONSOLE_SCREEN_BUFFER_INFO info;
+//    HANDLE hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
+//
+//    GetConsoleScreenBufferInfo(hConsoleOut, &info);
+//    size = (info.srWindow.Right-info.srWindow.Left+1) * (info.srWindow.Bottom-info.srWindow.Top+1);
+//
+//    FillConsoleOutputAttribute(hConsoleOut, 0 /*__COLOR*/, size, (COORD){0, 0}, &dummy);
+//    FillConsoleOutputCharacter(hConsoleOut, '\0', size, (COORD){0, 0}, &dummy);
+//    SetConsoleCursorPosition(hConsoleOut, (COORD){0, 0});
+//}
+//
+//void clreol(void)
+//{
+//    DWORD  dummy;
+//    int    size;
+//    CONSOLE_SCREEN_BUFFER_INFO info;
+//    HANDLE hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
+//
+//    GetConsoleScreenBufferInfo(hConsoleOut, &info);
+//    size = (info.srWindow.Right-info.srWindow.Left+1) - info.dwCursorPosition.X;
+//
+//    FillConsoleOutputAttribute(hConsoleOut, 0 /*__COLOR*/, size, info.dwCursorPosition, &dummy);
+//    FillConsoleOutputCharacter(hConsoleOut, '\0', size, info.dwCursorPosition, &dummy);
+//    SetConsoleCursorPosition(hConsoleOut, info.dwCursorPosition);
+//}
+//
+//void delline(void)
+//{
+//    DWORD  dummy;
+//    int    size;
+//    CONSOLE_SCREEN_BUFFER_INFO info;
+//    HANDLE hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
+//
+//    GetConsoleScreenBufferInfo(hConsoleOut, &info);
+//    size = (info.srWindow.Right-info.srWindow.Left+1);
+//
+//    FillConsoleOutputAttribute(hConsoleOut, 0 /*__COLOR*/, size, (COORD){0,info.dwCursorPosition.Y}, &dummy);
+//    FillConsoleOutputCharacter(hConsoleOut, '\0', size, (COORD){0, info.dwCursorPosition.Y}, &dummy);
+//    SetConsoleCursorPosition(hConsoleOut, (COORD){0, info.dwCursorPosition.Y});
+//}
+//
+//
+//// Liest oder Schreibt Text in einen Bildschirmbereich
+//int getstr(int left, int top, int right, int bottom, char *str)
+//{
+//    CONSOLE_SCREEN_BUFFER_INFO info;
+//    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+//
+//    int i, j, n=0;
+//    SMALL_RECT r = (SMALL_RECT){left-1, top-1, right-1, bottom-1};
+//    CHAR_INFO buffer[info.dwSize.Y][info.dwSize.X];
+//
+//    if(ReadConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), (PCHAR_INFO)buffer, info.dwSize, (COORD){0, 0}, &r))
+//    {
+//        for(i=0; i<=bottom-top; i++)
+//            for(j=0; j<=right-left; j++)
+//                str[n++] = buffer[i][j].Char.AsciiChar;
+//    }
+//    str[n] = '\0';
+//    return n;
+//}
+//
+//int putstr(int left, int top, int right, int bottom, char *str)
+//{
+//    CONSOLE_SCREEN_BUFFER_INFO info;
+//    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+//
+//    int i, j, n=0;
+//    SMALL_RECT r = (SMALL_RECT){left-1, top-1, right-1, bottom-1};
+//    CHAR_INFO buffer[info.dwSize.Y][info.dwSize.X];
+//
+//    for(i=0; i<=bottom-top; i++)
+//        for(j=0; j<=right-left;  j++)
+//        {
+//            buffer[i][j].Attributes     = /*str[n]=='\0' ? 0 :*/ __COLOR;
+//            buffer[i][j].Char.AsciiChar = str[n]=='\0' ? '\0' : str[n++];
+//        }
+//    return WriteConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), (PCHAR_INFO)buffer, info.dwSize, (COORD){0, 0}, &r);
+//}
