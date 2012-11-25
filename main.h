@@ -5,7 +5,7 @@
 #define MAIN_H_INCLUDED
     #define DEBUG 1                 //OB DEBUG-BEFEHLE DURCHGEFÜHRT WERDEN SOLLEN
     #define ImgDebug 0              //Ob Debug-Funktionen, die im Grafik-Fenster ausgegeben werden angewandt werden sollen
-    #define TIMEDEBUGOUTPUT 1       //Ob die Zeit/Spielschleifenruchlauf ausgegeben werden soll
+    #define TIMEDEBUGOUTPUT 0       //Ob die Zeit/Spielschleifenruchlauf ausgegeben werden soll
     const char* const VERSION={"Ver. 0.0"};
 
     //#include "GLee/GLee.h"
@@ -17,7 +17,7 @@
     #include <conio.h>
     #include <string.h>
     #include <math.h>           //cos, sin,...
-    #include <ctime>         //stoppen der zeit für einen durchlauf der schleife um das Prog computerunaabhängig zu machen
+    #include <time.h>         //stoppen der zeit für einen durchlauf der schleife um das Prog computerunaabhängig zu machen
     #include <stdio.h>
     #include <stdlib.h>
     #include "tga.h"                //Laden er Texturen

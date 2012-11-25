@@ -252,7 +252,7 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
     ///KUGELN:
             if(kugelOriginStart!=NULL)
             {   error("LEVEL::loadLevel()","Es befinden sich Kugeln in der Liste, obwohl das Level erst geladen wird. Fehlerabfrage \"status\" fehlgeschlagen. Das Programm wird abgebrochen um Speicherverletzungen zu verhindern");
-                MessageBox(NULL,"Schwerwiegender Fehler","Es kam zu einem Fehler. Um Speicherverletzungen zu verhindern wird das Spiel jetzt angehalten. Fuer mehr Details sehen Sie im Erroglog nach.",MB_OK|MB_ICONERROR);
+                MessageBox(NULL,"Es kam zu einem Fehler. Um Speicherverletzungen zu verhindern wird das Spiel jetzt angehalten. Für mehr Details sehen Sie im Erroglog nach.","Schwerwiegender Fehler",MB_OK|MB_ICONERROR);
                 for(;;);
             }
             for(int i=0;i<kugelAnz;i++)
@@ -383,6 +383,7 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
                             last->next=r;           //Hinten anhängen
                             r->prev=last;
                         }
+
                         ///Pointer der aufs nächste Element zeigt muss befüllt werden
                         if(bidirectional)//Es muss ein Ring gebildet werden (letztes Element zeigt aufs erste, erstes aufs letzte
                         {   r->next=start;           //aufs erste Element zeigen (falls noch weitere Elemente angehägt werden, wird dieser Pointer wieder überschrieben)
@@ -432,14 +433,13 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
                 }
 
                 p->type=1;      //Tödlicher Transporter
-                p->speed=10;
+                p->speed=5;
 
                 transporterOriginStart=p;   //Transporter am Anfang anhängen
                 //outputType aller Elemente berechnen:
                 if(calculateRailOutputType(p->start))
                 {   return 17;  //Fehler im Schienennetz
                 }
-
             }
 
 
@@ -517,10 +517,12 @@ bool LEVEL::calculateRailOutputType(RAIL *start)         //Setzt die Outputtypes
 {
     RAIL *p=start;
     //Zum berechnen sind das Element und dessen Nachbarelemente notwendig. Beide mit next- und prev-Pointer erreichbar
-
+    bool startAllowed=1;
     ///Werte setzen
-        while(p!=NULL)
-        {   //Schienentyp feststellen:
+        while(p!=NULL && (p!=start || startAllowed))
+        {   startAllowed=0;
+
+            //Schienentyp feststellen:
                 DIRECTION in,out;
                 if(p->prev!=NULL)//Es gibt ein vorheriges Element
                     in=getRailDirection((p->prev)->position,p->position);
@@ -556,16 +558,16 @@ bool LEVEL::calculateRailOutputType(RAIL *start)         //Setzt die Outputtypes
                                         {   case UP:    p->outputType=9; break;
                                             case DOWN:  p->outputType=6; break;
                                             case LEFT:  p->outputType=5; break; //gerade
-                                            case RIGHT: p->outputType=3; break; //umkehren
-                                            case BEAM:  p->outputType=3; break;
+                                            case RIGHT: p->outputType=2; break; //umkehren
+                                            case BEAM:  p->outputType=2; break;
                                             default:    break;
                                         }break;
-                            case RIGHT:  switch(out)
+                            case RIGHT: switch(out)
                                         {   case UP:    p->outputType=8; break;
                                             case DOWN:  p->outputType=7; break;
-                                            case LEFT:  p->outputType=2; break; //umkehren
+                                            case LEFT:  p->outputType=3; break; //umkehren
                                             case RIGHT: p->outputType=5; break; //gerade
-                                            case BEAM:  p->outputType=2; break;
+                                            case BEAM:  p->outputType=3; break;
                                             default:    break;
                                         }break;
                             case BEAM:  switch(out)
@@ -746,9 +748,11 @@ void LEVEL::printRail(TRANSPORTERorigin *transp)            //Gibt den Schienenw
     bool mirrorX,mirrorY;
     POS pos;
 
+    bool startAllowed=1;
     RAIL *r=transp->start;
-    while(r!=NULL)
-    {   num=0;
+    while(r!=NULL && (r!=transp->start || startAllowed))
+    {   startAllowed=0;
+        num=0;
         mirrorX=0;
         mirrorY=0;
         switch(r->outputType)
@@ -892,7 +896,7 @@ FIELDPROPERTY LEVEL::getFieldProperty(OBJEKT object,POS position)         //Gibt
 POS LEVEL::getTargetBeamer()                                //Gibt die Position des Zielbeamers zurück
 {   for(int y=0;y<size.y;y++)
         for(int x=0;x<size.x;x++)
-            if(spielfeld[y][x]==35)                         //Zielbeamer gefunden
+            if(spielfeld[y][x]==TILE_TARGETBEAMER)                         //Zielbeamer gefunden
                 return POS{x,y};
     return POS{-1,-1};                                      //existiert nicht
 }

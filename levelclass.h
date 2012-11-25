@@ -102,7 +102,7 @@ class LEVEL{
             void printFloorElement(int element,POS coord,COLOR color);          //Ein einzelnes Feld der Spielfläche ausgeben
 
             bool calculateRailOutputType(struct RAIL *start);//Setzt die Outputtypes für jedes Schienenelement (Ecke/Linie/Endstück/...)
-            DIRECTION getRailDirection(POS a,POS b);                            //Gibt zurück in welche Richtung man sich von a aus bewegen muss, damit man b erreicht
+
     public:
 
         ///Level laden:
@@ -136,7 +136,7 @@ class LEVEL{
             bool checkPos(const POS position);                  //Überprüft, ob sich die aktuelle Position auf dem Spielfeld befindet (0=ja) (position muss >=0 und <size sein)
             POS getTargetBeamer();                              //Gibt die Position des Zielbeamers zurück
             FIELDPROPERTY getFieldProperty(OBJEKT object,POS position);       //Gibt die Eigenschaften eines Feldes für ein bestimmtes Objekt zurück
-
+            DIRECTION getRailDirection(POS a,POS b);                          //Gibt zurück in welche Richtung man sich von a aus bewegen muss, damit man b erreicht
         ///Destruktor
             ~LEVEL();                                           //Destruktor - Speicher wieder freigeben
 

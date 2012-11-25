@@ -1,7 +1,7 @@
 Gooball														       © Ein Programm von Maier Jakob
 =====================================================================================================================================================
-Erstelldatum:		[11/18/12]
-Erstellzeitpunkt:	[10:19:22]				Weitere Informationen zu dieser Datei befinden sich unten
+Erstelldatum:		[11/10/12]
+Erstellzeitpunkt:	[14:39:55]				Weitere Informationen zu dieser Datei befinden sich unten
 =====================================================================================================================================================
 Rechte:			&§
 =====================================================================================================================================================
@@ -10,43 +10,53 @@ Allgemein:
 **********
 
 Levelgroesse:		[15x15]					
-Goo-Position:		[07x04]					
-Kugel-Anzahl:		[04]					
+Goo-Position:		[11x12]					
+Kugel-Anzahl:		[14]					
 Kanonen-Anzahl:		[00]					
 Transporter-Anzahl:	[00]					
-Block-Anzahl (Gegner):	[01]	
-Schloesser:             [00]				
+Block-Anzahl (Gegner):	[03]	
+Schloesser:             [04]				
 
 =====================================================================================================================================================
 
 Kugel-Positionen:						(Anzahl der Datensätze: siehe Kugel-Anzahl oben)
 *****************
 
-Nr.: 	{01}	Pos.:	[07x05]
-Nr.: 	{02}	Pos.:	[09x05]
-Nr.: 	{03}	Pos.:	[09x02]
-Nr.: 	{04}	Pos.:	[07x02]
+Nr.: 	{01}	Pos.:	[03x03]
+Nr.: 	{02}	Pos.:	[04x04]*00*
+Nr.: 	{03}	Pos.:	[04x05]*01*
+Nr.: 	{04}	Pos.:	[03x06]*01*
+Nr.: 	{05}	Pos.:	[04x06]
+Nr.: 	{06}	Pos.:	[03x13]
+Nr.: 	{07}	Pos.:	[04x01]*01*
+Nr.: 	{08}	Pos.:	[00x01]*01*
+Nr.: 	{09}	Pos.:	[01x00]
+Nr.: 	{10}	Pos.:	[01x07]
 
+[08x14]
+[10x12]
+[12x14]
+[12x13]
 =====================================================================================================================================================
 
 Level:
 ******
 
-#00.00.00.00.00.25.25.25.25.25.25.25.00.00.00			(Anzahl: siehe Levelgroesse oben)
-#00.00.00.00.00.25.01.01.25.01.01.25.00.00.00			(Anzahl: siehe Levelgroesse oben)
-#00.00.00.00.00.25.01.01.01.01.01.25.00.00.00			(Anzahl: siehe Levelgroesse oben)
-#25.25.25.25.25.25.01.01.25.01.01.25.00.00.00			(Anzahl: siehe Levelgroesse oben)
-#25.01.27.27.01.25.01.01.01.01.01.25.00.00.00			(Anzahl: siehe Levelgroesse oben)
-#25.01.01.27.01.01.01.01.25.01.01.25.00.00.00			(Anzahl: siehe Levelgroesse oben)
-#25.01.01.27.01.25.01.01.25.01.01.25.00.00.00			(Anzahl: siehe Levelgroesse oben)
-#01.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
-#01.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
-#01.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
-#01.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
-#01.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
-#01.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
-#01.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
-#01.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#27.27.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.01.01.52.34.34.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.01.12.12.25.44.45.46.47.48.49.50.51.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.12.12.12.25.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.01.01.01.25.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.01.01.04.25.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.01.01.01.25.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.01.01.01.25.01.01.01.52.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.37.01.01.01.25.01.01.01.01.41.42.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.55.52.52.52.01.01.01.01.43.40.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.55.26.26.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.26.55.26.01.01.01.01.01.01.01.07.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.26.26.26.01.01.01.01.01.07.01.07.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.26.26.26.01.01.01.01.01.07.12.11.01.01			(Anzahl: siehe Levelgroesse oben)
+#01.01.26.25.26.01.01.01.04.04.01.01.07.01.01			(Anzahl: siehe Levelgroesse oben)
 
 =====================================================================================================================================================
 
@@ -60,14 +70,22 @@ Transporter:							(Anzahl der Datensätze: siehe Transporter-Anzahl oben)
 
 Bloecke:							(Anzahl der Datensätze: siehe Block-Anzahl oben)
 ********
+Nr.:	{02}	Laenge:	[18]	Typ:	[1]	Startposition: [02]	Laenge: 02-75	Typ: 1 od. 2	1: hin+zurück	2: im Kreis
+		[13x09] [13x08] [13x07] [13x06] [13x05] [12x05] [11x05] [10x05] [10x04] [11x04] [12x04] [13x04] [14x04] [14x05] [14x06] [14x07] [14x08] [14x09] 
+Nr.:	{03}	Laenge:	[04]	Typ:	[2]	Startposition: [02]	Laenge: 02-75	Typ: 1 od. 2	1: hin+zurück	2: im Kreis
+		[06x04] [06x05] [06x06] [06x07] 
+Nr.:	{04}	Laenge:	[14]	Typ:	[1]	Startposition: [07]	Laenge: 02-75	Typ: 1 od. 2	1: hin+zurück	2: im Kreis
+		[05x11] [06x11] [07x11] [07x12] [06x12] [06x11] [06x10] [07x10] [08x10] [08x11] [08x12] [07x12] [06x12] [05x12] 
 
-Nr.:	{01}	Laenge:	[51]	Typ:	[2]	Startposition: [30]	Laenge: 02-75	Typ: 1 od. 2	1: hin+zurück	2: im Kreis
-		[02x08] [03x08] [04x08] [05x08] [06x08] [07x08] [08x08] [09x08] [10x08] [11x08] [12x08] [12x09] [12x10] [12x11] [12x12] [12x13] [11x13] [10x13] [09x13] [09x12] [09x11] [09x10] [08x10] [07x10] [07x11] [07x12] [06x12] [06x13] [05x13] [05x12] [05x11] [05x10] [04x10] [03x10] [02x10] [02x11] [02x12] [03x12] [03x13] [03x14] [02x14] [01x14] [00x14] [00x13] [00x12] [01x12] [01x11] [01x10] [01x09] [01x07]  [01x06] 
 
 =====================================================================================================================================================
 
 Schlösser:							(Anzahl der Datensätze: siehe Schloss-Anzahl oben)
 **********
+lock [01x14] key [1x13]
+lock [02x14] key [2x13]
+lock [03x14] key [3x13]
+lock [04x14] key [4x13]
 
 
 =====================================================================================================================================================
@@ -83,12 +101,12 @@ Wenigsten Bewegungen:	[999999999]
 Zusatzinformationen:
 °°°°°°°°°°°°°°°°°°°°
 
-Levelname:		>006
+Levelname:		>unbenannt
 Geschrieben mit:	>Editor (Ver. 1.0)
-Ersteller:		>maja
+Ersteller:		>unbekannt
 Sonstiges:
-	>(c) Maier Jakob				
-	>all rights reserved				
+	>---	
+	>---	
 	>---
 
 

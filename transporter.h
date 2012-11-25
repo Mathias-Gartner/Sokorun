@@ -40,10 +40,6 @@ struct TRANSPORTERorigin
 };
 
 
-
-
-
-
 class TRANSPORTER
 {
     private:
@@ -57,11 +53,18 @@ class TRANSPORTER
             int *elsize;                //Größe eines Elements (Feldes)
             POS *levelSize;             //Levelgröße
 
+
+        ///Levelstartanimation:
+            float minVisibility;        //Sobald das Spiel gestartet wird, werden alle Schienen langsam ausgeblendet. Dieser Wert gibt an, wie sehr die Schienen sichtbar sind (0.0 - 1.0)
+
         ///Leveldaten:
             TRANSPORTERorigin *data;
         ///Zustandsdaten:
             RAIL *position;                         //Zeiger auf das Schienenelement, auf dem sich der Transporter geraden befindet
+            bool direction;                         //Akt. Richtung, in die sich der Transporter bewegt (0: nach vorne (next-Pointer); 1: nach hinten)
             MOVEMENT movement;                      //Bewegung des Transporters
+        ///Sonstiges:
+            void printRailTrack(RAIL *r,DIRECTION in,float railtracksVisibility,float *alo,float *aro,float *alu,float *aru,float fkt);         //Gibt ein einzelnes Schienenstück aus
     public:
 
         TRANSPORTER(GAME *gamePointer,POS *originPointer,int *elsizePointer,POS *levelSizePointer,TRANSPORTERorigin *_data,TRANSPORTER *_next);       //Initialisiert den Transporter
@@ -87,6 +90,7 @@ class TRANSPORTER
 
 
 
+void getRailOutputInformation(int outputType,char *tile,bool *mirrorX,bool *mirrorY);       //Gibt Ausgabeinformationen für ein Schienenelement zurück
 
 
 

@@ -68,11 +68,10 @@ class KUGEL* KUGEL::getNextObject()                  //Liefert die Adresse des n
 void KUGEL::move(DIRECTION richtung)
 {   if(richtung==NONE)  return;                     //Nicht bewegen (kommt vor, wenn die Kugel am Eis steht und nicht rutscht)
 
-    POS next=game->getTargetFieldCoord(position,richtung);
+    POS next=game->getTargetFieldCoord(position,richtung);  //Zielfeld herausfinden
+    if(game->checkPos(next))    return;                     //Außerhalb des Spielfeldes
 
-    if(game->checkPos(next))    return;             //Außerhalb des Spielfeldes
-
-    int limit=game->isWalkable(OBJ_KUGEL,next);     //Nachbarfeld, auf das sich die Kugel bewegen soll überprüfen
+    int limit=game->isWalkable(OBJ_KUGEL,next);             //Zielfeld, auf das sich die Kugel bewegen soll überprüfen
 
     if(limit>0)
     {
@@ -80,12 +79,12 @@ void KUGEL::move(DIRECTION richtung)
                                                     //Beispiel: Ein Avatar schieb eine Kugel über mehrere Eis-Felder. Danach kommt ein Kugel-förderband in eine andere Richtung. Daher muss die Kugel in eine andere Richtung weitergeschoben werden
                                                     //          und darf nicht vom Avatar, der sich noch immer am Eis befindet und jetzt gegen die Kugel drückt, angestoßen werden. Der Avatar rutscht weiter und kommt zur gleichen zeit am Kugelförderband zu stehen,
                                                     //          wie die Kugel das nächste Feld nach dem Förderband betritt
-        game->setGameBackgroundSplashColor({0,0.6,1});   //Blau werden
+        game->setGameBackgroundSplashColor({0,0.6,1});      //Blau werden
 
         movement.moving=1;
         movement.progress=0;
         movement.richtung=richtung;
-        movement.limit=limit;                       //Limit durch Feld selbst (Kugeln und andere Objekte in diesem Feld werden erst dann beachtet, wenn sie berührt werden können)
+        movement.limit=limit;                               //Limit durch Feld selbst (Kugeln und andere Objekte in diesem Feld werden erst dann beachtet, wenn sie berührt werden können)
     }
 }
 
@@ -107,15 +106,13 @@ void KUGEL::run()                                                       //Führt 
         }else
         {   movement.progress+=movement.moving*WALKING_SPEED;               //Vor bzw. Zurück Bewegen
         }
-        POS targetField=game->getTargetFieldCoord(position,movement.richtung);
-
+        POS targetField=game->getTargetFieldCoord(position,movement.richtung);  //Zielfeld bestimmen
 
         ///Auf Hindernisse überprüfen: (limit nicht darauf ausgelegt)
         if(movement.moving==1)
         {
             if(movement.progress >= Wkgl && movement.progress < Wkgl+WALKING_SPEED)//Bei genau diesem Schritt könnte eine Kugel berührt werden
             {   KUGEL *touchedKugel=game->KugelOnField(targetField,this);
-
                 if(touchedKugel != NULL)                                    //Im nächsten Feld ist eine Kugel
                 {   ///IM NÄCHSTEN FELD IST EINE KUGEL --> Abprallen
                     movement.moving=-1;                         //Die Kugel prallt sofort ab (Die Kugel die sich im nächsten Feld befindet wird sich nicht bewegen)
@@ -174,6 +171,8 @@ void KUGEL::run()                                                       //Führt 
                 game->setGameBackgroundSplashColor(GREEN);        //Rot werden
             }
         }
+
+        if(movement.blocking && movement.moving!=-1)    movement.blocking=0;    //Die Kugel hat blockiert, wurde jetzt aber wieder freigegeben
     }
     if(movement.moving==0)                                              //Steht still --> prüfen, ob sich der Avatar auf einem Spezialfeld befindet
     {   switch(game->getFieldProperty(OBJ_KUGEL,position))              //Dieses Feld hat vlt. eine spezielle Eigenschaft

@@ -43,7 +43,7 @@
 
 
 /** GAME-EINSTELLUNGEN **/
-    #define WALKING_SPEED  10//7                //Wieviele % innerhalb eines Simulationszyklusses zurückgelegt werden (Um ein Objekt von einem Feld in ein anderes zu bewegen sind 100% notwendig) bei 2 sind also 50 Simulationszyklen notwendig, bis das Objekt von einem Feld ins nächste kommt
+    #define WALKING_SPEED  10                   //Wieviele % innerhalb eines Simulationszyklusses zurückgelegt werden (Um ein Objekt von einem Feld in ein anderes zu bewegen sind 100% notwendig) bei 2 sind also 50 Simulationszyklen notwendig, bis das Objekt von einem Feld ins nächste kommt
     #define OccupiedLimit Wkgl                  //Zuwieviel % sich ein Objekt in einem Feld befinden muss, damit dieses belegt ist (MUSS Wkgl sein: falls sich 2 Objekte in ein gleiches Feld zum gleichen Zeitpunkt bewegen kommt es sonst zu einer Überlagerung)
     #define DIEINGSPEED 5                       //Wenn der Avatar tot ist: wie lange das Spiel noch fortgesetzt werden soll und wie lange die Todes-Animation angezeigt werden soll (1-100%, dieser Wert gibt an wie große die Schritte sein sollen)
 
@@ -135,6 +135,7 @@
     #define TILE_FIXEDTARGET    4
     #define TILE_TYPECHANGE     40
     #define TILE_TYPECHANGEICE  41
+    #define TILE_TARGETBEAMER   49
     #define TILE_ANIMATIONFIELD 63 //Rotes Feld für Einblendeanimationen
     #define TILE_RAIL_VERT      50
     #define TILE_RAIL_HORI      51

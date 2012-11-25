@@ -39,18 +39,57 @@ void GAME::setupGameData()
 void GAME::initBuildupAnimationSpecialElements()    //Animation-Handler aktualisieren um Overlay-Elemente animiert aufzubauen
 {
     POS pos;
-    pos.x=origin.x+avatarOrigin.x* elsize;
-    pos.y=origin.y+(size.y-avatarOrigin.y-1)* elsize;
-    animationHandler.add(OBJECTBUILDUP,2,1, 36,39, 3,6/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});
+    ///TRANSPORTER
+        char num;
+        bool mirrorX,mirrorY;
+        AREA output;
+        TRANSPORTERorigin *t=transporterOriginStart;
+        while(t!=NULL)
+        {   //Schienen
+            bool startAllowed=1;
+            RAIL *r=t->start;
+            while(r!=NULL && (r!=t->start||startAllowed))
+            {   startAllowed=0;
+                pos.x=origin.x+r->position.x* elsize;
+                pos.y=origin.y+(size.y-r->position.y-1)* elsize;
 
-    KUGELorigin *p=kugelOriginStart;
-    while(p!=NULL)
-    {   pos.x=origin.x+p->origin.x* elsize;
-        pos.y=origin.y+(size.y-p->origin.y-1)* elsize;
-        if(p->type==1)  animationHandler.add(OBJECTBUILDUP,2,1, 28,31, 3,6/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});//Braune Kugel (Typ 1)
-        else            animationHandler.add(OBJECTBUILDUP,2,1, 32,35, 3,6/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});
-        p=p->next;
-    }
+                getRailOutputInformation(r->outputType,&num,&mirrorX,&mirrorY);
+                     if(!mirrorX && !mirrorY)/*Normal*/  output={{pos.x,pos.y},{pos.x+elsize,pos.y+elsize}};
+                else if(!mirrorX &&  mirrorY)/* >Y < */  output={{pos.x,pos.y+elsize},{pos.x+elsize,pos.y}};
+                else if( mirrorX && !mirrorY)/* >X < */  output={{pos.x+elsize,pos.y},{pos.x,pos.y+elsize}};
+                else                         /* >XY< */  output={{pos.x+elsize,pos.y+elsize},{pos.x,pos.y}};
+
+                animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,6/*speed*/,&leveltiles,{num%8,num/8},output,((t->type==0)?TRANSPORTER_COLOR:DEATHTRANSPORTER_COLOR));
+                r=r->next;
+            }
+            t=t->next;
+        }
+    ///KUGELN
+        KUGELorigin *p=kugelOriginStart;
+        while(p!=NULL)
+        {   pos.x=origin.x+p->origin.x* elsize;
+            pos.y=origin.y+(size.y-p->origin.y-1)* elsize;
+            if(p->type==1)  animationHandler.add(OBJECTBUILDUP,2,1, 28,31, 3,6/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});//Braune Kugel (Typ 1)
+            else            animationHandler.add(OBJECTBUILDUP,2,1, 32,35, 3,6/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});
+            p=p->next;
+        }
+    ///AVATAR
+        pos.x=origin.x+avatarOrigin.x* elsize;
+        pos.y=origin.y+(size.y-avatarOrigin.y-1)* elsize;
+        animationHandler.add(OBJECTBUILDUP,2,1, 36,39, 3,6/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});
+    ///SCHLÖSSER
+        LOCKorigin *l=lockOriginStart;
+        while(l!=NULL)
+        {   pos.x=origin.x+(l->lock).x* elsize;
+            pos.y=origin.y+(size.y-(l->lock).y-1)* elsize;
+            animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,6/*speed*/,&leveltiles,{TILE_LOCK%8,TILE_LOCK/8},{pos,{pos.x+elsize,pos.y+elsize}},l->color);
+
+            pos.x=origin.x+(l->key).x* elsize;
+            pos.y=origin.y+(size.y-(l->key).y-1)* elsize;
+            animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,6/*speed*/,&leveltiles,{TILE_KEY%8,TILE_KEY/8},{pos,{pos.x+elsize,pos.y+elsize}},l->color);
+            l=l->next;
+        }
+
     return;
 }
 
@@ -102,9 +141,10 @@ POS GAME::getTargetFieldCoord(POS position,DIRECTION richtung)   //Gibt die Koor
     return POS{-1,-1};//Fehler
 }
 
-void GAME::printMovingObject(MOVEMENT *movement,POS position,int spriteNum)      //Gibt ein Objekt am Spielfeld aus, dass sich darauf bewegen kann
+void GAME::printMovingObject(MOVEMENT *movement,POS position,int spriteNum,POS beamTarget)      //Gibt ein Objekt am Spielfeld aus, dass sich darauf bewegen kann
 {
-    static POS pos;
+    bool noOutput=0;        //Ob die Ausgabe zum Schluss stattfinden soll
+    POS pos;
     pos.x=origin.x+position.x* elsize;
     pos.y=origin.y+(size.y-position.y-1)* elsize;
     //Je nach Bewegung das Objekt von seiner Urpsrünglichen Position wegbewegen:
@@ -117,14 +157,17 @@ void GAME::printMovingObject(MOVEMENT *movement,POS position,int spriteNum)     
 
 
 
-            case BEAM:  {   //Einschwärtzen an der Startposition:
-                            leveltiles.print({pos,{pos.x+ elsize,pos.y+ elsize}},{spriteNum%8,spriteNum/8},COLOR{1-(movement->progress/100.0f),1-(movement->progress/100.0f),1-(movement->progress/100.0f)});
-                            //Aufhellen an der Zielposition:
-                            pos=getTargetBeamer();//Zielfeld herausfinden
+            case BEAM:  {   //Einschwärzen an der Startposition:    leveltiles.print({pos,{pos.x+ elsize,pos.y+ elsize}},{spriteNum%8,spriteNum/8},COLOR{1-(movement->progress/100.0f),1-(movement->progress/100.0f),1-(movement->progress/100.0f)});
+                            /*ausblenden:*/ leveltiles.print({pos,{pos.x+ elsize,pos.y+ elsize}},{spriteNum%8,spriteNum/8},WHITE,(100-movement->progress)/100.0f);
+
+                            if(beamTarget.x<0)  pos=getTargetBeamer();  //Zielfeld herausfinden
+                            else                pos=beamTarget;         //Zielfeld wurde übergeben
+
                             pos.x=origin.x+pos.x*elsize;
                             pos.y=origin.y+(size.y-pos.y-1)*elsize;
-                            leveltiles.print({pos,{pos.x+ elsize,pos.y+ elsize}},{spriteNum%8,spriteNum/8},COLOR{(movement->progress/100.0f),(movement->progress/100.0f),(movement->progress/100.0f)});
-                            return;
+                            //Aufhellen an der Zielposition:  leveltiles.print({pos,{pos.x+ elsize,pos.y+ elsize}},{spriteNum%8,spriteNum/8},COLOR{(movement->progress/100.0f),(movement->progress/100.0f),(movement->progress/100.0f)});
+                            /*einblenden*/leveltiles.print({pos,{pos.x+ elsize,pos.y+ elsize}},{spriteNum%8,spriteNum/8},WHITE,movement->progress/100.0f);
+                            noOutput=1;//Ausgabe bereits geschehen --> nicht mehr ausgeben
                         }break;
 
 
@@ -132,15 +175,19 @@ void GAME::printMovingObject(MOVEMENT *movement,POS position,int spriteNum)     
                         movement->moving=0;
         }
     }
-    leveltiles.print({pos,{pos.x+elsize,pos.y+elsize}},{spriteNum%8,spriteNum/8});
+    if(!noOutput)
+        leveltiles.print({pos,{pos.x+elsize,pos.y+elsize}},{spriteNum%8,spriteNum/8});
 
     if(ImgDebug)
     {
         if(movement->moving==0 || movement->progress<=100-OccupiedLimit)
-        {   marker(position,YELLOW);
+        {   marker(position,movement->blocking?RED:YELLOW);
         }
         if(movement->moving!=0 && movement->progress>=OccupiedLimit)
-        {   marker(getTargetFieldCoord(position,movement->richtung),YELLOW);
+        {   if(movement->richtung==BEAM && beamTarget.x>=0)//Zielfeld wurde mitübergeben (zB. bei transportern)
+            {   marker(beamTarget,movement->blocking?RED:YELLOW);
+            }else
+            marker(getTargetFieldCoord(position,movement->richtung),movement->blocking?RED:YELLOW);
         }
     }
 
@@ -228,6 +275,7 @@ void GAME::run()                    //Führt einen weiteren Simulationsschritt du
     if(kugelStartPointer!=NULL)     kugelStartPointer->run();
     cleanupKugeln();                //Alle Kugeln, die zum löschen markiert wurden jetzt löschen
     avatar->run();
+    if(transporterStartPointer!=NULL)   transporterStartPointer->run(); //Alle Transporter simulieren
 
     //Hier andere Elemente simulieren
 

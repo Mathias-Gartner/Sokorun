@@ -84,8 +84,8 @@ int complete_graphics(long loopStart,unsigned int loopSpeed=10)//Wird am Ende je
 
     static int td;
     td=loopSpeed-(clock()-loopStart);
-    if(td-1 > 0) Sleep(td-1);                      //Grob, Blockiert das Programm --> Statt 100% CPU-Auslasten nur noch 10% (Stand: Ver. 13.11.2012)
-    while(clock()-loopStart<(int)loopSpeed){}            //genaue, gleichmäßige Geschwindigkeit garantieren
+    if(td-1 > 0){Sleep(td-1);}                      //Grob, Blockiert das Programm --> Statt 100% CPU-Auslasten nur noch 10% (Stand: Ver. 13.11.2012)
+    while(clock()-loopStart<(int)loopSpeed);        //genaue, gleichmäßige Geschwindigkeit garantieren
 
     if(TIMEDEBUGOUTPUT) printf("%4dms (soll: %4dms)\n",(int)(clock()-loopStart),loopSpeed);
 

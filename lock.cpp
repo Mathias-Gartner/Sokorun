@@ -23,7 +23,7 @@ void LOCK::setNextObject(LOCK* nextPointer)                     //Ändert den Zei
 }
 
 
-void LOCK::print()                              //Alle Schlösser (und Schlüssel) ausgeben
+void LOCK::print()                                              //Alle Schlösser (und Schlüssel) ausgeben
 {
     pos.x=origin->x+lock.x* (*elsize);
     pos.y=origin->y+(levelSize->y-lock.y-1)* (*elsize);
@@ -33,23 +33,23 @@ void LOCK::print()                              //Alle Schlösser (und Schlüssel)
     pos.y=origin->y+(levelSize->y-key.y-1)* (*elsize);
     leveltiles.print({pos,{pos.x+(*elsize),pos.y+(*elsize)}},{TILE_KEY%8,TILE_KEY/8},color);
 
-    if(next!=NULL)  next->print();              //Alle Schlösser ausgeben
+    if(next!=NULL)  next->print();                              //Alle Schlösser ausgeben
 }
 
-bool LOCK::isLocked(POS position)               //Überprüft, ob diese Position von irgendeinem Schloss versperrt wird
+bool LOCK::isLocked(POS position)                               //Überprüft, ob diese Position von irgendeinem Schloss versperrt wird
 {
     if(poscmp(position,lock))
         return 1;
-    if(next!=NULL)  return next->isLocked(position);    //Alle Schlösser prüfen
+    if(next!=NULL)  return next->isLocked(position);            //Alle Schlösser prüfen
     else            return 0;
 }
 
 
-LOCK* LOCK::KeyOnField(POS position)            //Überprüft, ob sich auf dieser Position ein Schlüssel befindet
+LOCK* LOCK::KeyOnField(POS position)                            //Überprüft, ob sich auf dieser Position ein Schlüssel befindet
 {
     if(poscmp(position,key))
         return this;
-    if(next!=NULL)  return next->KeyOnField(position);    //Alle Schlüssel prüfen
+    if(next!=NULL)  return next->KeyOnField(position);          //Alle Schlüssel prüfen
     else            return NULL;
 }
 

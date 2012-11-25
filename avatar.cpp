@@ -202,6 +202,8 @@ void AVATAR::run()                                                      //Führt 
             game->addGameLogEvent(userinput?USERAVATARMOVE:AVATARMOVE,movement.richtung);     //Ereignis berichten
             userinput=0;
         }
+
+        if(movement.blocking && movement.moving!=-1)    movement.blocking=0;    //Der Avatar hat blockiert, wurde jetzt aber wieder freigegeben
     }
     if(movement.moving==0)                                              //Steht still --> prüfen, ob sich der Avatar auf einem Spezialfeld befindet
     {   switch(game->getFieldProperty(OBJ_AVATAR,position))             //Dieses Feld hat vlt. eine spezielle Eigenschaft

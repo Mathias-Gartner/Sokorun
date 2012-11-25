@@ -85,7 +85,7 @@ class GAME : public LEVEL
 
         void printGameLogBackground();                  //Gibt nur den linken Rand und den Hintergrund des GameLog-Bereiches aus (wird von GAMELOG::print() auch erledigt)
 
-        void printMovingObject(MOVEMENT *movement,POS position,int spriteNum);      //Gibt ein Objekt am Spielfeld aus, dass sich darauf bewegen kann
+        void printMovingObject(MOVEMENT *movement,POS position,int spriteNum,POS beamTarget=POS{-1,-1});      //Gibt ein Objekt am Spielfeld aus, dass sich darauf bewegen kann
         void print();                                   //Ausgabe des Spielzustandes
         void run();                                     //Führt einen weiteren Simulationsschritt durch
 
