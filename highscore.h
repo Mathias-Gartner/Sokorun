@@ -11,7 +11,7 @@ typedef struct
 class HIGHSCORE
 {
     public:
-        HIGHSCORE(char* map);
+        HIGHSCORE(char* level);
         virtual ~HIGHSCORE();
         void Load();
         void Save();
@@ -27,7 +27,7 @@ class HIGHSCORE
         unsigned int m_moves;
         TIME m_time;
         unsigned int m_timesplayed;
-        char* map;
+        char* level;
         bool isLoaded;
 };
 

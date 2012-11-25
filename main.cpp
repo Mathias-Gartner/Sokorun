@@ -246,18 +246,29 @@ int main(int argc,char* argv[])
 
 
 
+    LEVELSELECT *levelselect = new LEVELSELECT();
+    int success = levelselect->Select();
 
+    if (success)
+    {
+        GAME *game=new GAME({50,50},40,levelselect->GetLevelPath());
+        if(game->getStatus() != 0)
+        {
+            char *dateP,*timeP;
+            game->getMetaData(&dateP,&timeP);
+            logger(1,"Das Level wurde erfolgreich geladen. Levelpfad: %s, Erstelldatum: %s, Erstellzeitpunkt: %s",game->getLevelPath(),dateP,timeP);
+        }
 
+        gameMain(game);
 
-    GAME *game=new GAME({50,50},40,"daten/level/1.lvl");
-    if(game->getStatus() != 0)
-    {   char *dateP,*timeP;
-        game->getMetaData(&dateP,&timeP);
-        logger(1,"Das Level wurde erfolgreich geladen. Levelpfad: %s, Erstelldatum: %s, Erstellzeitpunkt: %s",game->getLevelPath(),dateP,timeP);
+        /*HIGHSCORE *score = new HIGHSCORE(levelselect->GetLevelName());
+        score->Setmoves(100);
+        score->Save();*/
     }
-
-    gameMain(game);
-
+    else
+    {
+        logger (true, "LevelSelect canceled, show main menu");
+    }
 
     cleanup();  //Abschlussarbeiten vor dem Programmende
     return 0;

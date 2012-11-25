@@ -6,10 +6,10 @@
 #include "highscore.h"
 #include "filesystemutility.h"
 
-HIGHSCORE::HIGHSCORE(char* mapname)
+HIGHSCORE::HIGHSCORE(char* levelname)
 {
     isLoaded = false;
-    map = mapname;
+    level = levelname;
     Load();
 }
 
@@ -23,7 +23,7 @@ void HIGHSCORE::Load()
     isLoaded = false;
     if (FILESYSTEMUTILITY::DirectoryExists("highscore"))
     {
-        FILE* file = fopen(map, "r");
+        FILE* file = fopen(level, "r");
         if (file != NULL)
         {
             fscanf(file, "%d", m_timesplayed);
@@ -37,9 +37,9 @@ void HIGHSCORE::Load()
 
 void HIGHSCORE::Save()
 {
-    char mapPath[strlen("highscore\\") + strlen(map) + 1];
-    strcpy(mapPath, "highscore\\");
-    strcat(mapPath, map);
+    char levelPath[strlen("highscore\\") + strlen(level) + 1];
+    strcpy(levelPath, "highscore\\");
+    strcat(levelPath, level);
 
     if (!DirectoryExists("highscore"))
         CreateDirectory("highscore", NULL);
@@ -47,7 +47,7 @@ void HIGHSCORE::Save()
     /*if (!isLoaded)
         Load();*/
 
-    FILE* file = fopen(strcat("highscore\\", map), "w");
+    FILE* file = fopen(strcat("highscore\\", level), "w");
     if (file != NULL)
     {
         fprintf(file, "%d", m_timesplayed);

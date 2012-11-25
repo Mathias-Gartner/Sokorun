@@ -132,7 +132,7 @@ class BUTTON//Ein Button, den man drücken kann
         char clicked();     //Gibt zurück ob, und welche Maustatste diesen Button geklickt hat (muss VOR pint() aufgerufen werden)
         void print();       //Button ausgeben
 
-
+        void setText(char* value){if (strlen(value)<128) strcpy(buttonText, value);}
 
 
 };
