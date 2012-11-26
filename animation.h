@@ -13,11 +13,12 @@ enum ANITYPE
 //Animatiostypen im Spiel:
     enum FIELDEFFECT            //Animationen, die auf dem Spielfeld ausgegeben werden können
     {       COLLISION,          //Ein Objekt prallt ab
-            LAVAFALL,           //Ein Objekt fällt in die Lava
+            LAVAFALL,           //Eine Kugel (Typ 1) fällt in die Lava
             AVATARLAVA,         //Der Avatar fällt in die Lava
             KUGELLAVA,          //Eine Kugel (Typ 0) fällt in die Lava
             AVATARKILL,         //Der Avatar wird getötet
             KUGELKILL,          //Eine Kugel (Typ 0) wird zerstört
+            KUGELBLOCKKILL,     //Eine Kugel (Typ 1) wird zerstört
             AVATARBUILDUP,      //Der Avatar wird eingeblendet
             KUGELBUILDUP,       //Eine Kugel (Typ 0) wird eingeblendet
             KUGELBLOCKBUILDUP   //Eine Kugel (Typ 1) wird eingeblendet
@@ -31,58 +32,62 @@ class ANIMATION
             ANIMATION *next;                //Für eine Animationsgruppe (Klasse ANIMATIONGROUP) --> Verkettete Klasse (wird innherlab dieser Klasse nicht verwendet, nur für den Zugriff von außerhalb)
 
         ///Allgemeine Einstellungen:
-            int type;                       //Welche Art von Animation verwendet wird
+            int type;                           //Welche Art von Animation verwendet wird
                 //-1: keine Animation (zB. weg. Fehlerhafter Daten)
                 //0: In einer Farbe langsam einfärben
                 //1: Drehen
                 //2: Textur-Folge
-            bool richtung;                  //0: normal; 1: rückwärts
+                //3: Langsam ein- bzw. ausblenden (Alpha-Wert wird verändert). Ansonsten gleich wie type=0
 
-            int start,end;                  //Anfangswert und Endwert der Animation
+            bool richtung;                      //0: normal; 1: rückwärts
+
+            int start,end;                      //Anfangswert und Endwert der Animation
                 //type=0:   Anfangs- und Endabdunklung  (0-100%)
                 //type=1:   Anfangswinkel und Endwinkel (0-100%)
                 //type=2:   erste und letzte Bildnummer (0-x)
+                //type=3:   Anfangs- und End-Alphawert  (0-100%)
 
-            int reverse;                    //Was nach Abschluss der Animation passieren soll
+            int reverse;                        //Was nach Abschluss der Animation passieren soll
                 //0: Nach Ende der Simulation soll diese gelöscht werden (wird nicht mehr ausgegeben)
                 //1: Richtung ändern (Variable "richtung")
                 //2: Nein - vom Anfang wiederholen
                 //3: Nach Ende der Simulation wird sie gestoppt und das letzte Bild immer wieder ausgegeben
 
-            float speed;                      //Animationsgeschwindigkeit (% pro Simulationsschritt)
+            float speed;                        //Animationsgeschwindigkeit (% pro Simulationsschritt)
                 //0: manuelle Erhöhung
 
         ///Ausgabeeinstellungen:
-            TEXTURE *texture;           //Welche Textur für die Animation verwendet wird
-            POS spritePos;              //Welches Sprite dieser Textur verwendet wird
+            TEXTURE *texture;                   //Welche Textur für die Animation verwendet wird
+            POS spritePos;                      //Welches Sprite dieser Textur verwendet wird
                     //type=2: Wert wird ignoriert
-            fAREA spriteArea;               //Um nur den Ausschnitt eines Sprites zu zeigen bzw. ein Sprite zu spiegeln
 
             COLOR overlay;
                 //type=0:   Farbe in der die Animation eingefärbt wird
                 //rest:     Overlay-Farbe
 
-            AREA output;                    //Gebiet für die Ausgabe
+            AREA output;                        //Gebiet für die Ausgabe - dient auch zum spiegeln eines Bildes
                 //type=1 (drehen):  Nur Quadratische Bilder möglich
                 //                  --> a =     Position (Bildmittelpunkt)
                 //                      b.x =   size (Bildgrößé)
 
         ///Statusinformationen:
-            float progress;                   //0-100%
+            float progress;                     //0-100%
             bool finished;                      //Wenn 1: Die Animation ist zu Ende (reverse==0: Keine Aushabe mehr erlaubt; reverse==3: keine Simulation mehhr erlaubt, Ausgabe schon)
 
 
         ///Prototypen:
-            void print_T0();                                //Ausgabefunktion für Typ 0
-            void print_T1();                                //Ausgabefunktion für Typ 1
-            void print_T2();                                //Ausgabefunktion für Typ 2
+            void print_T0();                    //Ausgabefunktion für Typ 0
+            void print_T1();                    //Ausgabefunktion für Typ 1
+            void print_T2();                    //Ausgabefunktion für Typ 2
+            void print_T3();                    //Ausgabefunktion für Typ 3
+
     public:
         ANIMATION(ANITYPE _anitype,int _identification,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay);//Erstellung einer neuen Animation
 
         void setProgress(int newProgress);                  //Fortschritt manuell ändern
         void setSpritePos(POS _spritePos);                  //Sprite ändern
 
-        void setSpriteArea(fAREA _spriteArea);              //spriteArea setzen
+        //void setSpriteArea(fAREA _spriteArea);              //spriteArea setzen
 
         int getIdentification();                            //Gibt die Identifikationsnummer zurück
         ANITYPE getAnitype();                               //Gibt den Animationstypen zurück
@@ -107,7 +112,7 @@ class ANIMATIONGROUP                                        //Verwaltet mehrere 
     public:
         ANIMATIONGROUP();                                   //Konstruktor
         int add(ANITYPE _anitype,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay);//Hinzufügen einer neuen Animation
-        void setSpriteArea(int identification,fAREA _spriteArea);   //spriteArea setzen (zB. zum spiegeln)
+        //void setSpriteArea(int identification,fAREA _spriteArea);   //spriteArea setzen (zB. zum spiegeln)
         void setSpritePos(int identification,POS _spritePos);        //Sprite ändern
 
         //int getAnimationAnz(ANITYPE group);                 //Gibt die Anzahl der Animationen mit diesem Typ zurück

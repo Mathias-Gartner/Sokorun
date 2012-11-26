@@ -3,16 +3,6 @@
 
 
 
-#define GAMELOGBOXTYPE 3
-#define GAMELOGBORDERWITH 20
-#define GAMELOGPADDING 5
-#define GAMELOGMAINCOLOR COLOR{0,0.3,0}
-#define GAMELOGNOTICESPACING 10
-
-#define GameLogTitleFontSize 24
-#define GameLogInfoFontSize 20
-
-
 enum GameEventType                                  //Alle Arten von Spieleevents die es gibt
 {   Gevt_NONE=-1,                                   //Gamelog-Intern (=type nicht zugewiesen/unbekannt)
     GAMESTART,
@@ -40,9 +30,9 @@ struct GameEvent
 
 
 
-    char size;                                      //Wieviele Daten in deisem Event gespeichet sind (1-7)
-    unsigned long time[7];                          //Wann es passiert ist
-    DIRECTION richtung[7];                          //Für bewegungen
+    char size;                                      //Wieviele Daten in deisem Event gespeichet sind (1-GAMELOG_ICONS_PER_BOX)
+    unsigned long time[GAMELOG_ICONS_PER_BOX];                          //Wann es passiert ist
+    DIRECTION richtung[GAMELOG_ICONS_PER_BOX];                          //Für bewegungen
 
     GameEvent *next;                                //Nächstes Element
 };
@@ -89,6 +79,7 @@ class GAMELOG
 
 
         void printBackground();                         //Gibt nur den Linken Rand und den Hintergrund aus (wird von GAMELOG::print() auch erledigt)
+        int getxpos();                                  //Gibt die X-Position zurück, ab der sich der Gamelog befindet
 
         void run();                                     //Muss bei jedem Schleifendurchlauf des Spieles aufgerufen werden
         void print();                                   //Kümmert sich um die Ausgabe
@@ -96,7 +87,7 @@ class GAMELOG
 };
 
 
-
+void getTimeString(char *string,int time);              //Wandelt eine Zeitangabe (ms) in eine String um
 
 
 #endif // GAMELOG_H_INCLUDED

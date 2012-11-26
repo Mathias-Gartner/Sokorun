@@ -1,7 +1,11 @@
 #ifndef KUGEL_H_INCLUDED
 #define KUGEL_H_INCLUDED
 
-
+struct KUGELorigin              //Verkettete Liste mit allen Kugel-Daten die aus der Level-Datei geladen werden
+{   POS origin;                 //Startposition
+    int type;                   //Kugeltyp
+    KUGELorigin *next;          //Nächste Kugel
+};
 
 class KUGEL
 {
@@ -38,6 +42,7 @@ class KUGEL
         /*alle Elemente*/void print();
         /*alle Elemente*/void run();                                //Führt einen Simulationsschritt durch
         /*alle Elemente*/KUGEL* KugelOnField(POS position,KUGEL* ignore);         //Überprüft, ob sich eine Kugel auf diesem Feld befindet (zu mind. OccupiedLimit %). Wenn ja wird der Pointer auf diese Kugel zurückgegeben
+        /*alle Elemente*/void killOnField(POS pos);                 //zerstört die Kugel, wenn sie die übergebene Position blockiert
 
         void move(DIRECTION richtung);                              //Kugel anstoßen
         /*alle Elemente*/void stopMovementsTo(POS pos,int limit);   //Wenn sich eine Kugel gerade auf dieses Feld zubewegt: abprallen lassen

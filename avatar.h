@@ -41,6 +41,7 @@ class AVATAR
         void stopMovementTo(POS pos,int limit);         //Wenn sich der Avatar gerade auf dieses Feld zubewegt: abprallen lassen
 
         bool AvatarOnField(POS pos);                    //Überprüft, ob der Avatar dieses Feld blockiert
+        void killOnField(POS pos);                      //tötet den Avatar, wenn er die übergebene Position blockiert
 
         void run();                                     //Führt einen Simulationsschritt durch
 

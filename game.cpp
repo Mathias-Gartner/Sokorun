@@ -39,17 +39,16 @@ int gameMain(GAME *game)
     ///Variablen initialisieren:
         bool exit=0;
         long loopStart;
-        GAMEBACKGROUND gamebg({{0,0},{GAMELOG_X,windY}});   //Hintergrund initialisieren
-
 
     ///Builup-Animation durchführen:
         prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
         do
         {   loopStart=clock();
             prepare_graphics();                 //Grafiken vorbereiten
-            gamebg.print(false);                //Hintergrund ausgeben, ohne Shine
             game->printGameLogBackground();     //Gamelog-Bereich markieren
             if(game->runBuildupAnimation())
+                exit=1;
+            if(glfwGetKey(GLFW_KEY_SPACE))
                 exit=1;
         }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
         exit=0;
@@ -60,7 +59,6 @@ int gameMain(GAME *game)
         do
         {   loopStart=clock();
             prepare_graphics();                 //Grafiken vorbereiten
-            gamebg.print();                     //Hintergrund ausgeben
             game->printGameLogBackground();     //Gamelog-Bereich markieren
             game->printFloor();
 
@@ -73,23 +71,35 @@ int gameMain(GAME *game)
         animationHandler.remove(OBJECTBUILDUP); //Animationen löschen
 
     ///Preview:
-    {   BUTTON start({{GAMELOG_X+GAMELOGPADDING,windY/2-20},{windX-GAMELOGPADDING,windY/2+20}},0,3,10,CYAN,"Spiel starten",20,YELLOW);
+    {   char pressed=glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN);
+
+        BUTTON start({{GAMELOG_X+GAMELOGPADDING,windY/2-20},{windX-GAMELOGPADDING,windY/2+20}},0,3,10,CYAN,"Spiel starten",20,YELLOW);
         prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
         do
         {   loopStart=clock();
             prepare_graphics();                 //Grafiken vorbereiten
-            gamebg.print();                     //Hintergrund ausgeben
             game->printGameLogBackground();     //Gamelog-Bereich markieren
 
             game->printPreview();
             if(start.clicked()) exit=1;
+
+
+            if(pressed==0 && (glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN)))
+                pressed=2;
+            if(!(glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN)))
+            {   if(pressed==1)  pressed=0;
+                else if (pressed==2)    break;
+            }
+            if(glfwGetKey(GLFW_KEY_SPACE))
+            {   break;
+            }
+
             start.print();
 
         }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
         exit=0;
     }
-
-gamebg.setColor(YELLOW);
+    game->setGameBackgroundColor({1.0,1.0,0.5});       //Gelbes Hintergrundleuchten
 
 
         logger(1,"Game starting...");
@@ -110,7 +120,6 @@ gamebg.setColor(YELLOW);
             ///POSITION MIT TASTATUR VERÄNDERN:
             if(glfwGetKey(GLFW_KEY_RIGHT))
             {   game->move(RIGHT);
-                gamebg.setSplashColor(RED);
             }
             if(glfwGetKey(GLFW_KEY_LEFT))
             {   game->move(LEFT);
@@ -124,9 +133,6 @@ gamebg.setColor(YELLOW);
             {   game->move(DOWN);
 
             }
-
-            gamebg.print();                     //Hintergrund ausgeben
-
 
             game->run();                    //Einen weiteren Simulationsschritt durchführen
             ///Animationen:
@@ -172,96 +178,3 @@ gamebg.setColor(YELLOW);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-/// ==================================================================================================================================
-/// KLASSE GAMEBACKGROUND ************************************************************************************************************
-/// ==================================================================================================================================
-
-
-
-
-
-
-GAMEBACKGROUND::GAMEBACKGROUND(AREA _area)
-{   area=_area;
-
-    alpha=0;
-
-    final=WHITE;
-    old=final;
-
-    splashProgress=0;   //Keine Splash-Farbe
-}
-
-void GAMEBACKGROUND::print(bool printshine)
-{   gamebackground.print(area,{{0.0,0.0},{(area.b.x-area.a.x)/128,(area.b.y-area.a.y)/128}},WHITE); //Hintergrundbild ausgeben
-
-    if(printshine)
-    {   colorProgress+=5;
-        if(colorProgress>100)
-        {   colorProgress=100;
-        }
-
-        if(splashProgress>0)
-        {   if(splashDirection==0)
-            {   splashProgress+=2;
-                if(splashProgress>=100)
-                {   splashProgress=100;
-                    splashDirection=1;
-                }
-            }else
-            {   splashProgress-=2;
-                if(splashProgress<0)    //Fertig
-                    splashProgress=0;
-            }
-        }
-
-
-        //Zielfarbe bestimmen:
-        COLOR target=final;
-        if(splashProgress>0)//Farben mischen
-        {   target={final.r+(splash.r-final.r)*splashProgress/100.0,final.g+(splash.g-final.g)*splashProgress/100.0,final.b+(splash.b-final.b)*splashProgress/100.0};
-        }
-
-
-        COLOR current;
-        if(colorProgress<100 || splashProgress>0)//Noch nicht die neue Farbe
-            current={old.r+(target.r-old.r)*colorProgress/100.0,old.g+(target.g-old.g)*colorProgress/100.0,old.b+(target.b-old.b)*colorProgress/100.0};
-        else current=target;
-
-        alpha+=0.005;
-        if(alpha>1.0)   alpha=1.0;
-
-        shine.print(area,stdTextArea,current,alpha);
-    }
-}
-void GAMEBACKGROUND::setColor(COLOR _final)             //Neue, endgültige Farbe wählen
-{   //Zielfarbe bestimmen
-    COLOR target=final;
-    if(splashProgress>0)//Farben mischen
-    {   target={final.r+(splash.r-final.r)*splashProgress/100.0,final.g+(splash.g-final.g)*splashProgress/100.0,final.b+(splash.b-final.b)*splashProgress/100.0};
-    }
-
-    old={old.r+(target.r-old.r)*colorProgress/100.0,old.g+(target.g-old.g)*colorProgress/100.0,old.b+(target.b-old.b)*colorProgress/100.0};
-
-    final=_final;
-    colorProgress=0;
-}
-
-void GAMEBACKGROUND::setSplashColor(COLOR _splash)      //Farbe einstellen, die kurzfristig verwendet werden soll
-{
-    splash=_splash;
-    splashProgress=1;
-    splashDirection=0;
-}

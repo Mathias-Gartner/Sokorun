@@ -84,7 +84,8 @@ void AVATAR::move(DIRECTION richtung,bool _userinput=0)
     int limit=game->isWalkable(OBJ_AVATAR,next);                        //Nachbarfeld, auf das sich der Avatar bewegen soll überprüfen
 
     if(limit>0)
-    {   movement.moving=1;
+    {   //game->setGameBackgroundSplashColor(RED);                        //Rot werden
+        movement.moving=1;
         movement.progress=0;
         movement.richtung=richtung;
         movement.limit=limit;                                           //Limit durch Feld selbst (Kugeln und andere Objekte in diesem Feld werden erst dann beachtet, wenn sie berührt werden können)
@@ -94,17 +95,16 @@ void AVATAR::move(DIRECTION richtung,bool _userinput=0)
 }
 
 
-void AVATAR::run()                                                      //Führt einen Simulationsschritt durch
+void AVATAR::run()                                                              //Führt einen Simulationsschritt durch
 {
-    if(deathProgress>0)                                                 //Avatar=Tot
+    if(deathProgress>0)                                                         //Avatar=Tot
     {   deathProgress+=DIEINGSPEED;
-        if(deathProgress>=100)                                          //Jetzt das Spiel beenden
+        if(deathProgress>=100)                                                  //Jetzt das Spiel beenden
             deathProgress=100;
         return;
     }
 
-
-    movement.blocking=0;                                                   //Falls der Avatar blockiert wird dieser immer auf moving=1 und -1 gesetzt --> collision-Animation muss verhindert werden können
+    movement.blocking=0;                                                        //Falls der Avatar blockiert wird dieser immer auf moving=1 und -1 gesetzt --> collision-Animation muss verhindert werden können
 
     if(movement.moving!=0)
     {   if(movement.moving==-1 && propRicCmp(movement.richtung,game->getFieldProperty(OBJ_AVATAR,position))) //Der Avatar prallt (genau jetzt) ab, darf aber nicht zurückkehren, weil der Feldtyp die Bewegung sofort wieder starten würde. (Ansonsten wackelt der Avatar immer hin und her)
@@ -114,7 +114,7 @@ void AVATAR::run()                                                      //Führt 
             movement.blocking=1;
             //Wenn nein, wird automatisch innerhalb dieses if's wieder abgeblockt und im nächsten Durchgang landet man hier
         }else
-            movement.progress+=movement.moving*WALKING_SPEED;               //Vor bzw. Zurück Bewegen
+            movement.progress+=movement.moving*WALKING_SPEED;                       //Vor bzw. Zurück Bewegen
 
 
         POS next=game->getTargetFieldCoord(position,movement.richtung);
@@ -124,20 +124,20 @@ void AVATAR::run()                                                      //Führt 
         if(movement.moving==1 && movement.richtung!=BEAM && movement.progress >= Wkey && movement.progress < Wkey+WALKING_SPEED)//Bei genau diesem Schritt könnte ein Schlüssel berührt und das Schloss geöffnert werden
         {   LOCK *touchedLock=game->KeyOnField(next);
             if(touchedLock != NULL)
-            {   game->openLock(touchedLock);    //Öffnet (=löscht) das Schloss
-                game->addGameLogEvent(LOCKOPENED);                //Ereignis berichten
+            {   game->openLock(touchedLock);                                        //Öffnet (=löscht) das Schloss
+                game->addGameLogEvent(LOCKOPENED);                                  //Ereignis berichten
             }
         }
 
         if(movement.moving==1 && movement.richtung!=BEAM && movement.progress >= Wkgl && movement.progress < Wkgl+WALKING_SPEED)//Bei genau diesem Schritt könnte angestoßen werden
         {   KUGEL *touchedKugel=game->KugelOnField(next,NULL);
 
-            if(touchedKugel != NULL)                                    //Im nächsten Feld ist eine Kugel
+            if(touchedKugel != NULL)                                                //Im nächsten Feld ist eine Kugel
             {   ///IM NÄCHSTEN FELD IST EINE KUGEL --> Es muss etwas passieren
                     POS next2=game->getTargetFieldCoord(next,movement.richtung);    //Feld nach der Kugel
 
                     if(movement.blocking || /*vorheriger Bedingungsteil: siehe unten*/game->getFieldProperty(OBJ_KUGEL,next)==fx || game->checkPos(next2))         //Kugel fixiert ODER Übernächste Position außerhalb des Spielfeldes
-                    {   movement.moving=-1;                             //Der Avatar prallt sofort ab (Die Kugel wird sich nicht bewegen)
+                    {   movement.moving=-1;                                         //Der Avatar prallt sofort ab (Die Kugel wird sich nicht bewegen)
                         if(!movement.blocking)
                         {   game->addFieldEffect(position,COLLISION,movement.richtung,AVATARCOLLITIONCOLOR);
                             /*Überprüfen, ob sich ein anderes Objekt gerade in dieses Feld bewegen will, in die der Avatar jetzt zurückkehren muss:*/
@@ -150,7 +150,7 @@ void AVATAR::run()                                                      //Führt 
                         //  Damit dass verhindert wird kann die Kugel nicht angestoßen werden, wenn der Avatar blockiert.
                         //  Sie kann nur dann angestoßen werden, wenn der Benutzer den Avatar in die entsprechende Richtung steuert. Auch wenn dies die Richtung ist, in die er gedrückt und blockiert wird. So kann und darf die Kugel dann angestoßen werden
                         //
-                        //Wann kann es vorkommen:
+                        //Wann kann es vorkommen (Feldwerte laut altem Levelformat):
                         //          07  <--- Hier ist die Kugel
                         //          07
                         //       12 11 01  <--- In dieses Freie Feld soll die Kugel nur dann geschoben werden, wenn der Spieler es will, nicht automatisch
@@ -201,6 +201,8 @@ void AVATAR::run()                                                      //Führt 
             game->addGameLogEvent(userinput?USERAVATARMOVE:AVATARMOVE,movement.richtung);     //Ereignis berichten
             userinput=0;
         }
+
+        if(movement.blocking && movement.moving!=-1)    movement.blocking=0;    //Der Avatar hat blockiert, wurde jetzt aber wieder freigegeben
     }
     if(movement.moving==0)                                              //Steht still --> prüfen, ob sich der Avatar auf einem Spezialfeld befindet
     {   switch(game->getFieldProperty(OBJ_AVATAR,position))             //Dieses Feld hat vlt. eine spezielle Eigenschaft
@@ -232,7 +234,7 @@ void AVATAR::run()                                                      //Führt 
 
 void AVATAR::stopMovementTo(POS pos,int limit)                         //Wenn sich der Avatar gerade auf dieses Feld zubewegt: abprallen lassen
 {
-    if(movement.moving==1)
+    if(movement.moving==1 && deathProgress==0)
     {   if(poscmp(pos,game->getTargetFieldCoord(position,movement.richtung)))       //Der Avatar bewegt sich auf dieses Feld zu
         {   if(movement.progress>=limit)
             {   movement.moving=-1;                                     //sofort abprallen
@@ -245,15 +247,41 @@ void AVATAR::stopMovementTo(POS pos,int limit)                         //Wenn si
     }
 }
 
+void AVATAR::killOnField(POS pos)                                       //tötet den Avatar, wenn er die übergebene Position blockiert
+{   if(deathProgress>0) return;                                         //bereits tot
+
+    bool kill=0;                                                        //Zwischenspeicher ob der Avatar getötet werden soll
+    if(movement.moving==0 || movement.progress<=100-OccupiedLimit)      //Avatar befindet sich am eigenen position-Feld
+    {   if(poscmp(pos,position))
+        {   kill=1;
+        }
+    }
+    if(movement.moving!=0 && movement.progress>=OccupiedLimit && !movement.blocking/* siehe Beschreibung in "AVATAR::AvatarOnField()" */)   //Avatar befindet sich bereits auf nächstem Feld
+    {   if(poscmp(pos,game->getTargetFieldCoord(position,movement.richtung)))       //Der Avatar bewegt sich auf dieses Feld zu
+        {   kill=1;
+        }
+    }
+
+    if(kill)
+    {   int feld=game->getField(position);              //Feldtyp herausfinden
+        game->addFieldEffect(position,AVATARKILL,((movement.moving==0)?NONE:movement.richtung),WHITE,movement.progress);
+        game->addGameLogEvent(AVATARDEATH);             //Ereignis berichten
+        game->addGameLogEvent(GAMEOVER);                //Ereignis berichten
+        deathProgress=1;                                //Den Avatar zu Tode verurteilen
+    }
+}
+
 bool AVATAR::AvatarOnField(POS pos)                                     //Überprüft, ob der Avatar dieses Feld blockiert
 {
+    if(deathProgress>0) return 0;                                       //Avatar bereits tot
+
     if(movement.moving==0 || movement.progress<=100-OccupiedLimit)      //Avatar befindet sich am eigenen position-Feld
     {   if(poscmp(pos,position))                                        //=gesuchte Position
             return 1;                                                   //ja
     }
     if(movement.moving!=0 && movement.progress>=OccupiedLimit && !movement.blocking/* siehe unten */)   //Avatar befindet sich bereits auf nächstem Feld
     {   if(poscmp(pos,game->getTargetFieldCoord(position,movement.richtung)))       //nächstes Feld=gesuchte Position
-            return this;                                                //ja
+            return 1;                                                   //ja
     }
 
     //Der Grund, warum oben im if movement.blocking steht:
@@ -273,7 +301,7 @@ bool AVATAR::AvatarOnField(POS pos)                                     //Überpr
 
 bool AVATAR::isMoving()                                                 //gibt zurück, ob sich der Avatar gerade bewegt
 {
-    if(movement.moving==0 || (movement.moving==-1 && propRicCmp(movement.richtung,game->getFieldProperty(OBJ_AVATAR,position))))
+    if(deathProgress>0 || movement.moving==0 || (movement.moving==-1 && propRicCmp(movement.richtung,game->getFieldProperty(OBJ_AVATAR,position))))
         return 0;
     return 1;
 }

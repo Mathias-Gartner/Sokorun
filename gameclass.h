@@ -1,7 +1,36 @@
 #ifndef GAMECLASS_H_INCLUDED
 #define GAMECLASS_H_INCLUDED
 
+extern TEXTURE gamebackground,shine;
 
+class GAMEBACKGROUND
+{
+    private:
+        AREA area;              //Soll-Ausgabefläche
+
+
+        float alpha;
+
+        int colorProgress;      //Zu wieviel % die neue Farbe g=nommen wird
+
+        COLOR old;              //Letze Farbe
+        COLOR final;            //Soll-Farbe
+
+        COLOR splash;           //Kurzzeitige Soll-Farbe
+        //bool splashEnabled;     //1: Die Splashfarbe=Zielfarbe
+        int splashProgress;     //1-100% - zu wieviel % die Splash-Farbe eingeblendet werden soll; 0=keine Splahfarbe
+        bool splashDirection;   //0: Die Splashfarbe wird eingeblendet; 1: Die Splashfarbe wird ausgeblendet
+
+        //bool colorVariation;     //0: Ziel = target-Farbe    1: Ziel = abgedunkelte Target-Farbe
+
+
+    public:
+        GAMEBACKGROUND(AREA _area);
+
+        void print(int bx,bool printshine=1);   //Ausgabe. bx = X-position, bis zu der der Hintergrund ausgegeben werden soll (gilt nicht für shine)
+        void setColor(COLOR _target);           //Neue, endgültige Farbe wählen
+        void setSplashColor(COLOR _splash);     //Farbe einstellen, die kurzfristig verwendet werden soll
+};
 
 class GAME : public LEVEL
 {
@@ -12,9 +41,11 @@ class GAME : public LEVEL
             class AVATAR *avatar;
             class KUGEL  *kugelStartPointer;                //Verkettete Klasse
             class LOCK   *lockStartPointer;                 //Verkettete Klasse
+            class TRANSPORTER *transporterStartPointer;
 
 
-
+        ///Hintergrund:
+            GAMEBACKGROUND gamebackground;                  //Hintergrund bestehend aus Hintergrundbild + Leuchten
 
 
         ///Einblende-Animation für spez. Elemente:      (Avatar, Kugeln, Schienen, Transporter, Schlösser,...)
@@ -28,7 +59,8 @@ class GAME : public LEVEL
             void collision(POS position,DIRECTION richtung,COLOR color);                        //Erzeugt eine Aufprall-Animation
 
     public:
-        GAME(POS origin,int elsize,const char *LVLpath,const bool skipMinorErrors=0):LEVEL(origin,elsize,LVLpath,skipMinorErrors)//Konstruktor der Oberklasse "LEVEL"
+        GAME(POS origin,int elsize,const char *LVLpath,const bool skipMinorErrors=0):   LEVEL(origin,elsize,LVLpath,skipMinorErrors), //Konstruktor der Oberklasse "LEVEL"
+                                                                                        gamebackground(AREA{{0,0},{windX-GameLogWidth,windY}})
         {   prepared=0;
             avatar=NULL;
             kugelStartPointer=NULL;                                                 //Verkettete Kugel-Klasse beinhaltet keine Elemente
@@ -39,7 +71,7 @@ class GAME : public LEVEL
         }
 
         //void lavafallAnimation(POS position);                                                 //Ezrueg eine Animation für ein in die Lava gefallenes Objekt
-        void addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung,COLOR color);    //Ezreugt eine Animation
+        void addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung=NONE,COLOR color=WHITE,int progress=0);    //Erzeugt eine Animation
 
 
         void addGameLogEvent(GameEventType type,DIRECTION richtung);                            //Event hinzufügen
@@ -53,14 +85,21 @@ class GAME : public LEVEL
 
         void printGameLogBackground();                  //Gibt nur den linken Rand und den Hintergrund des GameLog-Bereiches aus (wird von GAMELOG::print() auch erledigt)
 
-        void printMovingObject(MOVEMENT *movement,POS position,int spriteNum);      //Gibt ein Objekt am Spielfeld aus, dass sich darauf bewegen kann
+        void printMovingObject(MOVEMENT *movement,POS position,int spriteNum,POS beamTarget=POS{-1,-1});      //Gibt ein Objekt am Spielfeld aus, dass sich darauf bewegen kann
         void print();                                   //Ausgabe des Spielzustandes
         void run();                                     //Führt einen weiteren Simulationsschritt durch
 
         void move(DIRECTION richtung);                  //Der Avatar wird vom Spieler angestoßen
 
         void stopMovementsTo(POS pos,int limit);        //Objekte, die sich in dieses Feld bewegen wollen abprallen lassen, weil es ein anderes Objekt auf dieses Feld muss
+        void killObjectsOnField(POS pos);               //Zerstört alle Kugeln und den Avatar, wenn diese dieses Feld blockieren (wird zB. duch den tödlichen Transporter ausgelöst)
 
+        void printPreview();                            //Vorschau anzeigen (inkl. Levelhintergrund)
+        bool runBuildupAnimation();                     //Level aufbauen (inkl. Levelhintergrund)
+        void printFloor();                              //Spielfläche ausgeben (inkl. Levelhintergrund)
+        void setGameBackgroundSplashColor(COLOR splash);//kurzfristige Farbe setzen
+
+        void setGameBackgroundColor(COLOR target);      //Setzt die Farbe des Leuchtens im Spielhintergrund
 
         int isPrepared();                               //Gibt zurück, ob das Spiel erfolgreich vorbereitet und gespielt werden kann
 
@@ -70,6 +109,8 @@ class GAME : public LEVEL
 
         bool AvatarOnField(POS position);               //Überprüft, ob der Avatar dieses Feld blockiert
         int isWalkable(OBJEKT object,POS position);     //Ob ein bestimmtes Feld von einem Objekt betreten werden darf, und wenn ja, wie weit. (Prozentwert 0-100. 100=vollständig betretbar.  -1=Fehler) (Es wird nur der Feldtyp geprüft, nicht ob sich andere Elemente wie zB. Kugeln darauf befinden)
+        bool isDriveable(RAIL *r,TRANSPORTER *ignore,bool loaded);          //Gibt zurück ob sich ein Transporter auf dieses Feld bewegen darf
+        bool isLocked(POS position);                    //Überprüft, ob ein bestimmtes Feld von einem Schloss versperrrt wird
 
         void openLock(LOCK* lockAdr);                   //Öffnet (=löscht) das Schloss
 
@@ -82,5 +123,6 @@ class GAME : public LEVEL
         void cleanupKugeln();                           //Alle Kugeln, die zum löschen markiert wurden jetzt löschen
 
 };
+
 
 #endif // GAMECLASS_H_INCLUDED

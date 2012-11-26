@@ -1,6 +1,15 @@
 #ifndef LOCK_H_INCLUDED
 #define LOCK_H_INCLUDED
 
+
+struct LOCKorigin               //Verkettete Liste mit allen Schloss-Daten die aus der Level-Datei geladen werden
+{   POS lock;                   //Position des Schlosses
+    POS key;                    //Position des Schlüssels
+    COLOR color;                //Farbe
+    LOCKorigin *next;           //Nächstes Element
+};
+
+
 class LOCK
 {
     private:
@@ -26,7 +35,7 @@ class LOCK
         LOCK* getNextObject();                                      //Liefert die Adresse des nächsten Objekts zurück
         void setNextObject(LOCK* nextPointer);                      //Ändert den Zeiger des nächsten Elements
 
-        /*alle Elemente*/void print();
+        /*alle Elemente*/void print();                              //Ausgabe
         /*alle Elemente*/bool isLocked(POS position);               //Überprüft, ob diese Position von irgendeinem Schloss versperrt wird
         /*alle Elemente*/LOCK* KeyOnField(POS position);            //Überprüft, ob sich auf dieser Position ein Schlüssel befindet
 

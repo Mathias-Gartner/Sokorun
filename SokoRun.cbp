@@ -70,9 +70,6 @@
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="filesystemutility.h" />
-		<Unit filename="game.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Unit filename="game.h" />
 		<Unit filename="gameclass.cpp">
 			<Option target="&lt;{~None~}&gt;" />
@@ -129,6 +126,12 @@
 		</Unit>
 		<Unit filename="score.h" />
 		<Unit filename="tga.h" />
+		<Unit filename="transporter.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="transporter.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />
