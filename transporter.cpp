@@ -13,14 +13,11 @@ TRANSPORTER::TRANSPORTER(GAME *gamePointer,POS *originPointer,int *elsizePointer
     levelSize=levelSizePointer;                 //Levelgröße
 
     data=_data;
-    //position=(data->origin)->position;
     position=data->origin;
-
-    movement.moving=1;
-    movement.richtung=UP;                                                      //Bewegt sich gerade nicht
-    movement.progress=10;
-    movement.lastRichtung=NONE;
-    movement.blocking=0;
+    movement.moving=0;                          //Bewegt sich nicht
+    movement.progress=0;
+    movement.blocking=0;                        //Für die imgDebug-Ausgabe: damit der Rahmen nicht rot gezeichnet wird
+    //lastRichtung, blocking und limit wird nicht verwendet. moving kann nicht -1 sein (kein Abprallen möglich)
 
     direction=data->startDirection;             //Richtung, in die sich der Transporter los bewegt
 
@@ -30,10 +27,6 @@ TRANSPORTER::TRANSPORTER(GAME *gamePointer,POS *originPointer,int *elsizePointer
 TRANSPORTER* TRANSPORTER::getNextObject()                                   //Liefert die Adresse des nächsten Objekts zurück
 {  return next;
 }
-
-
-#define RAILTRACKS_VISIBILITY_NXT 0.25f     //Um wieviel % die Sichtbarkeit eines Schienenstücks abnimmt - für die nächsten Schienen
-#define RAILTRACKS_VISIBILITY_PRV 0.9f      //Um wieviel % die Sichtbarkeit eines Schienenstücks abnimmt - für die bereits passierten Schienen
 
 void getRailOutputInformation(int outputType,char *tile,bool *mirrorX,bool *mirrorY)    //Gibt Ausgabeinformationen für ein Schienenelement zurück
 {   switch(outputType)
@@ -112,7 +105,10 @@ void TRANSPORTER::print()
             {   if(movement.moving!=0 && smooth)
                 {   fkt=(100-movement.progress)/100.0f;
                     smooth=0;
-                }else   fkt=1;
+                }/*else if(smooth)//Bei der ersten stelle nichts abziehen
+                {   fkt=0;
+                    smooth=0;
+                }*/else   fkt=1;
                 printRailTrack(r,game->getRailDirection(lastPos,r->position),RAILTRACKS_VISIBILITY_NXT,&alo,&aro,&alu,&aru,fkt);
                 lastPos=r->position;
 
@@ -129,11 +125,13 @@ void TRANSPORTER::print()
         else lastPos=position->position;
 
         smooth=1;
-
         if(r!=NULL)
         {   do
             {   if(movement.moving!=0 && smooth)
                 {   fkt=movement.progress/100.0f;
+                    smooth=0;
+                }else if(smooth)//Bei der ersten stelle nichts abziehen
+                {   fkt=0;
                     smooth=0;
                 }else   fkt=1;
                 printRailTrack(r,game->getRailDirection(lastPos,r->position),RAILTRACKS_VISIBILITY_PRV,&alo,&aro,&alu,&aru,fkt);
@@ -152,94 +150,113 @@ void TRANSPORTER::print()
         MessageBox(NULL,"Es kam zu einem Fehler. Die Leveldaten sind ungültig. Für mehr Details sehen Sie im Erroglog nach.","Schwerwiegender Fehler",MB_OK|MB_ICONERROR);
         for(;;);
     }
+    if(next!=NULL)  next->print();  //Alle Transporter ausgeben (immer zuerst die Schienen, dann den Transporter selbst)
+    ///Jetzt, da alle Schienen ausgegeben wurde, den Transporter ausgeben:
     game->printMovingObject(&movement,position->position,data->type==0?TILE_TRANSPORTER:TILE_DEATHTRANSPORTER,nxt);
-    if(next!=NULL)  next->print();  //Alle Transporter ausgeben
 }
 
+TRANSPORTER* TRANSPORTER::TransporterOnField(POS pos,TRANSPORTER *ignore)                       //Überprüft, ob sich auf dieser Position ein Transporter befindet
+{
+    if(this != ignore)
+    {   //if(movement.moving==0 || (movement.moving!=0 && movement.progress<100-OccupiedLimit))  //Transporter ist (noch) im positions-Feld
+        {   if(poscmp(pos,position->position))                                                  //=gesuchte Position
+                return this;                                                                    //Transporteradresse zurückgeben
+        }
+
+        if(movement.moving!=0 && movement.progress>=0)                              //Transporter befindet sich bereits auf nächstem Feld
+        {
+            if(poscmp(pos,game->getTargetFieldCoord(position->position,movement.richtung)))     //nächstes Feld=gesuchte Position
+                return this;                                                                    //Transporteradresse zurückgeben
+        }
+    }
+    if(next!=NULL)  return next->TransporterOnField(pos,ignore);                                //nächsten Transporter überprüfen
+    else            return NULL;
+}
 
 
 void TRANSPORTER::run()                                                     //Führt einen Simulationsschritt durch
 {   if(minVisibility>0) minVisibility-=0.025;                               //Schienenelemente langsam ausblenden
 
 
-    movement.blocking=0;                                                   //Falls der Avatar blockiert wird dieser immer auf moving=1 und -1 gesetzt --> collision-Animation muss verhindert werden können
+    if(movement.moving==1)
+    {   movement.progress+=data->speed;                                     //weiter bewegen
 
-    if(movement.moving!=0)
-    {   movement.progress+=movement.moving*data->speed;                   //Vor bzw. Zurück Bewegen
-
-
-
-
-//        if(movement.moving==1 && movement.limit<100 && movement.progress>=movement.limit)          //Prüfen, ob er jetzt vlt. abprallt
-//        {   movement.moving=-1;                                         //Abprallen
-//            movement.progress=movement.limit;                           //Genau an die Kante setzen
-//            if(!movement.blocking)
-//            {   game->addFieldEffect(position,COLLISION,movement.richtung,AVATARCOLLITIONCOLOR);
-//                /*Überprüfen, ob sich ein anderes Objekt gerade in dieses Feld bewegen will, in die der Avatar jetzt zurückkehren muss:*/
-//                game->stopMovementsTo(position,Wava); //Alle Objekte nach Wava % abprallen lassen (sofern möglich.)
+//        if(movement.progress>=OccupiedLimit && movement.progress<OccupiedLimit+data->speed) //Bei genau diesem Schritt könnte ein anderer Tranporter (od. ein spzialelement) diesen Transporter blockieren
+//        {
+//            if((direction==0 && !game->isDriveable(position->next,this,0))/* || (direction==1 && !game->isDriveable(position->prev,0))*/) //Blockieren
+//            {   if(data->reverse)//Umkehren erlaubt
+//                {   movement.moving=0;
+//
+//                }else
+//                {   movement.progress=OccupiedLimit-1;
+//                }
+//
 //            }
 //        }
 
+
         ///Prüfen, ob die Bewegung schon abgeschlossen wurde:
-//        if(movement.moving==-1 && movement.progress<=0)                 //Ins Startfeld zurückgekehrt
-//        {   movement.moving=0;
-//            movement.lastRichtung=NONE;
-//        }
-        if(movement.moving==1 && movement.progress>=100)                //Im Zielfeld angekommen
+        if(movement.progress>=100)                                          //Im Zielfeld angekommen
         {   movement.lastRichtung=movement.richtung;
             //Neues Feld belegen:
             if(direction==0)    position=position->next;
             else                position=position->prev;
-
-            //Nächstes Feld suchen (und Richtung herausfinden. Wenn nötig den Transporter umkehren lassen):
-            RAIL *next;
-            if(direction==0)//Nach vorne
-            {   if(position->next!=NULL)
-                    next=position->next;
-                else                                                    //umkehren
-                {   next=position->prev;
-                    direction=1;
-                }
-            }else//Nach hinten
-            {   if(position->prev!=NULL)
-                    next=position->prev;
-                else                                                    //umkehren
-                {   next=position->next;
-                    direction=0;
-                }
-            }
-            movement.progress=0;
-            movement.richtung=game->getRailDirection(position->position,next->position);
-            movement.limit=100;
+            movement.moving=0;                                              //Anhalten. Im nächsten "if(moving==0)" wird auf ein Schloss und einen fremden Transporter überprüft und die bewegung wenn möglich fortgesetzt.
         }
     }
-//    if(movement.moving==0)                                              //Steht still --> prüfen, ob sich der Avatar auf einem Spezialfeld befindet
-//    {   switch(game->getFieldProperty(OBJ_AVATAR,position))             //Dieses Feld hat vlt. eine spezielle Eigenschaft
-//        {   case up: move(UP);      break;
-//            case dn: move(DOWN);    break;
-//            case lt: move(LEFT);    break;
-//            case rt: move(RIGHT);   break;
-//            case ic: move(movement.lastRichtung);    break;             //Weiter rutschen
-//            case bm: move(BEAM);    break;                              //Zum Ziel-Beamer versetzen
-//            case tr: move(turnRight(movement.lastRichtung)); break;     //Nach rechts (90° im Uhrzeigersinn) weiterruthschen
-//            case tl: move(turnLeft (movement.lastRichtung)); break;     //Nach links (90° gegen Uhrzeigersinn) weiterruthschen
-//            case dt:{   /*Tödlich*/
-//                        int feld=game->getField(position);              //Feldtyp herausfinden
-//                        switch(feld)
-//                        {   case TILE_LAVA:     game->addFieldEffect(position,AVATARLAVA); break;                /*lava*/
-//                            default:            error("AVATAR::run()","Ubekanntes, toedliches Feld. Es wird keine Animations ausgegeben. feld: %d",feld);
-//                        }
-//                        game->addGameLogEvent(AVATARDEATH);             //Ereignis berichten
-//                        game->addGameLogEvent(GAMEOVER);                //Ereignis berichten
-//                        deathProgress=1;                                //Den Avatar zu Tode verurteilen
-//                    }break;
-//            case fx: /*do nothing*/ break;
-//            case nm: /*do nothing*/ break;
-//            default: error("AVATAR::run()","Unbekannte Feldeigenschaft gefunden. Verarbeite wert als \"nm\" (Normal). fieldproperty=%d",game->getFieldProperty(OBJ_KUGEL,position));
-//        }
-//    }
+    if(movement.moving==0)
+    {   if(!game->isLocked(position->position))                             //Die aktuelle Position des Transporters wird nicht von einem Schloss blockiert
+        {
+            char timeout=0;
+            RAIL *next=NULL;
+            do
+            {   if(direction==0 && game->isDriveable(position->next,this,0)) //Nach vorne
+                {   next=position->next;
+                }else
+                if(direction==1 && game->isDriveable(position->prev,this,0)) //Nach hinten
+                {   next=position->prev;
+                }else if(data->reverse)                                 //Umkehren
+                {   if(direction==0)    direction=1;
+                    else                direction=0;
+                }else                                                   //Der Weg ist blockiert und das umkehren ist nicht erlaubt
+                {   timeout=100;
+                }
+                timeout++;
+            }while(next==NULL && timeout<2);                            //Wenn das Timeout 2 ist: beide Nachbarfelder sind blockiert. Oder es gibt nur ein Nachbarfeld und dieses ist blockiert
 
 
+            if(next!=NULL)                                              //Der Transporter wird nicht blockiert (darf sich bewegen)
+            {   //Weiter bewegen
+                movement.moving=1;
+                movement.progress=0;
+                movement.richtung=game->getRailDirection(position->position,next->position);
+            }
+        }
+    }
 
-    if(next != NULL)  next->run();                                          //Nächsten Transporter auch simulieren
+    ///INTERARKTION MIT ANDEREN ELEMENTEN:
+    if(data->type==0)   interactNormal();
+    else                interactDeath();
+
+    if(next != NULL)  next->run();                                      //Nächsten Transporter auch simulieren
+}
+
+
+void TRANSPORTER::interactNormal()                                      //Lässt einen normalen Transporter mit anderen Elementen interargieren
+{
+
+}
+
+void TRANSPORTER::interactDeath()                                       //Lässt einen tödlichen Transporter mit anderen Elementen interargieren
+{
+    if(movement.moving==0 || (movement.moving!=0 && movement.progress<=100-OccupiedLimit))
+    {   game->killObjectsOnField(position->position);                   //Alle Elemente an dieser Position vernichten
+    }
+    if(movement.moving!=0 && movement.progress>=OccupiedLimit)
+    {   if(direction==0)
+        {   game->killObjectsOnField((position->next)->position);       //Alle Elemente der nächsten Position vernichten (next)
+        }else
+        {   game->killObjectsOnField((position->prev)->position);       //Alle Elemente der nächsten Position vernichten (prev)
+        }
+    }
 }

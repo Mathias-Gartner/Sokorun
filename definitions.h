@@ -23,6 +23,8 @@
 
 
 /** GAMELOG-Eigenschaften und Positionierungen: **/
+    #define GAMELOG_ICONS_PER_BOX 6             //Wieviele gleiche Evenents in einer Box zusamengefasst werden dürfen (=max. anz. der Icons)
+
     #define GAMELOGBOXTYPE 3                    //Boxtyp der Eventboxen
     #define GAMELOGBORDERWITH 20                //Rahmenstärke der Eventboxen
     #define GAMELOGPADDING 5                    //Abstände
@@ -46,6 +48,10 @@
     #define WALKING_SPEED  10                   //Wieviele % innerhalb eines Simulationszyklusses zurückgelegt werden (Um ein Objekt von einem Feld in ein anderes zu bewegen sind 100% notwendig) bei 2 sind also 50 Simulationszyklen notwendig, bis das Objekt von einem Feld ins nächste kommt
     #define OccupiedLimit Wkgl                  //Zuwieviel % sich ein Objekt in einem Feld befinden muss, damit dieses belegt ist (MUSS Wkgl sein: falls sich 2 Objekte in ein gleiches Feld zum gleichen Zeitpunkt bewegen kommt es sonst zu einer Überlagerung)
     #define DIEINGSPEED 5                       //Wenn der Avatar tot ist: wie lange das Spiel noch fortgesetzt werden soll und wie lange die Todes-Animation angezeigt werden soll (1-100%, dieser Wert gibt an wie große die Schritte sein sollen)
+
+    #define RAILTRACKS_VISIBILITY_NXT 0.33f     //Um wieviel % die Sichtbarkeit eines Schienenstücks abnimmt - für die nächsten Schienen
+    #define RAILTRACKS_VISIBILITY_PRV 1.0f      //Um wieviel % die Sichtbarkeit eines Schienenstücks abnimmt - für die bereits passierten Schienen
+
 
 /** TYPE DEFINITIONS **/
 
@@ -154,7 +160,7 @@
 
     #define Wkgl 22             //Walkable until Kugel - Bei welchem Fortschritt eine Kugel berührt wird (muss >= WC sein, damit Kugeln, die sich auf Wänden befinden auch angestoßen werden können)
     #define Wava 18             //Walkable until Avatar - Bei welchem Fortschritt der Avatar berührt wird
-    #define Wlock 10            //Walkable until Lock - Bei welchem Fortschritt ein Schloss berührt wird
+    #define Wlock 10            //Walkable until Lock - Bei welchem Fortschritt ein Schloss berührt wird (ACHTUNG: Transporter können sich nur zu 0% in ein versperrtes Feld bewegen)
     #define Wkey 60             //Walkable until Key - Bei welchem Fortschritt ein Schlüssel berührt wird und genommen werden kann
 
 //Werte für das alte Levelformat:

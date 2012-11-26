@@ -79,11 +79,11 @@ int complete_graphics(long loopStart,unsigned int loopSpeed=10)//Wird am Ende je
 {   if(kbhit()){getch();system("CLS");}             //Ein Tastendruck in der Konsole führt zum löschen des Inhalts
 
     glfwSwapBuffers();                              //erzeugte Grafikdaten ausgeben
+    static int td;
+    td=loopSpeed-(clock()-loopStart);
 
     if(TIMEDEBUGOUTPUT) printf("%4dms -> ",(int)(clock()-loopStart));
 
-    static int td;
-    td=loopSpeed-(clock()-loopStart);
     if(td-1 > 0){Sleep(td-1);}                      //Grob, Blockiert das Programm --> Statt 100% CPU-Auslasten nur noch 10% (Stand: Ver. 13.11.2012)
     while(clock()-loopStart<(int)loopSpeed);        //genaue, gleichmäßige Geschwindigkeit garantieren
 

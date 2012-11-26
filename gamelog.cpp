@@ -41,7 +41,7 @@ void GAMELOG::addEvent(GameEventType type,DIRECTION richtung=NONE)              
 {
     events++;
     if(start!=NULL)
-    {   if(start->type==type && start->size<7)//selber Typ + noch Platz
+    {   if(start->type==type && start->size<GAMELOG_ICONS_PER_BOX)//selber Typ + noch Platz
         {   start->time[(int)(start->size)]=playtime;
             start->richtung[(int)(start->size)]=richtung;
             start->size++;
@@ -110,6 +110,20 @@ void GAMELOG::printBackground()                             //Gibt nur den Linke
     }
 }
 
+
+void getTimeString(char *string,int time)                   //Wandelt eine Zeitangabe (ms) in eine String um
+{   if(time<61000)      sprintf(string,"%.1fs",time/1000.0);
+    else
+    {   time/=1000;
+        if(time<3600)     sprintf(string,"%dm %ds",time/60,time%60);
+        else
+        {   time/=60;
+            sprintf(string,"%dh %dm",time/60,time%60);
+        }
+    }
+}
+
+
 void GAMELOG::print()                                       //Kümmert sich um die Ausgabe
 {
     //Abgrenzen des Loggers vom Spiel:
@@ -131,7 +145,10 @@ void GAMELOG::print()                                       //Kümmert sich um di
         if(coordInside(mouse,{{GAMELOG_X,y},{windX-movementInfoSize,y+movementInfoSize-5}}))
             normalFont.printf({GAMELOG_X,y},taLEFT,"%d",playtime);
         else
-            normalFont.printf({GAMELOG_X,y},taLEFT,"%.1fs",(playtime*GAMESPEED)/1000.0);
+        {   char txt[20];
+            getTimeString(txt,playtime*GAMESPEED);
+            normalFont.printf({GAMELOG_X,y},taLEFT,txt);
+        }
 
 
    //Anzahl der Ereignisse ausgeben:
@@ -203,7 +220,10 @@ void GAMELOG::print()                                       //Kümmert sich um di
             }
             else
             {   y=y-GAMELOGBOXHEIGHT+GAMELOGPADDING*1.5;
-                normalFont.printf({endXpos-GAMELOGPADDING*2,y},taRIGHT,"%.1f s",(p->time[(p->size)-1]*GAMESPEED)/1000.0);
+
+                char txt[20];
+                getTimeString(txt,p->time[(p->size)-1]*GAMESPEED);
+                normalFont.printf({endXpos-GAMELOGPADDING*2,y},taRIGHT,txt);
             }
 
         ///Icons:

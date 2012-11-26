@@ -48,6 +48,8 @@ int gameMain(GAME *game)
             game->printGameLogBackground();     //Gamelog-Bereich markieren
             if(game->runBuildupAnimation())
                 exit=1;
+            if(glfwGetKey(GLFW_KEY_SPACE))
+                exit=1;
         }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
         exit=0;
 
@@ -69,7 +71,7 @@ int gameMain(GAME *game)
         animationHandler.remove(OBJECTBUILDUP); //Animationen löschen
 
     ///Preview:
-    {   bool pressed=glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN)||glfwGetKey(GLFW_KEY_SPACE);
+    {   char pressed=glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN);
 
         BUTTON start({{GAMELOG_X+GAMELOGPADDING,windY/2-20},{windX-GAMELOGPADDING,windY/2+20}},0,3,10,CYAN,"Spiel starten",20,YELLOW);
         prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
@@ -82,10 +84,15 @@ int gameMain(GAME *game)
             if(start.clicked()) exit=1;
 
 
-            if(!pressed && (glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN)||glfwGetKey(GLFW_KEY_SPACE)))
-                break;
-            if(!(glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN)||glfwGetKey(GLFW_KEY_SPACE)))
-                pressed=0;
+            if(pressed==0 && (glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN)))
+                pressed=2;
+            if(!(glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN)))
+            {   if(pressed==1)  pressed=0;
+                else if (pressed==2)    break;
+            }
+            if(glfwGetKey(GLFW_KEY_SPACE))
+            {   break;
+            }
 
             start.print();
 

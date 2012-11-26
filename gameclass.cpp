@@ -45,7 +45,14 @@ void GAME::initBuildupAnimationSpecialElements()    //Animation-Handler aktualis
         AREA output;
         TRANSPORTERorigin *t=transporterOriginStart;
         while(t!=NULL)
-        {   //Schienen
+        {   //Transporter
+            pos.x=origin.x+((t->origin)->position).x* elsize;
+            pos.y=origin.y+(size.y-((t->origin)->position).y-1)* elsize;
+            if(t->type==0)  num=TILE_TRANSPORTER;
+            else            num=TILE_DEATHTRANSPORTER;
+            animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,6/*speed*/,&leveltiles,{num%8,num/8},{pos,{pos.x+elsize,pos.y+elsize}},((t->type==0)?TRANSPORTER_COLOR:DEATHTRANSPORTER_COLOR));
+
+            //Schienen
             bool startAllowed=1;
             RAIL *r=t->start;
             while(r!=NULL && (r!=t->start||startAllowed))
@@ -195,7 +202,7 @@ void GAME::printMovingObject(MOVEMENT *movement,POS position,int spriteNum,POS b
 }
 
 
-void GAME::addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung=NONE,COLOR color=WHITE)//Ezreugt eine Animation
+void GAME::addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung,COLOR color,int progress)//Erzeugt eine Animation
 {
     ///Effekte, die durch eigene Unterprogramme realisiert wurden:
     switch(effect)
@@ -203,18 +210,31 @@ void GAME::addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung=NON
         default: break;
     }
 
-    AREA fieldCoord={{origin.x+(position.x)*elsize,origin.y+(size.y-position.y-1)*elsize},{0,0}};
-    AREA fieldCoordDouble={{(int)(origin.x+(position.x-0.5f)*elsize),(int)(origin.y+(size.y-position.y-0.5f-1)*elsize)},{0,0}};  //Für eine doppelt so große Ausgabe
-    fieldCoord.b        ={fieldCoord.a.x        +elsize     ,fieldCoord.a.y         +elsize     };
-    fieldCoordDouble.b  ={fieldCoordDouble.a.x  +elsize*2   ,fieldCoordDouble.a.y   +elsize*2   };
 
+    AREA fieldCoord;
+    if(effect==LAVAFALL)//Doppelt so große Animation (über 4 Felder)
+    {   fieldCoord.a={(int)(origin.x+(position.x-0.5f)*elsize),(int)(origin.y+(size.y-position.y-0.5f-1)*elsize)};
+        fieldCoord.b ={fieldCoord.a.x  +elsize*2   ,fieldCoord.a.y   +elsize*2   };
+    }else
+    {   fieldCoord.a={origin.x+(position.x)*elsize,origin.y+(size.y-position.y-1)*elsize};
+        switch(richtung)//Wenn das Objekt in Bewegung war, und die Animation daher verschoeben werden muss
+        {   case UP:    fieldCoord.a.y+= elsize*progress/100; break;
+            case DOWN:  fieldCoord.a.y-= elsize*progress/100; break;
+            case LEFT:  fieldCoord.a.x-= elsize*progress/100; break;
+            case RIGHT: fieldCoord.a.x+= elsize*progress/100; break;
+            default: break;
+        }
+        fieldCoord.b={fieldCoord.a.x        +elsize     ,fieldCoord.a.y         +elsize };
+    }
 
 
     switch(effect)
-    {
-        case LAVAFALL:      animationHandler.add(LEVELEFFECT,2,0,0,9,0,6/*speed*/,&lavafall,{-1,-1},fieldCoordDouble);  break;
+    {   case LAVAFALL:      animationHandler.add(LEVELEFFECT,2,0,0,9,0,6/*speed*/,&lavafall,{-1,-1},fieldCoord);  break;
         case AVATARLAVA:    animationHandler.add(LEVELEFFECT,2,0,24,27,0,2/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
         case KUGELLAVA:     animationHandler.add(LEVELEFFECT,2,0,20,23,0,2/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
+        case AVATARKILL:    animationHandler.add(LEVELEFFECT,2,0,36,39,0,6/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
+        case KUGELKILL:     animationHandler.add(LEVELEFFECT,2,0,32,35,0,6/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
+        case KUGELBLOCKKILL:animationHandler.add(LEVELEFFECT,2,0,28,31,0,6/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
         default:    error("GAME::addFieldEffect()","Unbekannter Anitamionseffekt uebergeben. Animation wird nicht durchgefuehrt. effect=%d",effect);
     }
 }
@@ -371,10 +391,10 @@ bool GAME::isMoving(OBJEKT object)                            //Gibt zurück, ob 
 
 void GAME::makeLavaSecure(POS position)                     //Lavafeld mit Block befüllen (Dezimalwert des Spielfeldes ändern. Muss beim Neustart des Levels wieder Rückgängig gemacht werden)
 {
-    if(spielfeld[position.y][position.x]!=34)               //Keine Lava
+    if(spielfeld[position.y][position.x]!=TILE_LAVA)        //Keine Lava
     {   error("GAME::makeLavaSecure()","Das Spielfeld enthaelt an der uebergebenen Position keine Lava. Position: (%dx%d) Wert: %d",position.x,position.y,spielfeld[position.y][position.x]);
     }else
-        spielfeld[position.y][position.x]=54;               //Mit Block versperren
+        spielfeld[position.y][position.x]=TILE_BLOCKEDLAVA; //Mit Block versperren
 }
 
 void GAME::addGameLogEvent(GameEventType type,DIRECTION richtung=NONE)              //Event hinzufügen
@@ -382,15 +402,20 @@ void GAME::addGameLogEvent(GameEventType type,DIRECTION richtung=NONE)          
     gamelog->addEvent(type,richtung);
 }
 
+bool GAME::isLocked(POS position)                           //Überprüft, ob ein bestimmtes Feld von einem Schloss versperrrt wird
+{   if(lockStartPointer!=NULL && lockStartPointer->isLocked(position))                //Das Feld ist von einem Schloss blockiert
+    {   return 1;                                           //Versperrt
+    }
+    return 0;                                               //Nicht versperrt
+}
 
 int GAME::isWalkable(OBJEKT object,POS position)            //Ob ein bestimmtes Feld von einem Objekt betreten werden darf (Es wird nur der Feldtyp geprüft, nicht ob sich andere Elemente wie zB. Kugeln darauf befinden)
 {
     static int limit;
 
     limit=walkable[object][(int)spielfeld[position.y][position.x]];
-    if(lockStartPointer!=NULL && lockStartPointer->isLocked(position))                //Das Feld ist von einem Schloss blockiert
-    {   if(limit>Wlock)
-            return Wlock;
+    if(isLocked(position) && limit>Wlock)                   //Das Feld wird von einem Schloss blockiert
+    {   return Wlock;
     }
     return limit;
 }
@@ -446,6 +471,42 @@ void GAME::printFloor()                                     //Spielfläche ausgeb
 void GAME::setGameBackgroundSplashColor(COLOR splash)       //kurzfristige Farbe setzen
 {   gamebackground.setSplashColor(splash);
 }
+
+
+bool GAME::isDriveable(RAIL *r,TRANSPORTER *ignore,bool loaded)                 //Gibt zurück ob sich ein Transporter auf dieses Feld bewegen darf (0: nein; 1:ja)
+{   //loaded: Wenn 1: der Transporter ist beladen und darf auch dann nicht ins nächste Feld, wenn dort eine Kugel / der Avatar ist
+    if(r==NULL) return 0;                                   //Ungültiges Schienenelement. Nicht befahrbar
+
+    if(isLocked(r->position))  return 0;                    //Das Feld wird von einem Schloss versperrt
+    if(loaded)                                              //Transporter = nicht tödlich & beladen
+    {
+        //CHECK FOR KUGEL & AVATAR
+    }
+    if(transporterStartPointer->TransporterOnField(r->position,ignore)!=NULL)   //Wenn sich ein Transporter an dieser Stelle befindet: nicht betretbar
+        return 0;
+    return 1;                                               //Befahrbar
+}
+
+
+void GAME::killObjectsOnField(POS pos)                      //Zerstört alle Kugeln und den Avatar, wenn diese dieses Feld blockieren (wird zB. duch den tödlichen Transporter ausgelöst)
+{
+    //Avatar töten:
+    avatar->killOnField(pos);
+
+    //Kugeln zerstören:
+    if(kugelStartPointer!=NULL)     kugelStartPointer->killOnField(pos);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

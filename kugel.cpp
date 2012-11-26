@@ -66,7 +66,7 @@ class KUGEL* KUGEL::getNextObject()                  //Liefert die Adresse des n
 
 
 void KUGEL::move(DIRECTION richtung)
-{   if(richtung==NONE)  return;                     //Nicht bewegen (kommt vor, wenn die Kugel am Eis steht und nicht rutscht)
+{   if(richtung==NONE || type<0)  return;                   //Nicht bewegen (kommt vor, wenn die Kugel am Eis steht und nicht rutscht, oder bereits zerstört wurde)
 
     POS next=game->getTargetFieldCoord(position,richtung);  //Zielfeld herausfinden
     if(game->checkPos(next))    return;                     //Außerhalb des Spielfeldes
@@ -210,12 +210,12 @@ void KUGEL::run()                                                       //Führt 
 
 KUGEL* KUGEL::KugelOnField(POS pos,KUGEL* ignore)                       //Überprüft, ob sich eine Kugel auf diesem Feld befindet (zu mind. OccupiedLimit %). Wenn ja wird der Pointer auf diese Kugel zurückgegeben
 {
-    if(ignore!=this)
+    if(ignore!=this && type>=0)
     {   if(movement.moving==0 || movement.progress<=100-OccupiedLimit)  //Kugel befindet sich am position-Feld
         {   if(poscmp(pos,position))                                    //=gesuchte Position
                 return this;                                            //Kugeladresse zurückgeben
         }
-        if(movement.moving!=0 && movement.progress>=OccupiedLimit && !movement.blocking)      //Kugel befindet sich bereits auf nächstem Feld
+        if(movement.moving!=0 && movement.progress>=OccupiedLimit && !movement.blocking/* siehe Beschreibung in "AVATAR::AvatarOnField()" */)      //Kugel befindet sich bereits auf nächstem Feld
         {   if(poscmp(pos,game->getTargetFieldCoord(position,movement.richtung)))       //nächstes Feld=gesuchte Position
                 return this;                                            //Kugeladresse zurückgeben
         }
@@ -224,10 +224,37 @@ KUGEL* KUGEL::KugelOnField(POS pos,KUGEL* ignore)                       //Überpr
     else            return NULL;                                        //letzte Kugel --> keine Übereinstimmung gefunden
 }
 
+void KUGEL::killOnField(POS pos)                                        //zerstört die Kugel, wenn sie die übergebene Position blockiert
+{   if(type>=0)                                                         //Nur, wenn die Kugel nicht schon zerstört wurde
+    {   bool kill=0;                                                    //Zwischenspeicher ob die Kugel zerstört werden soll
+        if(movement.moving==0 || movement.progress<=100-OccupiedLimit)  //Kugel befindet sich am eigenen position-Feld
+        {   if(poscmp(pos,position))
+            {   kill=1;
+            }
+        }
+        if(movement.moving!=0 && movement.progress>=OccupiedLimit && !movement.blocking/* siehe Beschreibung in "AVATAR::AvatarOnField()" */)   //Kugel befindet sich bereits auf nächstem Feld
+        {   if(poscmp(pos,game->getTargetFieldCoord(position,movement.richtung)))       //Die Kugel bewegt sich auf dieses Feld zu
+            {   kill=1;
+            }
+        }
+
+        if(kill)
+        {   int feld=game->getField(position);              //Feldtyp herausfinden
+            game->addFieldEffect(position,((type==0)?KUGELKILL:KUGELBLOCKKILL),((movement.moving==0)?NONE:movement.richtung),WHITE,movement.progress);
+            game->addGameLogEvent(KUGELDESTROYED);          //Ereignis berichten
+            game->setGameBackgroundSplashColor(RED);        //Rot werden
+            position={-1,-1};
+            type=-1;                                        //Diese Kugel zum löschen markieren
+        }
+    }
+    if(next!=NULL)  next->killOnField(pos);             //nächste Kugel überprüfen
+    return;
+}
+
 void KUGEL::stopMovementsTo(POS pos,int limit)                          //Wenn sich eine Kugel gerade auf dieses Feld zubewegt: abprallen lassen
 {
-    if(movement.moving==1)
-    {   if(poscmp(pos,game->getTargetFieldCoord(position,movement.richtung)))       //Der Avatar bewegt sich auf dieses Feld zu
+    if(type>=0 && movement.moving==1)
+    {   if(poscmp(pos,game->getTargetFieldCoord(position,movement.richtung)))       //Die Kugel bewegt sich auf dieses Feld zu
         {   if(movement.progress>=limit)
             {   movement.moving=-1;                                     //sofort abprallen
                 game->addFieldEffect(position,COLLISION,movement.richtung,(type==0)?KUGELCOLLISIONCOLOR:KUGELBLOCKCOLLISIONCOLOR);
@@ -244,13 +271,14 @@ void KUGEL::setNextObject(KUGEL* nextPointer)                           //Ändert
 {   next=nextPointer;
 }
 
-bool KUGEL::isMoving()                                                  //gibt zurück, ob sich der Avatar gerade bewegt
+bool KUGEL::isMoving()                                                  //gibt zurück, ob sich gerade eine Kugel bewegt
 {
     if(movement.moving==0 || (movement.moving==-1 && propRicCmp(movement.richtung,game->getFieldProperty(OBJ_KUGEL,position))))
     {   if(next!=NULL)  return next->isMoving();
         else            return 0;
     }
-    return 1;
+    if(type>=0) return 1;
+    else        return 0;
 }
 
 int KUGEL::getType()                                                    //Gibt den Kugeltyp zurück

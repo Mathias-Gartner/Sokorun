@@ -33,6 +33,7 @@ struct TRANSPORTERorigin
 
     int speed;                  //Geschwindigkeit (in %, wieviel der Strecke der Transporter in einem Durchgang zurücklegt)
     bool startDirection;        //In welche Richtung sich der Transporter am Anfang bewegt. 0=Nach vorne (next-Pointer); 1=Zurück (prev-Pointer)
+    bool reverse;               //Gibt an, ob sich der Transporter in beide Richtungen bewegen darf (1: ja; 0: nein. Der Transporter bleibt bei einem Hinderniss stehen bis dieses verschwindet)
 
     int type;                   //0: normaler Transporter; 1: tödlicher Transporter
 
@@ -65,6 +66,10 @@ class TRANSPORTER
             MOVEMENT movement;                      //Bewegung des Transporters
         ///Sonstiges:
             void printRailTrack(RAIL *r,DIRECTION in,float railtracksVisibility,float *alo,float *aro,float *alu,float *aru,float fkt);         //Gibt ein einzelnes Schienenstück aus
+
+            void interactNormal();                                      //Lässt einen normalen Transporter mit anderen Elementen interargieren
+            void interactDeath();                                       //Lässt einen tödlichen Transporter mit anderen Elementen interargieren
+
     public:
 
         TRANSPORTER(GAME *gamePointer,POS *originPointer,int *elsizePointer,POS *levelSizePointer,TRANSPORTERorigin *_data,TRANSPORTER *_next);       //Initialisiert den Transporter
@@ -74,7 +79,7 @@ class TRANSPORTER
 
         /*alle Elemente*/void print();                                  //Gibt alle Transporter und deren Schienennetz aus
         /*alle Elemente*/void run();                                    //Simuliert jeden Transporter
-
+        /*alle Elemente*/TRANSPORTER* TransporterOnField(POS pos,TRANSPORTER *ignore);      //Überprüft, ob sich auf dieser Position ein Transporter befindet
 
 
 

@@ -13,11 +13,12 @@ enum ANITYPE
 //Animatiostypen im Spiel:
     enum FIELDEFFECT            //Animationen, die auf dem Spielfeld ausgegeben werden können
     {       COLLISION,          //Ein Objekt prallt ab
-            LAVAFALL,           //Ein Objekt fällt in die Lava
+            LAVAFALL,           //Eine Kugel (Typ 1) fällt in die Lava
             AVATARLAVA,         //Der Avatar fällt in die Lava
             KUGELLAVA,          //Eine Kugel (Typ 0) fällt in die Lava
             AVATARKILL,         //Der Avatar wird getötet
             KUGELKILL,          //Eine Kugel (Typ 0) wird zerstört
+            KUGELBLOCKKILL,     //Eine Kugel (Typ 1) wird zerstört
             AVATARBUILDUP,      //Der Avatar wird eingeblendet
             KUGELBUILDUP,       //Eine Kugel (Typ 0) wird eingeblendet
             KUGELBLOCKBUILDUP   //Eine Kugel (Typ 1) wird eingeblendet

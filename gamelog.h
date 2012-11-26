@@ -30,9 +30,9 @@ struct GameEvent
 
 
 
-    char size;                                      //Wieviele Daten in deisem Event gespeichet sind (1-7)
-    unsigned long time[7];                          //Wann es passiert ist
-    DIRECTION richtung[7];                          //Für bewegungen
+    char size;                                      //Wieviele Daten in deisem Event gespeichet sind (1-GAMELOG_ICONS_PER_BOX)
+    unsigned long time[GAMELOG_ICONS_PER_BOX];                          //Wann es passiert ist
+    DIRECTION richtung[GAMELOG_ICONS_PER_BOX];                          //Für bewegungen
 
     GameEvent *next;                                //Nächstes Element
 };
@@ -87,7 +87,7 @@ class GAMELOG
 };
 
 
-
+void getTimeString(char *string,int time);              //Wandelt eine Zeitangabe (ms) in eine String um
 
 
 #endif // GAMELOG_H_INCLUDED

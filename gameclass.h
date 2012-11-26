@@ -71,7 +71,7 @@ class GAME : public LEVEL
         }
 
         //void lavafallAnimation(POS position);                                                 //Ezrueg eine Animation für ein in die Lava gefallenes Objekt
-        void addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung,COLOR color);    //Ezreugt eine Animation
+        void addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung=NONE,COLOR color=WHITE,int progress=0);    //Erzeugt eine Animation
 
 
         void addGameLogEvent(GameEventType type,DIRECTION richtung);                            //Event hinzufügen
@@ -92,6 +92,7 @@ class GAME : public LEVEL
         void move(DIRECTION richtung);                  //Der Avatar wird vom Spieler angestoßen
 
         void stopMovementsTo(POS pos,int limit);        //Objekte, die sich in dieses Feld bewegen wollen abprallen lassen, weil es ein anderes Objekt auf dieses Feld muss
+        void killObjectsOnField(POS pos);               //Zerstört alle Kugeln und den Avatar, wenn diese dieses Feld blockieren (wird zB. duch den tödlichen Transporter ausgelöst)
 
         void printPreview();                            //Vorschau anzeigen (inkl. Levelhintergrund)
         bool runBuildupAnimation();                     //Level aufbauen (inkl. Levelhintergrund)
@@ -108,6 +109,8 @@ class GAME : public LEVEL
 
         bool AvatarOnField(POS position);               //Überprüft, ob der Avatar dieses Feld blockiert
         int isWalkable(OBJEKT object,POS position);     //Ob ein bestimmtes Feld von einem Objekt betreten werden darf, und wenn ja, wie weit. (Prozentwert 0-100. 100=vollständig betretbar.  -1=Fehler) (Es wird nur der Feldtyp geprüft, nicht ob sich andere Elemente wie zB. Kugeln darauf befinden)
+        bool isDriveable(RAIL *r,TRANSPORTER *ignore,bool loaded);          //Gibt zurück ob sich ein Transporter auf dieses Feld bewegen darf
+        bool isLocked(POS position);                    //Überprüft, ob ein bestimmtes Feld von einem Schloss versperrrt wird
 
         void openLock(LOCK* lockAdr);                   //Öffnet (=löscht) das Schloss
 

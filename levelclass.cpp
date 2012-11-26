@@ -346,7 +346,7 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
 //                }
 //            }
 
-            for(int i=0;i<DtransAnz;i++)//Tödliche Transporter
+            for(int i=0;i<NtransAnz+DtransAnz;i++)//Alle Transporter
             {   TRANSPORTERorigin *p=(TRANSPORTERorigin*)malloc(sizeof(TRANSPORTERorigin));
 
                 p->next=transporterOriginStart;
@@ -385,9 +385,9 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
                         }
 
                         ///Pointer der aufs nächste Element zeigt muss befüllt werden
-                        if(bidirectional)//Es muss ein Ring gebildet werden (letztes Element zeigt aufs erste, erstes aufs letzte
-                        {   r->next=start;           //aufs erste Element zeigen (falls noch weitere Elemente angehägt werden, wird dieser Pointer wieder überschrieben)
-                            start->prev=r;         //Das erste Element zeigt aufs letzte Element zurück
+                        if(!bidirectional)          //Es muss ein Ring gebildet werden (letztes Element zeigt aufs erste, erstes aufs letzte
+                        {   r->next=start;          //aufs erste Element zeigen (falls noch weitere Elemente angehägt werden, wird dieser Pointer wieder überschrieben)
+                            start->prev=r;          //Das erste Element zeigt aufs letzte Element zurück
                         }else
                         {   r->next=NULL;               //(noch) kein weiteres Element
                             //start-prev beinhaltet bereits NULL
@@ -431,9 +431,10 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
                     free(p);
                     return 16;//Startposition wurde nicht erkannt
                 }
-
-                p->type=1;      //Tödlicher Transporter
-                p->speed=5;
+                if(i<NtransAnz) p->type=0;  //Normaler Transporter
+                else            p->type=1;  //Tödlicher Transporter
+                p->reverse=bidirectional;   //Der Transporter darf nur umkehren, wenn er Bidirektional ist (in diesem Levelformat)
+                p->speed=1+rand()%20;
 
                 transporterOriginStart=p;   //Transporter am Anfang anhängen
                 //outputType aller Elemente berechnen:
@@ -734,11 +735,10 @@ void LEVEL::printPreview()
     //Danach:
     //*******
     //
-    printTransporter();
-    //Transporter
-    printKugelnAtOrigins();
-    printAvatarAtOrigin();
-    printLocksAtOrigins();//Schlösser
+    printTransporter();     //Transporter
+    printKugelnAtOrigins(); //Kugeln
+    printAvatarAtOrigin();  //Avatar
+    printLocksAtOrigins();  //Schlösser
     //Kanonen
 }
 
@@ -789,6 +789,12 @@ void LEVEL::printTransporter()                              //Gibt alle Schienen
     TRANSPORTERorigin *p=transporterOriginStart;
     while(p!=NULL)
     {   printRail(p);
+        p=p->next;
+    }
+    //Jetzt die Transporter auf die Schienen setzen:
+    p=transporterOriginStart;
+    while(p!=NULL)
+    {   printFloorElement((p->type==0)?TILE_TRANSPORTER:TILE_DEATHTRANSPORTER,(p->origin)->position);
         p=p->next;
     }
 }
