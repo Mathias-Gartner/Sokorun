@@ -15,19 +15,19 @@ class HIGHSCORE
         virtual ~HIGHSCORE();
         void Load();
         void Save();
-        unsigned int Getmoves() { return m_moves; }
-        void Setmoves(unsigned int val) { m_moves = val; }
+        int Getmoves() { return m_moves; }
+        void Setmoves(int val) { m_moves = val; }
         TIME Gettime() { return m_time; }
         void Settime(TIME val) { m_time = val; }
-        unsigned int Gettimesplayed() { return m_timesplayed; }
-        void Settimesplayed(unsigned int val) { m_timesplayed = val; }
+        int Gettimesplayed() { return m_timesplayed; }
+        void Settimesplayed(int val) { m_timesplayed = val; }
     protected:
     private:
         bool DirectoryExists(char* dir);
-        unsigned int m_moves;
+        int m_moves;
         TIME m_time;
-        unsigned int m_timesplayed;
-        char* level;
+        int m_timesplayed;
+        char level[MAX_PATH];
         bool isLoaded;
 };
 

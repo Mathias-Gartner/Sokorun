@@ -2,6 +2,9 @@
 //Mathias Gartner
 //Levelauswahl
 
+#include "levelselect.h"
+#include "filesystemutility.h"
+
 LEVELSELECT::LEVELSELECT()
 {
     currentLevelIndex = 0;
@@ -107,4 +110,7 @@ char* LEVELSELECT::GetLevelPath(const char* levelName, bool appendExtension)
     {
         error ("LEVELSELECT::GetLevelName", "Couldn't get CurrentDirectory");
     }
+
+    exit (1); //Only valid filepaths will be returned. If anything goes wrong -> exit
+    return NULL;
 }

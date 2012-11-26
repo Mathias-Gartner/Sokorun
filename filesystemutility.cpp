@@ -1,7 +1,8 @@
+#include <windows.h>
 #include "filesystemutility.h"
-#include "main.h"
+#include "logger.h"
 
-bool FILESYSTEMUTILITY::DirectoryExists(char* path)
+bool FILESYSTEMUTILITY::DirectoryExists(const char* path)
 {
 #ifdef _WINDOWS_H
     DWORD attribs = GetFileAttributesA(path);

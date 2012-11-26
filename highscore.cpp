@@ -9,7 +9,17 @@
 HIGHSCORE::HIGHSCORE(char* levelname)
 {
     isLoaded = false;
-    level = levelname;
+
+    if (strlen(levelname)<MAX_PATH)
+    {
+        strcpy(level, levelname);
+    }
+    else
+    {
+        error("HIGHSCORE::HIGHSCORE", "FATAL: Parameter levelname is too long.");
+        exit(1);
+    }
+
     Load();
 }
 
@@ -26,9 +36,9 @@ void HIGHSCORE::Load()
         FILE* file = fopen(level, "r");
         if (file != NULL)
         {
-            fscanf(file, "%d", m_timesplayed);
-            fscanf(file, "%d", m_moves);
-            fscanf(file, "%2d:%2d:%2d", m_time.Hours, m_time.Minutes, m_time.Seconds);
+            fscanf(file, "%d", &m_timesplayed);
+            fscanf(file, "%d", &m_moves);
+            fscanf(file, "%2d:%2d:%2d", &m_time.Hours, &m_time.Minutes, &m_time.Seconds);
             fclose(file);
             isLoaded = true;
         }
@@ -41,13 +51,13 @@ void HIGHSCORE::Save()
     strcpy(levelPath, "highscore\\");
     strcat(levelPath, level);
 
-    if (!DirectoryExists("highscore"))
+    if (!FILESYSTEMUTILITY::DirectoryExists("highscore"))
         CreateDirectory("highscore", NULL);
 
     /*if (!isLoaded)
         Load();*/
 
-    FILE* file = fopen(strcat("highscore\\", level), "w");
+    FILE* file = fopen(levelPath, "w");
     if (file != NULL)
     {
         fprintf(file, "%d", m_timesplayed);
@@ -55,12 +65,4 @@ void HIGHSCORE::Save()
         fprintf(file, "%2d:%2d:%2d", m_time.Hours, m_time.Minutes, m_time.Seconds);
         fclose(file);
     }
-}
-
-bool HIGHSCORE::DirectoryExists(char* dir)
-{
-    DWORD attribs = GetFileAttributesA(dir);
-    if (attribs == INVALID_FILE_ATTRIBUTES)
-      return false;
-    return (attribs & FILE_ATTRIBUTE_DIRECTORY);
 }
