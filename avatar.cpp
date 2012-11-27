@@ -10,6 +10,7 @@
 #include "lock.h"
 #include "logger.h"
 #include "gameclass.h"
+#include "gamelog.h"
 
 //extern ANIMATIONGROUP animationHandler;
 
@@ -134,7 +135,7 @@ void AVATAR::run()                                                              
         {   LOCK *touchedLock=game->KeyOnField(next);
             if(touchedLock != NULL)
             {   game->openLock(touchedLock);                                        //Öffnet (=löscht) das Schloss
-                game->addGameLogEvent(LOCKOPENED, NONE);                                  //Ereignis berichten
+                game->addGameLogEvent(LOCKOPENED);                                  //Ereignis berichten
             }
         }
 
@@ -229,8 +230,8 @@ void AVATAR::run()                                                              
                         {   case TILE_LAVA:     game->addFieldEffect(position,AVATARLAVA); break;                /*lava*/
                             default:            error("AVATAR::run()","Ubekanntes, toedliches Feld. Es wird keine Animations ausgegeben. feld: %d",feld);
                         }
-                        game->addGameLogEvent(AVATARDEATH, NONE);             //Ereignis berichten
-                        game->addGameLogEvent(GAMEOVER, NONE);                //Ereignis berichten
+                        game->addGameLogEvent(AVATARDEATH);             //Ereignis berichten
+                        game->addGameLogEvent(GAMEOVER);                //Ereignis berichten
                         deathProgress=1;                                //Den Avatar zu Tode verurteilen
                     }break;
             case fx: /*do nothing*/ break;
@@ -274,8 +275,8 @@ void AVATAR::killOnField(POS pos)                                       //tötet 
     if(kill)
     {   int feld=game->getField(position);              //Feldtyp herausfinden
         game->addFieldEffect(position,AVATARKILL,((movement.moving==0)?NONE:movement.richtung),WHITE,movement.progress);
-        game->addGameLogEvent(AVATARDEATH, NONE);             //Ereignis berichten
-        game->addGameLogEvent(GAMEOVER, NONE);                //Ereignis berichten
+        game->addGameLogEvent(AVATARDEATH);             //Ereignis berichten
+        game->addGameLogEvent(GAMEOVER);                //Ereignis berichten
         deathProgress=1;                                //Den Avatar zu Tode verurteilen
     }
 }

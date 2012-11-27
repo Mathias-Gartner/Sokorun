@@ -192,7 +192,7 @@ void GAME::printMovingObject(MOVEMENT *movement,POS position,int spriteNum,POS b
         }
     }
     if(!noOutput)
-        leveltiles.print({pos,{pos.x+elsize,pos.y+elsize}},{spriteNum%8,spriteNum/8}, WHITE, 1.0);
+        leveltiles.print({pos,{pos.x+elsize,pos.y+elsize}},{spriteNum%8,spriteNum/8});
 
     if(ImgDebug)
     {
@@ -406,7 +406,7 @@ void GAME::makeLavaSecure(POS position)                     //Lavafeld mit Block
         spielfeld[position.y][position.x]=TILE_BLOCKEDLAVA; //Mit Block versperren
 }
 
-void GAME::addGameLogEvent(GameEventType type,DIRECTION richtung=NONE)              //Event hinzufügen
+void GAME::addGameLogEvent(GameEventType type,DIRECTION richtung)              //Event hinzufügen
 {   //Überprüfung, ob die Klasse prepared ist wird nicht gemacht
     gamelog->addEvent(type,richtung);
 }
@@ -540,7 +540,7 @@ GAMEBACKGROUND::GAMEBACKGROUND(AREA _area)
 }
 
 void GAMEBACKGROUND::print(int bx,bool printshine)
-{   gamebackground.print({area.a,{bx,area.b.y}},{{0.0,0.0},{(bx-area.a.x)/128.0f,(area.b.y-area.a.y)/128.0f}},WHITE); //Hintergrundbild ausgeben
+{   gamebackground.print({area.a,{bx,area.b.y}},{{0.0,0.0},{(bx-area.a.x)/128.0f,(area.b.y-area.a.y)/128.0f}}); //Hintergrundbild ausgeben
     if(printshine)
     {   colorProgress+=5;
         if(colorProgress>100)

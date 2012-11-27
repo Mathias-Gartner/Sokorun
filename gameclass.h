@@ -79,7 +79,7 @@ class GAME : public LEVEL
         void addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung=NONE,COLOR color=WHITE,int progress=0);    //Erzeugt eine Animation
 
 
-        void addGameLogEvent(GameEventType type,DIRECTION richtung);                            //Event hinzufügen
+        void addGameLogEvent(GameEventType type,DIRECTION richtung=NONE);                            //Event hinzufügen
 
         POS getTargetFieldCoord(POS position,DIRECTION richtung);                   //Gibt die Koorinaten des Nachbarfeldes, abhängig von der Richtung, zurück bzw. das Feld des Zielbeamers
 

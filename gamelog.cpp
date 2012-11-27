@@ -46,7 +46,7 @@ void GAMELOG::run()
 {   playtime++;                                             //Weiterer Spielschleifendurchlauf
 }
 
-void GAMELOG::addEvent(GameEventType type,DIRECTION richtung=NONE)                 //Event hinzufügen
+void GAMELOG::addEvent(GameEventType type,DIRECTION richtung)                 //Event hinzufügen
 {
     events++;
     if(start!=NULL)
@@ -269,7 +269,7 @@ void GAMELOG::print()                                       //Kümmert sich um di
                     default:                break;
                 }
                 if(spritePos.x>=0)//Icon vorhanden
-                    gamelogIcons.print({{x,y},{x+20,y+20}},spritePos, CYAN, 1.0);
+                    gamelogIcons.print({{x,y},{x+20,y+20}},spritePos);
                 x+=21;
             }
 

@@ -167,11 +167,11 @@ void KUGEL::run()                                                       //Führt 
             if(feld==TILE_TYPECHANGE || feld==TILE_TYPECHANGEICE)                             //Typumwandlung
             {   if(type==0) type=1;
                 else        type=0;
-                game->addGameLogEvent(type==0?KUGELTYPECHANGED0:KUGELTYPECHANGED1, NONE);           //Ereignis berichten
+                game->addGameLogEvent(type==0?KUGELTYPECHANGED0:KUGELTYPECHANGED1);           //Ereignis berichten
             }
 
             if(type==0 && (feld==TILE_TARGET || feld==TILE_FIXEDTARGET))                       //Zielfeld
-            {   game->addGameLogEvent(KUGELTARGET, NONE);                     //Ereignis berichten
+            {   game->addGameLogEvent(KUGELTARGET);                     //Ereignis berichten
                 game->setGameBackgroundSplashColor(GREEN);        //Rot werden
             }
         }
@@ -194,11 +194,11 @@ void KUGEL::run()                                                       //Führt 
                         {   case TILE_LAVA: if(type==0) game->addFieldEffect(position,KUGELLAVA);                /*lava*/
                                             else {      game->makeLavaSecure(position);                         //Lavafeld mit Block befüllen (Dezimalwert des Spielfeldes ändern. Muss beim Neustart des Levels wieder Rückgängig gemacht werden)
                                                         game->addFieldEffect(position,LAVAFALL);
-                                                        game->addGameLogEvent(KUGELBLOCKEDLAVA, NONE);                //Ereignis berichten
+                                                        game->addGameLogEvent(KUGELBLOCKEDLAVA);                //Ereignis berichten
                                                 } break;
                             default:        error("KUGEL::run()","Ubekanntes, toedliches Feld. Es wird keine Animations ausgegeben. feld: %d",feld);
                         }
-                        game->addGameLogEvent(KUGELDESTROYED, NONE);          //Ereignis berichten
+                        game->addGameLogEvent(KUGELDESTROYED);          //Ereignis berichten
                         game->setGameBackgroundSplashColor(RED);        //Rot werden
                         position={-1,-1};
                         type=-1;                                        //Diese Kugel zum löschen markieren
@@ -245,7 +245,7 @@ void KUGEL::killOnField(POS pos)                                        //zerstö
         if(kill)
         {   int feld=game->getField(position);              //Feldtyp herausfinden
             game->addFieldEffect(position,((type==0)?KUGELKILL:KUGELBLOCKKILL),((movement.moving==0)?NONE:movement.richtung),WHITE,movement.progress);
-            game->addGameLogEvent(KUGELDESTROYED, NONE);          //Ereignis berichten
+            game->addGameLogEvent(KUGELDESTROYED);          //Ereignis berichten
             game->setGameBackgroundSplashColor(RED);        //Rot werden
             position={-1,-1};
             type=-1;                                        //Diese Kugel zum löschen markieren

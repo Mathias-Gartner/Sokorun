@@ -180,7 +180,7 @@ TEXTURE::TEXTURE(const char* const imgPath, POS imgSize=POS{0,0}, POS imgSprites
     spriteSize={(1.0f/sprites.x),(1.0f/sprites.y)};
 }
 
-void TEXTURE::print(AREA display,fAREA textArea=stdTextArea,COLOR overlay=WHITE,float alpha)             //Ausgabe des gesamten Bildes
+void TEXTURE::print(AREA display,fAREA textArea=stdTextArea,COLOR overlay,float alpha)             //Ausgabe des gesamten Bildes
 {   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
 
     switchGraphicMode(TEXTURES);
@@ -202,7 +202,7 @@ void TEXTURE::bindTexture() //Bindet eine Textur
         glBindTexture(GL_TEXTURE_2D,textur);
 }
 
-void TEXTURE::print(AREA display,POS spritePos,COLOR overlay=WHITE,float alpha)                          //Ausgabe eines Sprites
+void TEXTURE::print(AREA display,POS spritePos,COLOR overlay,float alpha)                          //Ausgabe eines Sprites
 {   if(!loaded) loadTexture();   //Grafik laden, wenn das noch nicht geschehen ist
     switchGraphicMode(TEXTURES);
     glColor4f(overlay.r,overlay.g,overlay.b,alpha);

@@ -77,7 +77,7 @@ class GAMELOG
         GAMELOG();                                      //Konstruktor
         ~GAMELOG();                                     //Destruktor
 
-        void addEvent(GameEventType,DIRECTION richtung);//Event hinzufügen
+        void addEvent(GameEventType,DIRECTION richtung=NONE);//Event hinzufügen
 
 
         void printBackground();                         //Gibt nur den Linken Rand und den Hintergrund aus (wird von GAMELOG::print() auch erledigt)

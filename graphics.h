@@ -77,8 +77,8 @@ class TEXTURE
 
     public:
         TEXTURE(const char* const imgPath, POS imgSize, POS imgSprites,bool _allowTextureRepeat);
-        void print(AREA display,fAREA textArea,COLOR overlay,float alpha=1.0);              //Ausgabe des gesamten Bildes
-        void print(AREA display,POS spritePos,COLOR overlay,float alpha=1.0);               //Ausgabe eines Sprites
+        void print(AREA display,fAREA textArea,COLOR overlay=WHITE,float alpha=1.0);              //Ausgabe des gesamten Bildes
+        void print(AREA display,POS spritePos,COLOR overlay=WHITE,float alpha=1.0);               //Ausgabe eines Sprites
 
         void print(AREA display,POS spritePos,COLOR overlay,float alo,float aro, float alu,float aru);               //Ausgabe eines Sprites; Jede Texturkoordinate hat einen andren Alpha-Wert
 
