@@ -2,9 +2,13 @@
 //Version 1.0
 //Jakob Maier
 
-//extern MOUSE mouse;
-extern FONT normalFont;
-extern POS mouse;
+#include <GL/glfw.h>
+#include <strings.h>
+#include "button.h"
+#include "definitions.h"
+#include "graphics.h"
+#include "globals.h"
+#include "logger.h"
 
 
 void getMousePos(POS *coord)      //Gibt die Position der Maus im Koordinatensystem zurück

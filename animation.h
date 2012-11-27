@@ -1,6 +1,9 @@
 #ifndef ANIMATION_H_INCLUDED
 #define ANIMATION_H_INCLUDED
 //
+
+#include "graphics.h"
+
 enum ANITYPE
 {
     BASIC,
@@ -82,7 +85,7 @@ class ANIMATION
             void print_T3();                    //Ausgabefunktion für Typ 3
 
     public:
-        ANIMATION(ANITYPE _anitype,int _identification,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay);//Erstellung einer neuen Animation
+        ANIMATION(ANITYPE _anitype,int _identification,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay=WHITE);//Erstellung einer neuen Animation
 
         void setProgress(int newProgress);                  //Fortschritt manuell ändern
         void setSpritePos(POS _spritePos);                  //Sprite ändern
@@ -111,7 +114,7 @@ class ANIMATIONGROUP                                        //Verwaltet mehrere 
         int IDcounter;
     public:
         ANIMATIONGROUP();                                   //Konstruktor
-        int add(ANITYPE _anitype,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay);//Hinzufügen einer neuen Animation
+        int add(ANITYPE _anitype,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay=WHITE);//Hinzufügen einer neuen Animation
         //void setSpriteArea(int identification,fAREA _spriteArea);   //spriteArea setzen (zB. zum spiegeln)
         void setSpritePos(int identification,POS _spritePos);        //Sprite ändern
 

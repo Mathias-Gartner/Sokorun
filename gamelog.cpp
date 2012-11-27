@@ -2,8 +2,17 @@
 //Version 1.0
 //Jakob Maier
 
-extern TEXTURE gamelogIcons;
-extern FONT normalFont;
+#include <stdio.h>
+#include <stdlib.h>
+#include <windows.h>
+#include "definitions.h"
+#include "gamelog.h"
+#include "graphics.h"
+#include "globals.h"
+#include "logger.h"
+
+//extern TEXTURE gamelogIcons;
+//extern FONT normalFont;
 
 
 
@@ -260,7 +269,7 @@ void GAMELOG::print()                                       //Kümmert sich um di
                     default:                break;
                 }
                 if(spritePos.x>=0)//Icon vorhanden
-                    gamelogIcons.print({{x,y},{x+20,y+20}},spritePos);
+                    gamelogIcons.print({{x,y},{x+20,y+20}},spritePos, CYAN, 1.0);
                 x+=21;
             }
 

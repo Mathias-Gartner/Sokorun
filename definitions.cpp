@@ -3,7 +3,9 @@
 //...
 //Allgemeine Funktionen
 
-
+#include <stdlib.h>
+#include "definitions.h"
+#include "globals.h"
 
 bool poscmp(POS a,POS b)            //Vergleicht 2 Positionen auf übereinstimmung
 {   if(a.x==b.x&&a.y==b.y)

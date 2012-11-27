@@ -1,5 +1,14 @@
-extern TEXTURE levelanimations,crashAnimationX,crashAnimationY,lavafall,gamebackground,shine;
-extern ANIMATIONGROUP animationHandler;
+#include <stdlib.h>
+#include "animation.h"
+#include "avatar.h"
+#include "gameclass.h"
+#include "globals.h"
+#include "graphics.h"
+#include "kugel.h"
+#include "lock.h"
+#include "logger.h"
+#include "transporter.h"
+
 
 
 void GAME::setupGameData()
@@ -183,7 +192,7 @@ void GAME::printMovingObject(MOVEMENT *movement,POS position,int spriteNum,POS b
         }
     }
     if(!noOutput)
-        leveltiles.print({pos,{pos.x+elsize,pos.y+elsize}},{spriteNum%8,spriteNum/8});
+        leveltiles.print({pos,{pos.x+elsize,pos.y+elsize}},{spriteNum%8,spriteNum/8}, WHITE, 1.0);
 
     if(ImgDebug)
     {

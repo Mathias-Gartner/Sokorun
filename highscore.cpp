@@ -2,9 +2,10 @@
 //
 //Highscore-Anzeige nach dem beenden des Spiels (nur, wenn das Spiel nicht vom Editor aufgerufen wurde)
 
-#include "main.h"
-#include "highscore.h"
+#include <stdio.h>
 #include "filesystemutility.h"
+#include "highscore.h"
+#include "logger.h"
 
 HIGHSCORE::HIGHSCORE(char* levelname)
 {

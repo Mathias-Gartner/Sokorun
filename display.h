@@ -7,6 +7,8 @@
   Version:  1.0 (für gcc 4.2)
 */
 
+#ifndef DISPLAY_H_INCLUDED
+#define DISPLAY_H_INCLUDED
 
 // Cursorarten
 #define NOCURSOR        0
@@ -53,62 +55,17 @@ void txtcolor (int farbe);
 // ******************** INTERN ******************** //
 #include <windows.h>
 
-static int __COLOR = ccLIGHTGRAY | (ccBLACK<<4);
+
 
 // Setzt Farben für Ausgabe am Bildschirm
-void textcolor(COLORS color)
-{
-    __COLOR = (__COLOR & 0xf0) | (color & 0x0f);
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), __COLOR);
-}
+void textcolor(COLORS color);
 
-void textbackground(COLORS color)
-{
-    __COLOR = (__COLOR & 0x0f) | ((color & 0x0f) << 4);
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), __COLOR);
-}
+void textbackground(COLORS color);
 
-void txtcolor (int farbe)
-{
-    switch(farbe)
-    {
-        case 0: textcolor(ccBLACK);       textbackground(ccWHITE);          break;
-        case 1: textcolor(ccYELLOW);      textbackground(ccBLUE);           break;
-        case 2: textcolor(ccLIGHTMAGENTA);textbackground(ccGREEN);          break;
-        case 3: textcolor(ccLIGHTRED);    textbackground(ccCYAN);           break;
-        case 4: textcolor(ccLIGHTCYAN);   textbackground(ccRED);            break;
-        case 5: textcolor(ccLIGHTGREEN);  textbackground(ccMAGENTA);        break;
-        case 6: textcolor(ccLIGHTBLUE);   textbackground(ccBROWN);          break;
-        case 7: textcolor(ccDARKGRAY);    textbackground(ccLIGHTGRAY);      break;
-        case 8: textcolor(ccLIGHTGRAY);   textbackground(ccDARKGRAY);       break;
-        case 9: textcolor(ccBROWN);       textbackground(ccLIGHTBLUE);      break;
-        case 10:textcolor(ccMAGENTA);     textbackground(ccLIGHTGREEN);     break;
-        case 11:textcolor(ccRED);         textbackground(ccLIGHTCYAN);      break;
-        case 12:textcolor(ccCYAN);        textbackground(ccLIGHTRED);       break;
-        case 13:textcolor(ccGREEN);       textbackground(ccLIGHTMAGENTA);   break;
-        case 14:textcolor(ccBLUE);        textbackground(ccYELLOW);         break;
-        case 15:textcolor(ccWHITE);       textbackground(ccBLACK);          break;
-    }
-}
-
-
+void txtcolor (int farbe);
 
 // Ändert die Anzeige des Cursors am Bildschirm
-void setcursortype(int type)
-{
-    CONSOLE_CURSOR_INFO info;
-
-    info.bVisible = TRUE;
-    if(type == NOCURSOR)
-        info.bVisible = FALSE;
-    else if(type == NORMALCURSOR)
-        info.dwSize = 1;
-    else if(type == SOLIDCURSOR)
-        info.dwSize = 100;
-    else
-        return;
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-}
+void setcursortype(int type);
 
 //
 //// Cursor am Bildschirm setzen (return 1 bei OK und 0 bei Fehler)
@@ -243,3 +200,5 @@ void setcursortype(int type)
 //        }
 //    return WriteConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), (PCHAR_INFO)buffer, info.dwSize, (COORD){0, 0}, &r);
 //}
+
+#endif //DISPLAY_H_INCLUDED

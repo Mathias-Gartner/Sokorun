@@ -1,8 +1,13 @@
 //Version 0.1
 //Jakob Maier
 
-#ifndef TYPEDEF_H_INCLUDED
-#define TYPEDEF_H_INCLUDED
+#ifndef DEFINITIONS_H_INCLUDED
+#define DEFINITIONS_H_INCLUDED
+
+    #define DEBUG 1                 //OB DEBUG-BEFEHLE DURCHGEFÜHRT WERDEN SOLLEN
+    #define ImgDebug 1              //Ob Debug-Funktionen, die im Grafik-Fenster ausgegeben werden angewandt werden sollen
+    #define TIMEDEBUGOUTPUT 1       //Ob die Zeit/Spielschleifenruchlauf ausgegeben werden soll
+
 
 
 /** EINSTELLUNGEN **/
@@ -121,11 +126,11 @@
 
 /** GLOBALE VARIABLEN **/
 
-    const POS windowSize={1200,680};      //Fenstergröße - Anzahl der Koordinatenpunkte die erreicht werden können
+
     #define windX windowSize.x
     #define windY windowSize.y
 
-    float coordPixel=1;         //Wieviele Pixel eine Koordinateneinheit am Bildschirm bekommt
+
 
 /** FELDEIGENSCHAFTEN **/
 
@@ -205,7 +210,7 @@
 
 /** PROTOTYPEN **/
 
-    POS transformY(POS position);                                                                   //Die Y-Koordinate wird gespiegelt (Ursprung oben/unten vertauscht)
+    void transformY(POS* position);                                                                   //Die Y-Koordinate wird gespiegelt (Ursprung oben/unten vertauscht)
     bool coordInside(POS coord,AREA gebiet);                                                        //Meldet, ob sich die übergebenen Koordinaten innerhalb des übergebenen Gebiets befinden (zB. für "Maus über Bild?)
     void getMousePos(POS *coord);                                                                   //Gibt die Position der Maus im Koordinatensystem zurück
     void PosSizeToArea(AREA *data);                                                                 //Wandelt eine Struktur, die aus Position+Größe besteht um, in Startposition+Endposition
@@ -213,8 +218,9 @@
     POS getFieldCoord(POS position,DIRECTION richtung);                                             //Gibt die Koorinaten des Nachbarfeldes, abhängig von der Richtung, zurück
     bool propRicCmp(DIRECTION richtung,FIELDPROPERTY property);                                     //Vergleicht die beiden unterschiedlichen Datentypen auf Gleichheit (1=gleich)
     bool colorcmp(COLOR a,COLOR b);                                                                 //Vergleicht 2 Farben auf gleichheit (1=gleich)
+    bool poscmp(POS a,POS b);                                                                       //Vergleicht 2 Positionen auf übereinstimmung
     DIRECTION turnRight(DIRECTION richtung);                                                        //Gibt die um 90° im Uhrzeigersinn gedrehte Richtung zurück
     DIRECTION turnLeft(DIRECTION richtung);                                                         //Gibt die um 90° gegen den Uhrzeigersinn gedrehte Richtung zurück
 
 
-#endif // TYPEDEF_H_INCLUDED
+#endif // DEFINITIONS_H_INCLUDED

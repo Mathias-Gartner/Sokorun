@@ -2,12 +2,21 @@
 //Jakob Maier
 //Grafikfunktionen
 
+#include <conio.h>
+#include <GL/glfw.h>
+#include <math.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <windows.h>
+#include "definitions.h"
+#include "globals.h"
+#include "graphics.h"
+#include "logger.h"
+#include "tga.h"
+
 #define M_PI		3.14159265358979323846
-
-extern TEXTURE boxTextures;
-extern POS mouse;
-//extern MOUSE mouse;
-
 
 void init_window()//Initialisiert das Spiel
 {
@@ -17,10 +26,10 @@ void init_window()//Initialisiert das Spiel
         return;
     }
     glfwSetWindowTitle("SokoRun");          //Fenstername
-    if(DEBUG)                                                       //Ändern in "main.h"
+    if(DEBUG)                                                       //Ändern in definitions.h"
     {   system("title SokoRun Debug Window");                       //Konsolenfenstername
         logger(1,"Das Programm wurde im Debug-Modus gestartet");
-        logger(1,"Versionsnummer: %s",VERSION);                       //Versionsnummer (Ändern in "main.h")
+//        logger(1,"Versionsnummer: %s",VERSION);                       //Versionsnummer (Ändern in "definitions.h")
     }
 }
 
@@ -111,7 +120,7 @@ void winkelKorr(int& gamma)  //Winkelwert in einen gültigen Wert (0-359) umwand
 /*private*/
 void TEXTURE::loadTexture()//TGA-Datei laden
 {
-    TGAImg Img;        // Image loader
+TGAImg Img;        // Image loader
     // Load our Texture
     if(Img.Load(path)!=IMG_OK)
     {   error("TEXTURE::loadTexture()","Eine Bilddatei konnte nicht geladen werden. Pfad: \"%s\". Es wird stattdessen eine weisse Textur verwendet",path);

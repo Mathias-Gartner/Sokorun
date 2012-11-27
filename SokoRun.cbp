@@ -45,92 +45,90 @@
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="animation.h">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="avatar.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="avatar.h" />
 		<Unit filename="button.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="button.h">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="definitions.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="definitions.h" />
 		<Unit filename="display.h" />
 		<Unit filename="editor.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="editor.h" />
-		<Unit filename="filesystemutility.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="filesystemutility.cpp" />
 		<Unit filename="filesystemutility.h" />
 		<Unit filename="game.h" />
 		<Unit filename="gameclass.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="gameclass.h" />
 		<Unit filename="gameguide.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="gameguide.h" />
 		<Unit filename="gamelog.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="gamelog.h">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="graphics.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="graphics.h" />
 		<Unit filename="highscore.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="highscore.h" />
 		<Unit filename="kugel.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="kugel.h" />
 		<Unit filename="levelclass.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="levelclass.h" />
 		<Unit filename="levelselect.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="levelselect.h" />
 		<Unit filename="lock.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="lock.h">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="logger.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="logger.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="main.h" />
 		<Unit filename="mainmenue.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="mainmenue.h" />
 		<Unit filename="score.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="score.h" />
 		<Unit filename="tga.h" />
 		<Unit filename="transporter.cpp">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="transporter.h">
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="Debug" />
 		</Unit>
 		<Extensions>
 			<code_completion />

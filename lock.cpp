@@ -1,6 +1,12 @@
 //Version 0.0
 //Jakob Maier
 //LOCK-Klasse
+
+#include <stdlib.h>
+#include "gameclass.h"
+#include "globals.h"
+#include "lock.h"
+
 LOCK::LOCK(GAME *gamePointer,POS *originPointer,int *elsizePointer,POS *levelSizePointer,POS _lock,POS _key,COLOR _color,LOCK *_next)  //Konstruktor
 {
     game=gamePointer;

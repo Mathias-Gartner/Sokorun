@@ -1,6 +1,8 @@
 #ifndef HIGHSCORE_H_INCLUDED
 #define HIGHSCORE_H_INCLUDED
 
+#include <windows.h>
+
 typedef struct
 {
     int Hours;

@@ -2,8 +2,13 @@
 //Version 1.0
 //Jakob Maier
 
+#include <stdlib.h>
+#include "animation.h"
+#include "definitions.h"
+#include "graphics.h"
+#include "logger.h"
 
-ANIMATION::ANIMATION(ANITYPE _anitype,int _identification,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay=WHITE)//Erstellung einer neuen Animation
+ANIMATION::ANIMATION(ANITYPE _anitype,int _identification,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay)//Erstellung einer neuen Animation
 {
     next=NULL;
 
@@ -89,10 +94,10 @@ int ANIMATION::getIdentification()                              //Gibt die Ident
 void ANIMATION::print()                                         //Ausgabe
 {   if(finished && reverse==0)  return;                         //Keine Ausgabe mehr
     switch(type)
-    {   case 0: print_T0(); break;
-        case 1: print_T1(); break;
-        case 2: print_T2(); break;
-        case 3: print_T3(); break;
+    {   case 0: this->print_T0(); break;
+        case 1: this->print_T1(); break;
+        case 2: this->print_T2(); break;
+        case 3: this->print_T3(); break;
     }
 }
 
@@ -209,7 +214,7 @@ ANIMATIONGROUP::ANIMATIONGROUP()                                //Konstruktor
     IDcounter=0;
 }
 
-int ANIMATIONGROUP::add(ANITYPE _anitype,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay=WHITE)//Hinzufügen einer neuen Animation
+int ANIMATIONGROUP::add(ANITYPE _anitype,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay)//Hinzufügen einer neuen Animation
 {   ANIMATION *neu;
     neu=new class ANIMATION(_anitype,++IDcounter,_type,_richtung,_start,_end,_reverse,_speed,_texture,_spritePos,_output,_overlay);
     if(neu->getType() <0 )//Fehler

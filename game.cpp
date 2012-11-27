@@ -2,9 +2,13 @@
 //
 //Spielschleife
 
-
-extern TEXTURE levelanimations;
-extern ANIMATIONGROUP animationHandler;
+#include <stdlib.h>
+#include <time.h>
+#include "animation.h"
+#include "game.h"
+#include "globals.h"
+#include "graphics.h"
+#include "logger.h"
 
 
 int gameMain(GAME *game)

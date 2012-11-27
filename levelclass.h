@@ -1,7 +1,7 @@
 #ifndef LEVELCLASS_H_INCLUDED
 #define LEVELCLASS_H_INCLUDED
 
-
+#include "definitions.h"
 
 
 ///SPIELFELDWERTE: VERALTET

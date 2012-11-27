@@ -4,6 +4,8 @@
 #ifndef GRAPHICS_H_INCLUDED
 #define GRAPHICS_H_INCLUDED
 
+#include <GL/glfw.h>
+#include "definitions.h"
 
 /** Konstanten und Defines: **/
     #define stdTextArea         fAREA{{0.0f,0.0f},{1.0f,1.0f}}
@@ -19,12 +21,12 @@
 
 
 /** TYPE DEFINITIONS **/
+
      //akt. Anzeigemodus
     enum GRAPHICMODES{
         DRAWING,    //Zeichnen (Linien, Pixel, Kreise, Quadrate,...)
         TEXTURES    //Einbinden von Texturen
     };
-
     struct fontSymbol{  //Einzelnes Zeichen eines fonts
         const char symbol;      //Zeichen (zB. 'a', 'b', '0', '@', ...)
         const float width;      //Zeichenbreite (0.0 - 1.0)
@@ -38,8 +40,6 @@
 
 
 /** GLOBALE VARIABLEN **/
-
-    GRAPHICMODES graphicMode=DRAWING;
 
 
 
@@ -136,6 +136,5 @@ class FONT : public TEXTURE
         int putString(const char *text,POS position,TEXTALIGN ausrichtung);           //Gibt einen Text aus
         int printf(POS position,TEXTALIGN ausrichtung,const char *format,...);              //Printf für Grafikfenster - ACHTUNG: max. Textlänge!
 };
-
 
 #endif // GRAPHICS_H_INCLUDED

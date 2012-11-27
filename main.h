@@ -3,10 +3,6 @@
 
 #ifndef MAIN_H_INCLUDED
 #define MAIN_H_INCLUDED
-    #define DEBUG 1                 //OB DEBUG-BEFEHLE DURCHGEFÜHRT WERDEN SOLLEN
-    #define ImgDebug 1              //Ob Debug-Funktionen, die im Grafik-Fenster ausgegeben werden angewandt werden sollen
-    #define TIMEDEBUGOUTPUT 1       //Ob die Zeit/Spielschleifenruchlauf ausgegeben werden soll
-    const char* const VERSION={"Ver. 0.0"};
 
     //#include "GLee/GLee.h"
     //#include "GLee/GLee.c"
@@ -28,10 +24,10 @@
     #include "button.h"             //Buttons
     #include "graphics.h"           //Grafik
 
-    #include "logger.cpp"           //Errorlog und Infolog
-    #include "definitions.cpp"      //Grundfunktionien
-    #include "button.cpp"           //Buttons
-    #include "graphics.cpp"         //Grafik
+//    #include "logger.cpp"           //Errorlog und Infolog
+//    #include "definitions.cpp"      //Grundfunktionien
+//    #include "button.cpp"           //Buttons
+//    #include "graphics.cpp"         //Grafik
 
 
     ///-----------------------------
@@ -64,25 +60,25 @@
 
     ///-----------------------------
 
-    #include "gamelog.cpp"          //Speichern und Anzeigen von Spieleereignissen (=Lösungsweg)
+    //#include "gamelog.cpp"          //Speichern und Anzeigen von Spieleereignissen (=Lösungsweg)
 
-    #include "animation.cpp"        //Animations-Klasse
-    #include "levelclass.cpp"       //Level-Klasse
-    #include "gameclass.cpp"        //Spiel-Klasse
-    #include "avatar.cpp"           //Spielfiguren-Klasse
-    #include "lock.cpp"             //Schloss-Klasse
-    #include "kugel.cpp"            //Kugel-Klasse
-    #include "transporter.cpp"      //Transporter-Klasse
+    //#include "animation.cpp"        //Animations-Klasse
+//    #include "levelclass.cpp"       //Level-Klasse
+//    #include "gameclass.cpp"        //Spiel-Klasse
+//    #include "avatar.cpp"           //Spielfiguren-Klasse
+//    #include "lock.cpp"             //Schloss-Klasse
+//    #include "kugel.cpp"            //Kugel-Klasse
+//    #include "transporter.cpp"      //Transporter-Klasse
 
     ///-----------------------------
 
-    #include "mainmenue.cpp"        //Hauptmenü
-    #include "levelselect.cpp"      //Levelauswahl
-    #include "game.cpp"             //Spiel
-    #include "highscore.cpp"        //Highscore nach dem Spiel
-    #include "editor.cpp"           //Leveleditor
-    #include "score.cpp"            //Score zwischen Spiel und Editor
-    #include "gameguide.cpp"        //Spielanleitung
+//    #include "mainmenue.cpp"        //Hauptmenü
+//    #include "levelselect.cpp"      //Levelauswahl
+//    #include "game.cpp"             //Spiel
+//    #include "highscore.cpp"        //Highscore nach dem Spiel
+//    #include "editor.cpp"           //Leveleditor
+//    #include "score.cpp"            //Score zwischen Spiel und Editor
+//    #include "gameguide.cpp"        //Spielanleitung
 
 
 #endif // MAIN_H_INCLUDED

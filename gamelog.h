@@ -1,6 +1,8 @@
 #ifndef GAMELOG_H_INCLUDED
 #define GAMELOG_H_INCLUDED
 
+#include "button.h"
+#include "definitions.h"
 
 
 enum GameEventType                                  //Alle Arten von Spieleevents die es gibt

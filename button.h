@@ -1,6 +1,9 @@
 #ifndef BUTTON_H_INCLUDED
 #define BUTTON_H_INCLUDED
 
+#include <strings.h>
+#include "definitions.h"
+
 //enum BUTTONID                               //Eine eindeutige ID für jeden Button, der im Spiel irgendwo irgendwann vorkommt
 //{   BUTTON_NO_BUTTON,
 //

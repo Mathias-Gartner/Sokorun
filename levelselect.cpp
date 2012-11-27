@@ -2,8 +2,16 @@
 //Mathias Gartner
 //Levelauswahl
 
-#include "levelselect.h"
+#include <time.h>
+#include <windows.h>
+#include "button.h"
+#include "definitions.h"
 #include "filesystemutility.h"
+#include "globals.h"
+#include "graphics.h"
+#include "highscore.h"
+#include "levelselect.h"
+#include "logger.h"
 
 LEVELSELECT::LEVELSELECT()
 {

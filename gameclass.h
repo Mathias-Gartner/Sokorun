@@ -1,6 +1,11 @@
 #ifndef GAMECLASS_H_INCLUDED
 #define GAMECLASS_H_INCLUDED
 
+#include "animation.h"
+#include "levelclass.h"
+#include "gamelog.h"
+#include "globals.h"
+
 extern TEXTURE gamebackground,shine;
 
 class GAMEBACKGROUND

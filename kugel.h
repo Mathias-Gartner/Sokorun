@@ -1,6 +1,8 @@
 #ifndef KUGEL_H_INCLUDED
 #define KUGEL_H_INCLUDED
 
+#include "definitions.h"
+
 struct KUGELorigin              //Verkettete Liste mit allen Kugel-Daten die aus der Level-Datei geladen werden
 {   POS origin;                 //Startposition
     int type;                   //Kugeltyp

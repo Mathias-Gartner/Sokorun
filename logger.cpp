@@ -2,7 +2,14 @@
 //Jakob Maier
 //Allg. Grundfunktionen fürs Debugging
 
-
+#include <conio.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <time.h>
+#include "definitions.h"
+#include "display.h"
+#include "logger.h"
 
 //Übergabeparameter:
 //  1.) mode                            Ob am Einde eine neue Zeile ausgegeben werden soll wenn keine vorhanden ist und die Farbe gewechselt werden soll (1); Wenn 0: Wie ein normales printf()

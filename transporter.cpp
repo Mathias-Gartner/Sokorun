@@ -2,6 +2,12 @@
 //Version 1.0
 //Jakob Maier
 
+#include <stdlib.h>
+#include <windows.h>
+#include "gameclass.h"
+#include "globals.h"
+#include "logger.h"
+#include "transporter.h"
 
 TRANSPORTER::TRANSPORTER(GAME *gamePointer,POS *originPointer,int *elsizePointer,POS *levelSizePointer,TRANSPORTERorigin *_data,TRANSPORTER *_next)       //Initialisiert den Transporter
 {
