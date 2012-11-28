@@ -24,7 +24,7 @@ LEVELSELECT::LEVELSELECT()
     }
     else
     {
-        switchLevel(0);
+        SwitchLevel(0);
     }
 }
 
@@ -73,9 +73,9 @@ int LEVELSELECT::Select()
             return true;
         }
         else if (prevButton.clicked() || levelCaption.clicked() == 2)
-            switchLevel(-1);
+            SwitchLevel(-1);
         else if (nextButton.clicked() || levelCaption.clicked() == 1)
-            switchLevel(1);
+            SwitchLevel(1);
 
         //output
         prevButton.print();
@@ -109,7 +109,7 @@ bool LEVELSELECT::isInputValid()
     return (levels != NULL && GetLevelName() != NULL);
 }
 
-void LEVELSELECT::switchLevel(int jumpWidth)
+void LEVELSELECT::SwitchLevel(int jumpWidth)
 {
     currentLevelIndex = currentLevelIndex+jumpWidth;
     logger(true, "LEVELSELECT: Switching level, increasing %d, new index %d", jumpWidth, currentLevelIndex);
