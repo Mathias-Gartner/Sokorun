@@ -7,6 +7,8 @@
 #include "highscore.h"
 #include "logger.h"
 
+const char HIGHSCORE::path[] = "daten\\highscore\\";
+
 HIGHSCORE::HIGHSCORE(char* levelname)
 {
     isLoaded = false;
@@ -20,7 +22,6 @@ HIGHSCORE::HIGHSCORE(char* levelname)
         error("HIGHSCORE::HIGHSCORE", "FATAL: Parameter levelname is too long.");
         exit(1);
     }
-
     Load();
 }
 
@@ -31,16 +32,21 @@ HIGHSCORE::~HIGHSCORE()
 
 void HIGHSCORE::Load()
 {
+    char filename[strlen(path) + strlen(level) + 7];
+    strcpy(filename, path);
+    strcat(filename, level);
+    strcat(filename, ".score");
     isLoaded = false;
-    if (FILESYSTEMUTILITY::DirectoryExists("highscore"))
+    if (FILESYSTEMUTILITY::DirectoryExists(path))
     {
-        FILE* file = fopen(level, "r");
+        FILE* file = fopen(filename, "r");
         if (file != NULL)
         {
             fscanf(file, "%d", &m_timesplayed);
             fscanf(file, "%d", &m_moves);
             fscanf(file, "%2d:%2d:%2d", &m_time.Hours, &m_time.Minutes, &m_time.Seconds);
             fclose(file);
+            logger(true, "Higscore of level %s loaded.", level);
             isLoaded = true;
         }
     }
@@ -48,12 +54,13 @@ void HIGHSCORE::Load()
 
 void HIGHSCORE::Save()
 {
-    char levelPath[strlen("highscore\\") + strlen(level) + 1];
-    strcpy(levelPath, "highscore\\");
+    char levelPath[strlen(path) + strlen(level) + 7];
+    strcpy(levelPath, path);
     strcat(levelPath, level);
+    strcat(levelPath, ".score");
 
-    if (!FILESYSTEMUTILITY::DirectoryExists("highscore"))
-        CreateDirectory("highscore", NULL);
+    if (!FILESYSTEMUTILITY::DirectoryExists(path))
+        CreateDirectory(path, NULL);
 
     /*if (!isLoaded)
         Load();*/
@@ -65,5 +72,6 @@ void HIGHSCORE::Save()
         fprintf(file, "%d", m_moves);
         fprintf(file, "%2d:%2d:%2d", m_time.Hours, m_time.Minutes, m_time.Seconds);
         fclose(file);
+        logger(true, "Highscore of level %s saved.", level);
     }
 }

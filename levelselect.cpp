@@ -2,6 +2,7 @@
 //Mathias Gartner
 //Levelauswahl
 
+#include <stdio.h>
 #include <time.h>
 #include <windows.h>
 #include "button.h"
@@ -27,15 +28,32 @@ LEVELSELECT::LEVELSELECT()
     }
 }
 
+LEVELSELECT::~LEVELSELECT()
+{
+    if (levels != NULL)
+    {
+        for (int i=0; i<levelCount; i++)
+        {
+            free(&levels[i][0]);
+        }
+        free(levels);
+    }
+
+    if (currentLevel != NULL)
+        delete currentLevel;
+    if (currentLevelScore != NULL)
+        delete currentLevelScore;
+}
+
 int LEVELSELECT::Select()
 {
     long loopStart;
-    BUTTON *prevButton = new BUTTON({{10, windY - 180}, {90, windY-130}}, 0, 3, 10, CYAN, "<", 20, YELLOW);
-    BUTTON *nextButton = new BUTTON({{windX - 100, windY - 180}, {windX - 10, windY - 130}}, 0, 3, 10, CYAN, ">", 20, YELLOW);
-    BUTTON *selectButton = new BUTTON({{windX - 200, 10}, {windX - 10, 60}}, 0, 3, 10, CYAN, "Spiel starten", 20, YELLOW);
-    BUTTON *cancelButton = new BUTTON({{10, 10}, {190, 60}}, 0, 3, 10, CYAN, "Zurück", 20, YELLOW);
-    BUTTON *levelCaption = new BUTTON({{100, windY - 180}, {windX - 110, windY - 130}}, 3, 3, 10, CYAN, "(Levelname)", 20, YELLOW);
-    AREA highscoreOutput = {{20, 20}, {windX / 2, windY - 200}};
+    BUTTON prevButton ({{10, windY - 180}, {90, windY-130}}, 0, 3, 10, CYAN, "<", 20, YELLOW);
+    BUTTON nextButton ({{windX - 100, windY - 180}, {windX - 10, windY - 130}}, 0, 3, 10, CYAN, ">", 20, YELLOW);
+    BUTTON selectButton ({{windX - 200, 10}, {windX - 10, 60}}, 0, 3, 10, CYAN, "Spiel starten", 20, YELLOW);
+    BUTTON cancelButton ({{10, 10}, {190, 60}}, 0, 3, 10, CYAN, "Zurück", 20, YELLOW);
+    BUTTON levelCaption ({{100, windY - 180}, {windX - 110, windY - 130}}, 3, 3, 10, CYAN, "(Levelname)", 20, YELLOW);
+    AREA highscoreOutput {{100, 140}, {windX / 2 - 100, windY - 240}};
 
     prepare_GameLoop();
 
@@ -44,32 +62,42 @@ int LEVELSELECT::Select()
         loopStart = clock();
         prepare_graphics();
 
-        levelCaption->setText(GetLevelName());
+        levelCaption.setText(GetLevelName());
 
         //handle clicks
-        if (cancelButton->clicked())
-            return false;
-        else if (selectButton->clicked() && isInputValid())
+        if (cancelButton.clicked())
+            break;
+        else if (selectButton.clicked() && isInputValid())
+        {
+            currentLevelScore->setTimesPlayed(currentLevelScore->getTimesPlayed() + 1);
             return true;
-        else if (prevButton->clicked() || levelCaption->clicked() == 2)
+        }
+        else if (prevButton.clicked() || levelCaption.clicked() == 2)
             switchLevel(-1);
-        else if (nextButton->clicked() || levelCaption->clicked() == 1)
+        else if (nextButton.clicked() || levelCaption.clicked() == 1)
             switchLevel(1);
 
         //output
-        prevButton->print();
-        nextButton->print();
-        selectButton->print();
-        cancelButton->print();
-        levelCaption->print();
+        prevButton.print();
+        nextButton.print();
+        selectButton.print();
+        cancelButton.print();
+        levelCaption.print();
 
-        /*if (currentLevelScore != NULL)
+        if (currentLevel != NULL)
         {
-            drawBox(highscoreOutput,10,3,CYAN);
-            normalFont.setFontColor(YELLOW);
-            normalFont.setFontSize(20);
-            normalFont.putString("Highscore",{highscoreOutput.a.x+(highscoreOutput.b.x-highscoreOutput.a.x)/2 , highscoreOutput.a.y + (highscoreOutput.b.y-highscoreOutput.a.y-20)/2},taLEFT); break;
-        }*/
+            drawBox({{windX/2 + 80, 140}, {windX - 110, windY - 240}}, 10, 3, WHITE);
+            currentLevel->printPreview();
+        }
+        if (currentLevelScore != NULL)
+        {
+            TIME time = currentLevelScore->getTime();
+            drawBox(highscoreOutput,10,3,WHITE);
+            normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 40}, taLEFT, "Highscore");
+            normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 80}, taLEFT, "Züge: %d", currentLevelScore->getMoves());
+            normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 120}, taLEFT, "Zeit: %2d:%2d:%2d", time.Hours, time.Minutes, time.Seconds);
+            normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 160}, taLEFT, "%d mal gespielt", currentLevelScore->getTimesPlayed());
+        }
     } while (complete_graphics(loopStart, GAMESPEED));
 
     logger(true, "LEVELSELECT: Got false from complete_graphics(..). Returning -1.");
@@ -93,7 +121,11 @@ void LEVELSELECT::switchLevel(int jumpWidth)
 
     levelName = levels[currentLevelIndex];
 
-    free(currentLevelScore);
+    if (currentLevel != NULL)
+        delete currentLevel;
+    currentLevel = new LEVEL({windX/2+160, 160}, 17, GetLevelPath(), true);
+    if (currentLevelScore != NULL)
+        delete currentLevelScore;
     currentLevelScore = new HIGHSCORE(GetLevelName());
 }
 

@@ -1,11 +1,13 @@
 #ifndef LEVELSELECT_H_INCLUDED
 #define LEVELSELECT_H_INCLUDED
 #include "highscore.h"
+#include "levelclass.h"
 
 class LEVELSELECT
 {
     public:
         LEVELSELECT();
+        ~LEVELSELECT();
         /*
             false: Auswahl abgebrochen, Rückkehr ins MainMenu
             true: Level ausgewählt, Name in GetLevelName
@@ -14,6 +16,7 @@ class LEVELSELECT
         int GetStatus() {return status;}
         char* GetLevelName() {return levelName;}
         char* GetLevelPath() {return GetLevelPath(GetLevelName(), true);}
+        HIGHSCORE* getCurrentLevelScore() {return currentLevelScore;}
     private:
         bool isInputValid();
         void switchLevel(int jumpWidth);
@@ -22,6 +25,7 @@ class LEVELSELECT
         char **levels;
         char levelPath[MAX_PATH];
         int levelCount;
+        LEVEL *currentLevel;
         int currentLevelIndex;
         HIGHSCORE *currentLevelScore;
         int status;
