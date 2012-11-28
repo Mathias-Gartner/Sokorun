@@ -41,39 +41,27 @@
 			<Add library="gdi32" />
 			<Add directory="D:\Installierte Programme (x86)\CodeBlocks\MinGW\lib" />
 		</Linker>
-		<Unit filename="animation.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="animation.cpp" />
 		<Unit filename="animation.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="avatar.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="avatar.cpp" />
 		<Unit filename="avatar.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="button.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="button.cpp" />
 		<Unit filename="button.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="definitions.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="definitions.cpp" />
 		<Unit filename="definitions.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="display.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="display.cpp" />
 		<Unit filename="display.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="editor.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="editor.cpp" />
 		<Unit filename="editor.h">
 			<Option target="Release" />
 		</Unit>
@@ -83,69 +71,47 @@
 		<Unit filename="game.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="gameclass.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="gameclass.cpp" />
 		<Unit filename="gameclass.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="gameguide.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="gameguide.cpp" />
 		<Unit filename="gameguide.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="gamelog.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="gamelog.cpp" />
 		<Unit filename="gamelog.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="globals.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="globals.cpp" />
 		<Unit filename="globals.h">
 			<Option target="Debug" />
 		</Unit>
-		<Unit filename="graphics.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="graphics.cpp" />
 		<Unit filename="graphics.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="highscore.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="highscore.cpp" />
 		<Unit filename="highscore.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="kugel.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="kugel.cpp" />
 		<Unit filename="kugel.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="levelclass.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="levelclass.cpp" />
 		<Unit filename="levelclass.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="levelselect.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="levelselect.cpp" />
 		<Unit filename="levelselect.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="lock.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="lock.cpp" />
 		<Unit filename="lock.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="logger.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="logger.cpp" />
 		<Unit filename="logger.h">
 			<Option target="Release" />
 		</Unit>
@@ -168,9 +134,7 @@
 		<Unit filename="tga.h">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="transporter.cpp">
-			<Option target="Debug" />
-		</Unit>
+		<Unit filename="transporter.cpp" />
 		<Unit filename="transporter.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
