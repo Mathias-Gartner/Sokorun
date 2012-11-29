@@ -11,7 +11,6 @@
 #include "logger.h"
 #include "gameclass.h"
 
-//extern ANIMATIONGROUP animationHandler;
 
 AVATAR::AVATAR(GAME *gamePointer,POS *originPointer,int *elsizePointer,POS *levelSizePointer,POS avatarOrigin)
 {
@@ -315,3 +314,8 @@ bool AVATAR::isMoving()                                                 //gibt z
     return 1;
 }
 
+bool AVATAR::isDead()                                                   //Gibt zurück ob der Avatar tot ist, und die Todesanimation abgeschlossen ist (DeatchProgress>=100)
+{   if(deathProgress>=100)
+        return 1;
+    return 0;
+}

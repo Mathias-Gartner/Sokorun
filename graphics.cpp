@@ -1,4 +1,3 @@
-//Version 0.1
 //Jakob Maier
 //Grafikfunktionen
 
@@ -8,13 +7,14 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <ctime>
 #include <windows.h>
 #include "definitions.h"
 #include "globals.h"
 #include "graphics.h"
 #include "logger.h"
 #include "tga.h"
+
 
 #define M_PI		3.14159265358979323846
 
@@ -98,7 +98,7 @@ int complete_graphics(long loopStart,unsigned int loopSpeed=10)//Wird am Ende je
 
     if(TIMEDEBUGOUTPUT) printf("%4dms (soll: %4dms)\n",(int)(clock()-loopStart),loopSpeed);
 
-    return (!glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED));//Abbruchbedingung
+    return (/* !glfwGetKey(GLFW_KEY_ESC) &&*/glfwGetWindowParam(GLFW_OPENED));//Abbruchbedingung
 }
 
 void cleanup()//Wird beim beenden des Programms aufgerufen
@@ -162,7 +162,7 @@ TGAImg Img;        // Image loader
 }
 
 
-TEXTURE::TEXTURE(const char* const imgPath, POS imgSize=POS{0,0}, POS imgSprites=POS{1,1},bool _allowTextureRepeat=0)
+TEXTURE::TEXTURE(const char* const imgPath, POS imgSize, POS imgSprites,bool _allowTextureRepeat)
 {   loaded=0;
     strcpy(path,imgPath);
     sprites=imgSprites;

@@ -94,121 +94,131 @@ void KUGEL::move(DIRECTION richtung)
 
 
 
-void KUGEL::run()                                                       //Führt einen Simulationsschritt durch
+int KUGEL::run(int targeted)                                            //Führt einen Simulationsschritt durch (targeted: Anzahl der Kugeln die in Zielfelder liegen (die vor diesem Element in der Liste stehen)); Rückgabewert: Anz. der bisher gefunden Kugeln, die sich in Zielfeldern befinden
 {
-    if(type==-1)    return;                                             //Diese Kugel wurde zum löschen markiert
-
-    movement.blocking=0;                                                //Falls eine Kugel blockiert wird diese immer auf moving=1 und -1 gesetzt --> collision-Animation muss verhindert werden können
-
-    if(movement.moving!=0)
+    if(type!=-1)                                                        //Diese Kugel wurde zum löschen markiert
     {
-        if(movement.moving==-1 && propRicCmp(movement.richtung,game->getFieldProperty(OBJ_KUGEL,position))) //Die Kugel prallt (genau jetzt) ab, darf aber nicht zurückkehren, weil der Feldtyp die Bewegung sofort wieder starten würde. (Ansonsten wackeln die Kugeln immer hin und her)
-        {   //Prüfen, ob das Hinderniss bereits aus dem Weg ist und der Weg fortgesetzt werden darf:
-            movement.moving=1;
-            movement.blocking=1;
-            //Wenn nein, wird automatisch innerhalb dieses if's wieder abgeblockt und im nächsten Durchgang landet man hier
-        }else
-        {   movement.progress+=movement.moving*WALKING_SPEED;               //Vor bzw. Zurück Bewegen
-        }
-        POS targetField=game->getTargetFieldCoord(position,movement.richtung);  //Zielfeld bestimmen
+        movement.blocking=0;                                                //Falls eine Kugel blockiert wird diese immer auf moving=1 und -1 gesetzt --> collision-Animation muss verhindert werden können
 
-        ///Auf Hindernisse überprüfen: (limit nicht darauf ausgelegt)
-        if(movement.moving==1)
+        if(movement.moving!=0)
         {
-            if(movement.progress >= Wkgl && movement.progress < Wkgl+WALKING_SPEED)//Bei genau diesem Schritt könnte eine Kugel berührt werden
-            {   KUGEL *touchedKugel=game->KugelOnField(targetField,this);
-                if(touchedKugel != NULL)                                    //Im nächsten Feld ist eine Kugel
-                {   ///IM NÄCHSTEN FELD IST EINE KUGEL --> Abprallen
-                    movement.moving=-1;                         //Die Kugel prallt sofort ab (Die Kugel die sich im nächsten Feld befindet wird sich nicht bewegen)
-                    if(!movement.blocking)
-                    {   game->addFieldEffect(position,COLLISION,movement.richtung,(type==0)?KUGELCOLLISIONCOLOR:KUGELBLOCKCOLLISIONCOLOR);
-                        /*Überprüfen, ob sich der Avatar oder ein anderes Objekt gerade in dieses Feld bewegen wollen, in die die Kugel jetzt zurückkehren muss:*/
-                        /*(Ist der Fall, wenn der Avatar die Kugel angestoßen hat oder sich eine andere Kugel in das Feld bewegt)*/
-                        game->stopMovementsTo(position,Wkgl); //Alle Objekte nach WK % abprallen lassen (sofern möglich.)
-                    }
-                }
+            if(movement.moving==-1 && propRicCmp(movement.richtung,game->getFieldProperty(OBJ_KUGEL,position))) //Die Kugel prallt (genau jetzt) ab, darf aber nicht zurückkehren, weil der Feldtyp die Bewegung sofort wieder starten würde. (Ansonsten wackeln die Kugeln immer hin und her)
+            {   //Prüfen, ob das Hinderniss bereits aus dem Weg ist und der Weg fortgesetzt werden darf:
+                movement.moving=1;
+                movement.blocking=1;
+                //Wenn nein, wird automatisch innerhalb dieses if's wieder abgeblockt und im nächsten Durchgang landet man hier
+            }else
+            {   movement.progress+=movement.moving*WALKING_SPEED;               //Vor bzw. Zurück Bewegen
             }
+            POS targetField=game->getTargetFieldCoord(position,movement.richtung);  //Zielfeld bestimmen
 
-            if(movement.blocking||(movement.progress >= Wava && movement.progress < Wava+WALKING_SPEED))//Bei genau diesem Schritt könnte der Avatar berührt werden
-            {   if(game->AvatarOnField(targetField))                  //Im nächsten Feld ist der Avatar
-                {   ///IM NÄCHSTEN FELD IST DER AVATAR --> Abprallen
-                    movement.moving=-1;                                     //Die Kugel prallt sofort ab (Der Avatar der sich im nächsten Feld befindet wird sich nicht bewegen)
-
-                    /*Überprüfen, ob sich der Avatar oder ein anderes Objekt gerade in dieses Feld bewegen wollen, in die die Kugel jetzt zurückkehren muss:*/
-                    if(!movement.blocking)
-                    {   game->stopMovementsTo(position,Wkgl); //Alle Objekte nach WK % abprallen lassen (sofern möglich.)
-                    }
-                }
-            }
-        }
-
-        ///Auf Abprallen wegen Feldtyp überprüfen: (limit bereits bekannt)
-        if(movement.moving==1 && movement.limit<100 && movement.progress>=movement.limit)          //Prüfen, ob die Kugel jetzt vlt. abprallt
-        {   movement.moving=-1;                                         //Abprallen
-            movement.progress=movement.limit;                           //Genau an die Kante setzen
-            if(!movement.blocking)
-            {   game->addFieldEffect(position,COLLISION,movement.richtung,(type==0)?KUGELCOLLISIONCOLOR:KUGELBLOCKCOLLISIONCOLOR);
-                game->stopMovementsTo(position,Wkgl); //Alle Objekte nach WK % abprallen lassen (sofern möglich.)
-            }
-        }
-
-
-        ///Prüfen, ob die Bewegung schon abgeschlossen wurde:
-        if(movement.moving==-1 && movement.progress<=0)                 //Ins Startfeld zurückgekehrt
-        {   movement.moving=0;
-            movement.lastRichtung=NONE;                                 //Abgeprallt --> letzte Richtung war nicht möglich
-        }
-        if(movement.moving==1 && movement.progress>=100)                //Im Zielfeld angekommen
-        {   position=targetField;
-            game->addGameLogEvent(type==0?KUGELMOVE:KUGELBLOCKMOVE,movement.richtung);         //Ereignis berichten
-            movement.moving=0;
-            movement.lastRichtung=movement.richtung;
-            int feld=game->getField(position);
-            if(feld==TILE_TYPECHANGE || feld==TILE_TYPECHANGEICE)                             //Typumwandlung
-            {   if(type==0) type=1;
-                else        type=0;
-                game->addGameLogEvent(type==0?KUGELTYPECHANGED0:KUGELTYPECHANGED1, NONE);           //Ereignis berichten
-            }
-
-            if(type==0 && (feld==TILE_TARGET || feld==TILE_FIXEDTARGET))                       //Zielfeld
-            {   game->addGameLogEvent(KUGELTARGET, NONE);                     //Ereignis berichten
-                game->setGameBackgroundSplashColor(GREEN);        //Rot werden
-            }
-        }
-
-        if(movement.blocking && movement.moving!=-1)    movement.blocking=0;    //Die Kugel hat blockiert, wurde jetzt aber wieder freigegeben
-    }
-    if(movement.moving==0)                                              //Steht still --> prüfen, ob sich der Avatar auf einem Spezialfeld befindet
-    {   switch(game->getFieldProperty(OBJ_KUGEL,position))              //Dieses Feld hat vlt. eine spezielle Eigenschaft
-        {   case up: move(UP);      break;
-            case dn: move(DOWN);    break;
-            case lt: move(LEFT);    break;
-            case rt: move(RIGHT);   break;
-            case ic: move(movement.lastRichtung);    break;             //Weiter rutschen
-            case bm: move(BEAM);    break;                              //Zum Ziel-Beamer versetzen
-            case tr: move(turnRight(movement.lastRichtung)); break;     //Nach rechts (90° im Uhrzeigersinn) weiterruthschen
-            case tl: move(turnLeft (movement.lastRichtung)); break;     //Nach links (90° gegen Uhrzeigersinn) weiterruthschen
-            case dt:{   /*Tödlich*/
-                        int feld=game->getField(position);              //Feldtyp herausfinden
-                        switch(feld)
-                        {   case TILE_LAVA: if(type==0) game->addFieldEffect(position,KUGELLAVA);                /*lava*/
-                                            else {      game->makeLavaSecure(position);                         //Lavafeld mit Block befüllen (Dezimalwert des Spielfeldes ändern. Muss beim Neustart des Levels wieder Rückgängig gemacht werden)
-                                                        game->addFieldEffect(position,LAVAFALL);
-                                                        game->addGameLogEvent(KUGELBLOCKEDLAVA, NONE);                //Ereignis berichten
-                                                } break;
-                            default:        error("KUGEL::run()","Ubekanntes, toedliches Feld. Es wird keine Animations ausgegeben. feld: %d",feld);
+            ///Auf Hindernisse überprüfen: (limit nicht darauf ausgelegt)
+            if(movement.moving==1)
+            {
+                if(movement.progress >= Wkgl && movement.progress < Wkgl+WALKING_SPEED)//Bei genau diesem Schritt könnte eine Kugel berührt werden
+                {   KUGEL *touchedKugel=game->KugelOnField(targetField,this);
+                    if(touchedKugel != NULL)                                    //Im nächsten Feld ist eine Kugel
+                    {   ///IM NÄCHSTEN FELD IST EINE KUGEL --> Abprallen
+                        movement.moving=-1;                         //Die Kugel prallt sofort ab (Die Kugel die sich im nächsten Feld befindet wird sich nicht bewegen)
+                        if(!movement.blocking)
+                        {   game->addFieldEffect(position,COLLISION,movement.richtung,(type==0)?KUGELCOLLISIONCOLOR:KUGELBLOCKCOLLISIONCOLOR);
+                            /*Überprüfen, ob sich der Avatar oder ein anderes Objekt gerade in dieses Feld bewegen wollen, in die die Kugel jetzt zurückkehren muss:*/
+                            /*(Ist der Fall, wenn der Avatar die Kugel angestoßen hat oder sich eine andere Kugel in das Feld bewegt)*/
+                            game->stopMovementsTo(position,Wkgl); //Alle Objekte nach WK % abprallen lassen (sofern möglich.)
                         }
-                        game->addGameLogEvent(KUGELDESTROYED, NONE);          //Ereignis berichten
-                        game->setGameBackgroundSplashColor(RED);        //Rot werden
-                        position={-1,-1};
-                        type=-1;                                        //Diese Kugel zum löschen markieren
-                    }break;
-            case fx: /*do nothing*/ break;
-            case nm: /*do nothing*/ break;
-            default: error("KUGEL::run()","Unbekannte Feldeigenschaft gefunden. Verarbeite wert als \"nm\" (Normal). fieldproperty=%d",game->getFieldProperty(OBJ_KUGEL,position));
+                    }
+                }
+
+                if(movement.blocking||(movement.progress >= Wava && movement.progress < Wava+WALKING_SPEED))//Bei genau diesem Schritt könnte der Avatar berührt werden
+                {   if(game->AvatarOnField(targetField))                  //Im nächsten Feld ist der Avatar
+                    {   ///IM NÄCHSTEN FELD IST DER AVATAR --> Abprallen
+                        movement.moving=-1;                                     //Die Kugel prallt sofort ab (Der Avatar der sich im nächsten Feld befindet wird sich nicht bewegen)
+
+                        /*Überprüfen, ob sich der Avatar oder ein anderes Objekt gerade in dieses Feld bewegen wollen, in die die Kugel jetzt zurückkehren muss:*/
+                        if(!movement.blocking)
+                        {   game->stopMovementsTo(position,Wkgl); //Alle Objekte nach WK % abprallen lassen (sofern möglich.)
+                        }
+                    }
+                }
+            }
+
+            ///Auf Abprallen wegen Feldtyp überprüfen: (limit bereits bekannt)
+            if(movement.moving==1 && movement.limit<100 && movement.progress>=movement.limit)          //Prüfen, ob die Kugel jetzt vlt. abprallt
+            {   movement.moving=-1;                                         //Abprallen
+                movement.progress=movement.limit;                           //Genau an die Kante setzen
+                if(!movement.blocking)
+                {   game->addFieldEffect(position,COLLISION,movement.richtung,(type==0)?KUGELCOLLISIONCOLOR:KUGELBLOCKCOLLISIONCOLOR);
+                    game->stopMovementsTo(position,Wkgl); //Alle Objekte nach WK % abprallen lassen (sofern möglich.)
+                }
+            }
+
+
+            ///Prüfen, ob die Bewegung schon abgeschlossen wurde:
+            if(movement.moving==-1 && movement.progress<=0)                 //Ins Startfeld zurückgekehrt
+            {   movement.moving=0;
+                movement.lastRichtung=NONE;                                 //Abgeprallt --> letzte Richtung war nicht möglich
+            }
+            if(movement.moving==1 && movement.progress>=100)                //Im Zielfeld angekommen
+            {   position=targetField;
+                game->addGameLogEvent(type==0?KUGELMOVE:KUGELBLOCKMOVE,movement.richtung);         //Ereignis berichten
+                movement.moving=0;
+                movement.lastRichtung=movement.richtung;
+                int feld=game->getField(position);
+                if(feld==TILE_TYPECHANGE || feld==TILE_TYPECHANGEICE)                             //Typumwandlung
+                {   if(type==0) type=1;
+                    else        type=0;
+                    game->addGameLogEvent(type==0?KUGELTYPECHANGED0:KUGELTYPECHANGED1, NONE);           //Ereignis berichten
+                }
+
+                if(type==0 && (feld==TILE_TARGET || feld==TILE_FIXEDTARGET))                       //Zielfeld
+                {   game->addGameLogEvent(KUGELTARGET, NONE);                     //Ereignis berichten
+                    game->setGameBackgroundSplashColor(GREEN);        //Rot werden
+                }
+            }
+
+            if(movement.blocking && movement.moving!=-1)    movement.blocking=0;    //Die Kugel hat blockiert, wurde jetzt aber wieder freigegeben
+        }
+        if(movement.moving==0)                                              //Steht still --> prüfen, ob sich der Avatar auf einem Spezialfeld befindet
+        {   switch(game->getFieldProperty(OBJ_KUGEL,position))              //Dieses Feld hat vlt. eine spezielle Eigenschaft
+            {   case up: move(UP);      break;
+                case dn: move(DOWN);    break;
+                case lt: move(LEFT);    break;
+                case rt: move(RIGHT);   break;
+                case ic: move(movement.lastRichtung);    break;             //Weiter rutschen
+                case bm: move(BEAM);    break;                              //Zum Ziel-Beamer versetzen
+                case tr: move(turnRight(movement.lastRichtung)); break;     //Nach rechts (90° im Uhrzeigersinn) weiterruthschen
+                case tl: move(turnLeft (movement.lastRichtung)); break;     //Nach links (90° gegen Uhrzeigersinn) weiterruthschen
+                case dt:{   /*Tödlich*/
+                            int feld=game->getField(position);              //Feldtyp herausfinden
+                            switch(feld)
+                            {   case TILE_LAVA: if(type==0) game->addFieldEffect(position,KUGELLAVA);                /*lava*/
+                                                else {      game->makeLavaSecure(position);                         //Lavafeld mit Block befüllen (Dezimalwert des Spielfeldes ändern. Muss beim Neustart des Levels wieder Rückgängig gemacht werden)
+                                                            game->addFieldEffect(position,LAVAFALL);
+                                                            game->addGameLogEvent(KUGELBLOCKEDLAVA, NONE);                //Ereignis berichten
+                                                    } break;
+                                default:        error("KUGEL::run()","Ubekanntes, toedliches Feld. Es wird keine Animations ausgegeben. feld: %d",feld);
+                            }
+                            game->addGameLogEvent(KUGELDESTROYED, NONE);          //Ereignis berichten
+                            game->setGameBackgroundSplashColor(RED);        //Rot werden
+                            position={-1,-1};
+                            type=-1;                                        //Diese Kugel zum löschen markieren
+                        }break;
+                case fx: /*do nothing*/ break;
+                case nm: /*do nothing*/ break;
+                default: error("KUGEL::run()","Unbekannte Feldeigenschaft gefunden. Verarbeite wert als \"nm\" (Normal). fieldproperty=%d",game->getFieldProperty(OBJ_KUGEL,position));
+            }
+        }
+
+        if(movement.moving==0)
+        {   char field=game->getField(position);
+            if(field==TILE_TARGET || field==TILE_FIXEDTARGET)
+            {   targeted++;
+            }
         }
     }
-    if(next != NULL)  next->run();                                      //Nächste Kugel auch simulieren
+
+    if(next != NULL)    return next->run(targeted);                     //Nächste Kugel auch simulieren
+    else                return targeted;
 }
 
 

@@ -1,4 +1,3 @@
-//Version 0.0
 //Jakob Maier
 //Level-Klasse
 
@@ -6,17 +5,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
-#include <time.h>
+#include <ctime>
 #include <windows.h>
+#include "levelclass.h"
+#include "globals.h"
 #include "display.h"
 #include "graphics.h"
 #include "kugel.h"
-#include "levelclass.h"
 #include "lock.h"
 #include "logger.h"
 #include "transporter.h"
-
-extern TEXTURE leveltiles;
 
 
 bool freadToChar(FILE *datei,const char symbol)
@@ -60,6 +58,8 @@ LEVEL::LEVEL(POS _origin,int _elsize,const char *LVLpath="",const bool skipMinor
     {   error("LEVEL::LEVEL()","Fehler - Die Elementgroesse ist zu niedrig und wurde deshalb nicht uebernommen - elsize=%d. Es wird stattdessen der Wert 40 verwendet",_elsize);
         elsize=40;
     }
+
+    targetFieldAnz=0;                   //Anz. der Zielfelder = 0
 
     animationType=0;                    //Animationstyp noch nicht definiert
     buildupAnimationProgress=0;         //Animation noch nicht gestartet
@@ -226,6 +226,7 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
         return 1;
     }
     status=0;                           //Keine gültigen Leveldaten
+    targetFieldAnz=0;                   //Keine Zielfelder
 
     FILE *level=fopen(LVLpath,"r");     //Leveldatei öffnen
 
@@ -266,8 +267,8 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
     ///KUGELN:
             if(kugelOriginStart!=NULL)
             {   error("LEVEL::loadLevel()","Es befinden sich Kugeln in der Liste, obwohl das Level erst geladen wird. Fehlerabfrage \"status\" fehlgeschlagen. Das Programm wird abgebrochen um Speicherverletzungen zu verhindern");
-                MessageBox(NULL,"Es kam zu einem Fehler. Um Speicherverletzungen zu verhindern wird das Spiel jetzt angehalten. Für mehr Details sehen Sie im Erroglog nach.","Schwerwiegender Fehler",MB_OK|MB_ICONERROR);
-                for(;;);
+                MessageBox(NULL,"Es kam zu einem Fehler. Um Speicherverletzungen zu verhindern wird das Spiel jetzt beendet. Für mehr Details sehen Sie im Erroglog nach.","Schwerwiegender Fehler",MB_OK|MB_ICONERROR);
+                exit(-1);   for(;;);
             }
             for(int i=0;i<kugelAnz;i++)
             {   KUGELorigin *p=(KUGELorigin*)malloc(sizeof(KUGELorigin));
@@ -462,7 +463,7 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
     ///SCHLÖSSER:
             if(lockOriginStart!=NULL)
             {   error("LEVEL::loadLevel()","Es befinden sich Schloesser in der Liste, obwohl das Level erste geladen wird. womöglich muss hier jetzt die Liste geleert werden, wurde noch nicht ausprogrammiert");
-                for(;;);
+                exit(-1);   for(;;);
             }
             for(int i=0;i<lockAnz;i++)
             {   LOCKorigin *p=(LOCKorigin*)malloc(sizeof(LOCKorigin));
@@ -523,6 +524,13 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
     {   return 10;  //Konvertieren fehlgeschlagen
     }
     strcpy(path,LVLpath);
+
+    //Anzahl der Zielfelder zählen:
+    for(int y=0;y<size.y;y++)
+        for(int x=0;x<size.x;x++)
+            if(spielfeld[y][x]==TILE_TARGET || spielfeld[y][x]==TILE_FIXEDTARGET)
+                targetFieldAnz++;
+
     status=1;
     fclose(level);
     return 0;
@@ -885,6 +893,11 @@ void LEVEL::setDisplayOptions(POS _origin,int _elsize)
        elsize=_elsize;
    else
        error("LEVEL::setDisplayOptions()","Fehler - Die Elementgroesse ist zu niedrig und wurde deshalb nicht uebernommen - elsize=%d",_elsize);
+}
+
+void LEVEL::getDisplayOptions(POS *_origin,int *_elsize)
+{   *_origin=origin;
+    *_elsize=elsize;
 }
 
 int LEVEL::getStatus()

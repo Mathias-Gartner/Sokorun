@@ -1,0 +1,113 @@
+Gooball														       © Ein Programm von Maier Jakob
+=====================================================================================================================================================
+Erstelldatum:		[07/27/09]
+Erstellzeitpunkt:	[18:33:53]				Weitere Informationen zu dieser Datei befinden sich unten
+=====================================================================================================================================================
+Rechte:			&§
+=====================================================================================================================================================
+
+Allgemein:
+**********
+
+Levelgroesse:		[15x15]					
+Goo-Position:		[05x11]					
+Kugel-Anzahl:		[11]					
+Kanonen-Anzahl:		[05]					
+Transporter-Anzahl:	[00]					
+Block-Anzahl (Gegner):	[00]	
+Schloesser:             [00]				
+
+=====================================================================================================================================================
+
+Kugel-Positionen:						(Anzahl der Datensätze: siehe Kugel-Anzahl oben)
+*****************
+
+Nr.: 	{01}	Pos.:	[09x09]
+Nr.: 	{02}	Pos.:	[11x06]
+Nr.: 	{03}	Pos.:	[06x03]
+Nr.: 	{04}	Pos.:	[08x04]
+Nr.: 	{05}	Pos.:	[13x01]
+Nr.: 	{06}	Pos.:	[12x02]
+Nr.: 	{07}	Pos.:	[02x02]
+Nr.: 	{08}	Pos.:	[04x01]
+Nr.: 	{09}	Pos.:	[03x06]
+Nr.: 	{10}	Pos.:	[02x05]
+Nr.: 	{11}	Pos.:	[01x08]
+
+=====================================================================================================================================================
+
+Level:
+******
+
+#25.25.25.25.25.25.25.25.25.25.25.25.25.25.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.25.26.26.26.26.25.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.25.26.26.26.26.26.26.26.26.26.26.25.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.26.26.25.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.25.26.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.25.26.26.26.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.25.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.27.26.26.26.25.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.25.26.26.26.26.26.26.26.26.26.26.25.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.26.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.26.26.26.26.26.26.26.26.26.26.25.26.26.25			(Anzahl: siehe Levelgroesse oben)
+#25.25.25.25.25.25.25.25.25.25.25.25.25.25.25			(Anzahl: siehe Levelgroesse oben)
+
+=====================================================================================================================================================
+
+Kanonen:							(Anzahl der Datensätze: siehe Kanonen-Anzahl oben)
+********
+
+Nr.:	{01}	Pos.:	[13x14]		Ausrichtung:	[0]	Energie:	[4]	Pause:	[02000]ms
+Nr.:	{02}	Pos.:	[11x02]		Ausrichtung:	[2]	Energie:	[4]	Pause:	[02000]ms
+Nr.:	{03}	Pos.:	[07x09]		Ausrichtung:	[2]	Energie:	[4]	Pause:	[00800]ms
+Nr.:	{04}	Pos.:	[04x06]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{05}	Pos.:	[01x00]		Ausrichtung:	[1]	Energie:	[2]	Pause:	[04000]ms
+
+Transporter:							(Anzahl der Datensätze: siehe Transporter-Anzahl oben)
+************
+
+
+Bloecke:							(Anzahl der Datensätze: siehe Block-Anzahl oben)
+********
+
+
+=====================================================================================================================================================
+
+Schlösser:							(Anzahl der Datensätze: siehe Schloss-Anzahl oben)
+**********
+
+
+=====================================================================================================================================================
+
+Auflösung:
+**********
+
+Beste Zeit:		[999999999]ms
+Wenigsten Bewegungen:	[999999999]
+
+=====================================================================================================================================================
+
+Zusatzinformationen:
+°°°°°°°°°°°°°°°°°°°°
+
+Levelname:		>B13
+Geschrieben mit:	>Editor (Ver. 1.0)
+Ersteller:		>maja
+Sonstiges:
+	>(c) Maier Jakob			
+	>all rights reserved			
+	>---
+
+
+
+=====================================================================================================================================================
+Diese Datei ist fuer das Programm >Gooball< von Maier Jakob. Sie beinhaltet ein gesamtes Spiellevel.
+Geschrieben am 28.03.2009
+Warning! This file is Auto-Generated!
+
+Alle Daten sind Eigentum des Programmierers.
+(c) Maier Jakob
+all rights reserved 

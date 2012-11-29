@@ -1,13 +1,9 @@
-//Version 0.1
-//Jakob Maier
-
 #ifndef DEFINITIONS_H_INCLUDED
 #define DEFINITIONS_H_INCLUDED
 
     #define DEBUG 1                 //OB DEBUG-BEFEHLE DURCHGEFÜHRT WERDEN SOLLEN
-    #define ImgDebug 1              //Ob Debug-Funktionen, die im Grafik-Fenster ausgegeben werden angewandt werden sollen
-    #define TIMEDEBUGOUTPUT 1       //Ob die Zeit/Spielschleifenruchlauf ausgegeben werden soll
-
+    #define ImgDebug 0              //Ob Debug-Funktionen, die im Grafik-Fenster ausgegeben werden angewandt werden sollen
+    #define TIMEDEBUGOUTPUT 0       //Ob die Zeit/Spielschleifenruchlauf ausgegeben werden soll
 
 
 /** EINSTELLUNGEN **/
@@ -47,6 +43,10 @@
     #define GAMELOGshowBUTTONarea AREA{{windX-movementInfoSize,GAMELOGBUTTONS_Y-50},{windX-movementInfoSize+25,GAMELOGBUTTONS_Y-25}}    //Show-Button AREA
     #define GAMELOGhideBUTTONarea AREA{{GAMELOG_X,GAMELOGBUTTONS_Y-30},{GAMELOG_X+25,GAMELOGBUTTONS_Y-5}}                               //Hide-Button AREA
     #define GAMELOGsaveBUTTONarea AREA{{GAMELOG_X+30,GAMELOGBUTTONS_Y-30},{GAMELOG_X+55,GAMELOGBUTTONS_Y-5}}                            //Save-Button AREA
+    #define GAMELOGpauseBUTTONarea AREA{{GAMELOG_X+60,GAMELOGBUTTONS_Y-30},{GAMELOG_X+85,GAMELOGBUTTONS_Y-5}}                           //Pause-Button AREA
+
+/** PAUSE-Menü Eigenschaften und Positionierungen: **/
+
 
 
 /** GAME-EINSTELLUNGEN **/
@@ -177,7 +177,7 @@
 
     const int walkable[2][64]={    //Eigenschaften, welches Feld wie weit von einem Objekt betreten werden darf
         //             00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63
-        /*0 = AVATAR*/{WB,WA,WB,WA,WA,WC,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WC,WC,WC,WC,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WB,WB,WB,WB,WA,WA,WA,WA,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+        /*0 = AVATAR*/{WB,WA,WB,WA,WA,WA,WC,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WC,WC,WC,WC,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WB,WB,WB,WB,WA,WA,WA,WA,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
         /*1 = KUGEL */{WB,WA,WB,WA,WA,WC,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WC,WC,WC,WC,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WA,WB,WB,WB,WB,WA,WA,WA,WA,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
         };  //Erster Index: Objekt-Typ (Datenwerte siehe Struktur "OBJEKT"). Inhalt: Prozentwert, wieweit das Feld betreten werden darf. 100=darf betreten werden. 0-99: nur zu x% betretbar, danach wieder zurückprallen. -1: Fehler - das Feld darf gar nicht vorkommen
 

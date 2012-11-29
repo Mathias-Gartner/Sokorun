@@ -154,7 +154,7 @@ void TRANSPORTER::print()
     }else
     {   error("TRANSPORTER::print()","Ein Schienenelement hat keine Nachbarn, die Schienenstrecke besteht nur aus einem Feld. -die Leveldaten sind ungueltig, das Spiel wird abgebrochen.");
         MessageBox(NULL,"Es kam zu einem Fehler. Die Leveldaten sind ungültig. Für mehr Details sehen Sie im Erroglog nach.","Schwerwiegender Fehler",MB_OK|MB_ICONERROR);
-        for(;;);
+        exit(-1);   for(;;);
     }
     if(next!=NULL)  next->print();  //Alle Transporter ausgeben (immer zuerst die Schienen, dann den Transporter selbst)
     ///Jetzt, da alle Schienen ausgegeben wurde, den Transporter ausgeben:

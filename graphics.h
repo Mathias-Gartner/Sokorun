@@ -1,4 +1,3 @@
-//Version 0.1
 //Jakob Maier
 
 #ifndef GRAPHICS_H_INCLUDED
@@ -76,7 +75,7 @@ class TEXTURE
         void bindTexture();     //Bindet eine Textur
 
     public:
-        TEXTURE(const char* const imgPath, POS imgSize, POS imgSprites,bool _allowTextureRepeat);
+        TEXTURE(const char* const imgPath, POS imgSize=POS{0,0}, POS imgSprites=POS{1,1},bool _allowTextureRepeat=0);
         void print(AREA display,fAREA textArea,COLOR overlay,float alpha=1.0);              //Ausgabe des gesamten Bildes
         void print(AREA display,POS spritePos,COLOR overlay,float alpha=1.0);               //Ausgabe eines Sprites
 

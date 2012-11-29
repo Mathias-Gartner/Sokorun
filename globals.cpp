@@ -8,15 +8,15 @@ ANIMATIONGROUP animationHandler;                                                
 
 GRAPHICMODES graphicMode=DRAWING;
 
-TEXTURE boxTextures ("daten/texturen/box.tga", {103,128}, {4,5}, false);          //Elemente zur Ausgabe von Boxen
-TEXTURE gamelogIcons ("daten/texturen/gamelog.tga", {128,128}, {4,4}, false);          //Elemente zur Ausgabe von Boxen
-TEXTURE leveltiles ("daten/texturen/leveltiles.tga", {512,512}, {8,8}, false);          //Dieses Bild ist 512 512 groß und besteht aus 64 Teilbildern (8x8 Teilbilder) --> Jedes Teilbild ist 64x64 Pixel groß
-TEXTURE levelanimations     ("daten/texturen/animation/levelanimations.tga"     ,{256,768},{4,12}, false);         //
-TEXTURE crashAnimationX     ("daten/texturen/animation/crashAnimationX.tga"     ,{13,128},{1,4}, false);           //Animationsdatei: Falls ein Objekt gegen en Hinderniss stößt (links/rechts)
-TEXTURE crashAnimationY     ("daten/texturen/animation/crashAnimationY.tga"     ,{128,13},{4,1}, false);           //Animationsdatei: Falls ein Objekt gegen en Hinderniss stößt (oben/unten)
-TEXTURE lavafall            ("daten/texturen/animation/lavafall.tga"            ,{512,205},{5,2}, false);          //Animationsdatei: Wenn ein Objekt in die Lava fällt
+TEXTURE boxTextures ("daten/texturen/box.tga", {101,125}, {4,5});                                           //Elemente zur Ausgabe von Boxen
+TEXTURE gamelogIcons ("daten/texturen/gamelog.tga", {128,128}, {4,4});                                      //Elemente zur Ausgabe von Boxen
+TEXTURE leveltiles ("daten/texturen/leveltiles.tga", {512,512}, {8,8}, false);                              //Dieses Bild ist 512 512 groß und besteht aus 64 Teilbildern (8x8 Teilbilder) --> Jedes Teilbild ist 64x64 Pixel groß
+TEXTURE levelanimations     ("daten/texturen/animation/levelanimations.tga"     ,{256,768},{4,12});         //
+TEXTURE crashAnimationX     ("daten/texturen/animation/crashAnimationX.tga"     ,{13,128},{1,4});           //Animationsdatei: Falls ein Objekt gegen en Hinderniss stößt (links/rechts)
+TEXTURE crashAnimationY     ("daten/texturen/animation/crashAnimationY.tga"     ,{128,13},{4,1});           //Animationsdatei: Falls ein Objekt gegen en Hinderniss stößt (oben/unten)
+TEXTURE lavafall            ("daten/texturen/animation/lavafall.tga"            ,{512,205},{5,2});          //Animationsdatei: Wenn ein Objekt in die Lava fällt
 TEXTURE gamebackground      ("daten/texturen/gamebg.tga"                        ,{256,256},{1,1},true);     //Hintergrund für das Spiel
-TEXTURE shine               ("daten/texturen/shine.tga"                         ,{64,64},{1,1}, false);            //Shein/Leuchten
+TEXTURE shine               ("daten/texturen/shine.tga"                         ,{64,64},{1,1});            //Shein/Leuchten
 
 FONT normalFont(0);            //Ausgabe für Texte: normale Schriftart
 

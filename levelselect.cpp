@@ -2,7 +2,7 @@
 //Mathias Gartner
 //Levelauswahl
 
-#include <time.h>
+#include <ctime>
 #include <windows.h>
 #include "button.h"
 #include "definitions.h"
@@ -22,8 +22,7 @@ LEVELSELECT::LEVELSELECT()
         logger(true, "WARN: No Levels available (Got NULL from FILESYSTEMUTILITY::EnumarateFiles)");
     }
     else
-    {
-        switchLevel(0);
+    {   switchLevel(0);
     }
 }
 
@@ -36,6 +35,13 @@ int LEVELSELECT::Select()
     BUTTON *cancelButton = new BUTTON({{10, 10}, {190, 60}}, 0, 3, 10, CYAN, "Zurück", 20, YELLOW);
     BUTTON *levelCaption = new BUTTON({{100, windY - 180}, {windX - 110, windY - 130}}, 3, 3, 10, CYAN, "(Levelname)", 20, YELLOW);
     AREA highscoreOutput = {{20, 20}, {windX / 2, windY - 200}};
+
+    //Tastaturtasten zu den Buttons hinzufügen:
+        prevButton  ->assignKeyboardButton(0,GLFW_KEY_LEFT ,'A');
+        nextButton  ->assignKeyboardButton(0,GLFW_KEY_RIGHT,'D');
+        levelCaption->assignKeyboardButton(0,'S');
+        cancelButton->assignKeyboardButton(0,GLFW_KEY_ESC);
+        selectButton->assignKeyboardButton(0,GLFW_KEY_ENTER,GLFW_KEY_SPACE);
 
     prepare_GameLoop();
 

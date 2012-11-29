@@ -40,9 +40,9 @@ class KUGEL
         void setNextObject(KUGEL* nextPointer);                      //Ändert den Zeiger des nächsten Elements
 
         int getType();                                              //Gibt den Kugeltyp zurück
-        //*alle Elemente*/bool setupAnimation();                     //langsames Einblenden
+        //*alle Elemente*/bool setupAnimation();                    //langsames Einblenden
         /*alle Elemente*/void print();
-        /*alle Elemente*/void run();                                //Führt einen Simulationsschritt durch
+        /*alle Elemente*/int run(int targeted=0);                   //Führt einen Simulationsschritt durch (targeted: Anzahl der Kugeln die in Zielfelder liegen (die vor diesem Element in der Liste stehen)); Rückgabewert: Anz. der gefunden Kugeln, die sich in Zielfeldern befinden
         /*alle Elemente*/KUGEL* KugelOnField(POS position,KUGEL* ignore);         //Überprüft, ob sich eine Kugel auf diesem Feld befindet (zu mind. OccupiedLimit %). Wenn ja wird der Pointer auf diese Kugel zurückgegeben
         /*alle Elemente*/void killOnField(POS pos);                 //zerstört die Kugel, wenn sie die übergebene Position blockiert
 

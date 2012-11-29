@@ -11,15 +11,20 @@
 #include "globals.h"
 #include "logger.h"
 
-//extern TEXTURE gamelogIcons;
-//extern FONT normalFont;
-
-
 
 GAMELOG::GAMELOG() :    show(GAMELOGshowBUTTONarea,0,&gamelogIcons,POS{0,3}),
                         hide(GAMELOGhideBUTTONarea,0,&gamelogIcons,POS{0,3}),
-                        save(GAMELOGsaveBUTTONarea,0,&gamelogIcons,POS{2,3})
+                        save(GAMELOGsaveBUTTONarea,0,&gamelogIcons,POS{2,3}),
+                        pause(GAMELOGpauseBUTTONarea,0,&gamelogIcons,POS{1,3})
 {
+    show.assignKeyboardButton(0,'H',0);
+    hide.assignKeyboardButton(0,'H',0);
+    save.assignKeyboardButton(0,GLFW_KEY_RSHIFT ,0);
+    pause.assignKeyboardButton(0,'P',GLFW_KEY_ESC);
+    pauseButtonClicked=0;
+    pauseButtonEnable=1;
+
+
     playtime=0;
     events=0;
 
@@ -41,6 +46,11 @@ GAMELOG::~GAMELOG()                                         //Destruktor
         p=q;
     }
 }
+
+void GAMELOG::EnablePauseButton(bool enable)                //Ativiert/Deaktiviert den Pause-Button
+{   pauseButtonEnable=enable;
+}
+
 
 void GAMELOG::run()
 {   playtime++;                                             //Weiterer Spielschleifendurchlauf
@@ -143,6 +153,11 @@ void GAMELOG::print()                                       //Kümmert sich um di
     {
         if(show.clicked())  displayGameLog=1;               //Wieder einblenden
         show.print();                                       //Show-Button ausgeben
+        if(pauseButtonEnable)
+        {   if(pause.clicked()) pauseButtonClicked=1;
+            pause.print(1);                                     //Pause-Button mit Tastatur anklickbar, wird aber nicht ausgegeben und ist nicht mit Maus aklickbar
+        }else
+            pauseButtonClicked=0;
         return;
     }
 
@@ -169,6 +184,11 @@ void GAMELOG::print()                                       //Kümmert sich um di
         hide.print();   //Hide
         if(save.clicked())  MessageBox(NULL,"Die Speicherfunktion kann derzeit leider noch nicht verwendet werden","Funktion noch nicht implementiert",MB_OK|MB_ICONWARNING);
         save.print();   //Save
+        if(pauseButtonEnable)
+        {   if(pause.clicked()) pauseButtonClicked=1;
+            pause.print();  //Pause
+        }else
+            pauseButtonClicked=0;
 
     //Ausgabe vorbereiten:
         y-=movementInfoSize;    //Y-Position der ersten Box
@@ -269,7 +289,7 @@ void GAMELOG::print()                                       //Kümmert sich um di
                     default:                break;
                 }
                 if(spritePos.x>=0)//Icon vorhanden
-                    gamelogIcons.print({{x,y},{x+20,y+20}},spritePos, CYAN, 1.0);
+                    gamelogIcons.print({{x,y},{x+20,y+20}},spritePos, WHITE, 1.0);
                 x+=21;
             }
 
@@ -287,3 +307,11 @@ int GAMELOG::getxpos()                                 //Gibt die X-Position zur
 }
 
 
+bool GAMELOG::isPauseButtonClicked()                   //Gibt zurück, ob der Pause-Button seit dem letzten Aufruf gedrückt worden ist
+{
+    if(pauseButtonClicked)
+    {   pauseButtonClicked=0;
+        return 1;
+    }
+    return 0;
+}

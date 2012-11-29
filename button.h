@@ -103,6 +103,8 @@ class BUTTON//Ein Button, den man drücken kann
                 //5: rechts + mitte
                 //6: links + rechts + mitte
 
+            int keyboardButton[2][3];               //Statt jeder Maustaste auch zwei Tastaturtasten erlauben
+
             int type;                               //Wie der Button ausgegeben werden soll
                 //0: Keine Ausgabe
                 //1: Textur
@@ -132,8 +134,10 @@ class BUTTON//Ein Button, den man drücken kann
         BUTTON(AREA _output,char _clickable,int _boxtype,int _borderWidth,COLOR _color);                                      //Typ 3 initialisieren
         BUTTON(AREA _output,char _clickable,int _boxtype,int _borderWidth,COLOR _color,const char* const value,int _fontSize,COLOR _fontcolor);         //Typ 4 initialisieren
 
+        void assignKeyboardButton(int mousebutton,int keyboard1,int keyboard2=0);   //Weist Tastaturtasten zu einem Button zu
+
         char clicked();     //Gibt zurück ob, und welche Maustatste diesen Button geklickt hat (muss VOR pint() aufgerufen werden)
-        void print();       //Button ausgeben
+        void print(bool SimulateOnly=0);       //Button ausgeben
 
         void setText(char* value){if (strlen(value)<128) strcpy(buttonText, value);}
 

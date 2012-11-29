@@ -47,6 +47,8 @@ class AVATAR
 
         bool isMoving();                                //gibt zurück, ob sich der Avatar gerade bewegt
 
+        bool isDead();                                  //Gibt zurück ob der Avatar tot ist, und die Todesanimation abgeschlossen ist (DeatchProgress>=100)
+
 };
 
 

@@ -68,6 +68,10 @@ class GAMELOG
             BUTTON show;                                //Einblende-Button
             BUTTON hide;                                //Ausblende-Button
             BUTTON save;                                //Save-Button
+            BUTTON pause;                               //Pause-Button
+
+            bool pauseButtonEnable;                     //Ob der Pause-Button ausgegeben werden soll oder nicht (und ob er gedrückt werden darf)
+            bool pauseButtonClicked;                    //Zeigt an, ob der User den Pause-Button geklickt hat (seit dem letzten "getPauseButtonClicked()"-Aufruf)
 
 
         ///Sonstiges:
@@ -86,6 +90,8 @@ class GAMELOG
         void run();                                     //Muss bei jedem Schleifendurchlauf des Spieles aufgerufen werden
         void print();                                   //Kümmert sich um die Ausgabe
 
+        bool isPauseButtonClicked();                    //Gibt zurück, ob der Pause-Button seit dem letzten Aufruf gedrückt worden ist
+        void EnablePauseButton(bool enable);            //Ativiert/Deaktiviert den Pause-Button
 };
 
 

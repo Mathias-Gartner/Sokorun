@@ -6,8 +6,6 @@
 #include "gamelog.h"
 #include "globals.h"
 
-extern TEXTURE gamebackground,shine;
-
 class GAMEBACKGROUND
 {
     private:
@@ -89,10 +87,12 @@ class GAME : public LEVEL
         //void deleteKugel(KUGEL *pointer);               //Löscht eine Kugel aus der Liste
 
         void printGameLogBackground();                  //Gibt nur den linken Rand und den Hintergrund des GameLog-Bereiches aus (wird von GAMELOG::print() auch erledigt)
+        void EnablePauseButton(bool enable);            //Ativiert/Deaktiviert den Pause-Button im Gamelog
+
 
         void printMovingObject(MOVEMENT *movement,POS position,int spriteNum,POS beamTarget=POS{-1,-1});      //Gibt ein Objekt am Spielfeld aus, dass sich darauf bewegen kann
         void print();                                   //Ausgabe des Spielzustandes
-        void run();                                     //Führt einen weiteren Simulationsschritt durch
+        int run();                                      //Führt einen weiteren Simulationsschritt durch; Rückgabewert: Spielstatus (-1: Gameover; >=0: Anzahl der Noch freien Zielfelder)
 
         void move(DIRECTION richtung);                  //Der Avatar wird vom Spieler angestoßen
 
@@ -122,6 +122,9 @@ class GAME : public LEVEL
         bool isMoving(OBJEKT object);                   //Gibt zurück, ob sich ein solches Objekt gerade am Bildschirm bewegt
 
         void makeLavaSecure(POS position);              //Lavafeld mit Block befüllen (Dezimalwert des Spielfeldes ändern. Muss beim Neustart des Levels wieder Rückgängig gemacht werden)
+
+
+        bool isPauseButtonClicked();                    //Gibt zurück, ob der Pause-Button seit dem letzten Aufruf gedrückt worden ist (im Gamelog)
 
         ~GAME();                                        //Destruktor (Speicherfreigabe usw.)
 

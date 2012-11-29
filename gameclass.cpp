@@ -144,7 +144,11 @@ GAME::~GAME()
     }
 }
 
-POS GAME::getTargetFieldCoord(POS position,DIRECTION richtung)   //Gibt die Koorinaten des Nachbarfeldes, abhängig von der Richtung, zurück
+void GAME::EnablePauseButton(bool enable)                       //Ativiert/Deaktiviert den Pause-Button im Gamelog
+{   gamelog->EnablePauseButton(enable);                         //An den Gamelog weiterleiten
+}
+
+POS GAME::getTargetFieldCoord(POS position,DIRECTION richtung)  //Gibt die Koorinaten des Nachbarfeldes, abhängig von der Richtung, zurück
 {
     switch(richtung)
     {   case UP:    return POS{position.x,position.y-1};
@@ -299,16 +303,24 @@ void GAME::move(DIRECTION richtung)
 {   avatar->move(richtung,1);       //Weiterleiten. 1= User Input
 }
 
-void GAME::run()                    //Führt einen weiteren Simulationsschritt durch
-{
-    if(kugelStartPointer!=NULL)     kugelStartPointer->run();
-    cleanupKugeln();                //Alle Kugeln, die zum löschen markiert wurden jetzt löschen
+int GAME::run()                         //Führt einen weiteren Simulationsschritt durch; Rückgabewert: Spielstatus (-1: Gameover; >=0: Anzahl der Noch freien Zielfelder)
+{   int targeted=0;
+
+    if(kugelStartPointer!=NULL)
+    {   targeted=kugelStartPointer->run();
+        cleanupKugeln();                //Alle Kugeln, die zum löschen markiert wurden jetzt löschen
+    }else
+    {   targeted=-1;                    //Game Over (keine Kugeln mehr)
+    }
     avatar->run();
     if(transporterStartPointer!=NULL)   transporterStartPointer->run(); //Alle Transporter simulieren
 
     //Hier andere Elemente simulieren
 
-    gamelog->run();                 //Gamelogger
+    gamelog->run();                     //Gamelogger
+
+    if(targeted<0 || avatar->isDead())    return -1;  //Gameover
+    return targetFieldAnz - targeted;
 }
 
 void GAME::cleanupKugeln()                //Alle Kugeln, die zum löschen markiert wurden jetzt löschen
@@ -509,8 +521,9 @@ void GAME::killObjectsOnField(POS pos)                      //Zerstört alle Kuge
 
 
 
-
-
+bool GAME::isPauseButtonClicked()                       //Gibt zurück, ob der Pause-Button seit dem letzten Aufruf gedrückt worden ist (im Gamelog)
+{   return gamelog->isPauseButtonClicked();             //Weiterleiten
+}
 
 
 

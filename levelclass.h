@@ -77,6 +77,8 @@ class LEVEL{
             POS size;                           //Größe des Spielfeldes
 
             char spielfeld[MaxYsize][MaxXsize]; //Spielfeld
+            int targetFieldAnz;                 //Anzahl der Zielfelder im Spielfeld, die befüllt werden müssen
+
             POS avatarOrigin;                                   //Startposition der Spielfigur
             struct KUGELorigin *kugelOriginStart;               //Start der Verketteten Liste mit allen Kugel-Startpositionen
             struct LOCKorigin  *lockOriginStart;                //Start der Verketteten Liste mit allen Schloss-Daten
@@ -120,6 +122,7 @@ class LEVEL{
         ///Ausgabe:
             //--- Einstellungen
             void setDisplayOptions(POS _origin,int _elsize);    //Darstellungsoptionen ändern
+            void getDisplayOptions(POS *_origin,int *_elsize);  //Darstellungsoptionen abfragen
             //--- Komplette Ausgabe
             void printPreview();                                //Ausgabe des gesametem Levels
             //--- Teile der Ausgabe

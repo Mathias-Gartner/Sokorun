@@ -64,6 +64,7 @@ char** FILESYSTEMUTILITY::EnumarateFiles(const char* directory, int* count)
 #endif //_WINDOWS_H
 }
 
+
 char** FILESYSTEMUTILITY::appendToArray(char** filesArray, int* position, char* newEntry)
 {
     char** newArray = (char**) malloc((*position)+1);

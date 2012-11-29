@@ -3,15 +3,17 @@
 //Spielschleife
 
 #include <stdlib.h>
-#include <time.h>
+#include <ctime>
+#include <stdio.h>
+#include <windows.h>
 #include "animation.h"
-#include "game.h"
 #include "globals.h"
 #include "graphics.h"
 #include "logger.h"
+#include "pausemenue.h"
 
 
-int gameMain(GAME *game)
+int gameMain(GAME *game)    //Rückgabewert: Anzahl der Kugeln die noch gefehlt haben, um das Level zu gewinnen. Wenn -1: Game Over
 {
 
     ///GAME-Klasse vorbereiten:
@@ -75,7 +77,7 @@ int gameMain(GAME *game)
         animationHandler.remove(OBJECTBUILDUP); //Animationen löschen
 
     ///Preview:
-    {   char pressed=glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN);
+    {   //char pressed=glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN);
 
         BUTTON start({{GAMELOG_X+GAMELOGPADDING,windY/2-20},{windX-GAMELOGPADDING,windY/2+20}},0,3,10,CYAN,"Spiel starten",20,YELLOW);
         prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
@@ -88,15 +90,8 @@ int gameMain(GAME *game)
             if(start.clicked()) exit=1;
 
 
-            if(pressed==0 && (glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN)))
-                pressed=2;
-            if(!(glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN)))
-            {   if(pressed==1)  pressed=0;
-                else if (pressed==2)    break;
-            }
-            if(glfwGetKey(GLFW_KEY_SPACE))
-            {   break;
-            }
+            if(glfwGetKey(GLFW_KEY_ESC)||glfwGetKey(GLFW_KEY_ENTER)||glfwGetKey(GLFW_KEY_SPACE)||glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN))
+                exit=1;
 
             start.print();
 
@@ -106,13 +101,16 @@ int gameMain(GAME *game)
     game->setGameBackgroundColor({1.0,1.0,0.5});       //Gelbes Hintergrundleuchten
 
 
-        logger(1,"Game starting...");
+    logger(1,"Game starting...");
 
 
     ///
         int movementInfoAniID=0;            //ID mit der die Animation wieder identifiziert werden kann
         int movementInfoType=0;             //Welcher Typ grade im Animationshandler eingestellt ist
         int help;
+        bool firstLoopRun=1;                //Wenn die Game-Loop das erste mal durchlaufen wird: keine Usereingabe erlaubt. (Falls sich Kugeln am Anfang auf Spezialfeldern befinden darf sich die Spielfirgur nicht bewegen)
+        int status;                         //Zur statusabfrage von GAMECLASS::run() --> zeigt an, ob WIN oder GAME OVER
+
 
         movementInfoAniID=animationHandler.add(MOVEMENTINFO,1/*drehen*/,1,0,100,2,1,&levelanimations,{0,11},{{windX-movementInfoSize/2,windY-movementInfoSize/2},{movementInfoSize,-1}});
         prepare_GameLoop();                 //Für die Spiel-/Anzeigeschleife vorbereiten
@@ -120,27 +118,37 @@ int gameMain(GAME *game)
         {   loopStart=clock();
             prepare_graphics();             //Grafiken vorbereiten
 
-
-            ///POSITION MIT TASTATUR VERÄNDERN:
-            if(glfwGetKey(GLFW_KEY_RIGHT))
-            {   game->move(RIGHT);
-            }
-            if(glfwGetKey(GLFW_KEY_LEFT))
-            {   game->move(LEFT);
-
-            }
-            if(glfwGetKey(GLFW_KEY_UP))
-            {   game->move(UP);
-
-            }
-            if(glfwGetKey(GLFW_KEY_DOWN))
-            {   game->move(DOWN);
-
+            if(game->isPauseButtonClicked())    //Pausemenü öffnen
+            {   //MessageBox(NULL,"Pause gibts noch nicht","Funktion noch nicht implementiert",MB_OK|MB_ICONWARNING);
+                pauseMenue(game);
             }
 
-            game->run();                    //Einen weiteren Simulationsschritt durchführen
+
+            if(firstLoopRun!=1)
+            {   ///POSITION MIT TASTATUR VERÄNDERN:
+                if(glfwGetKey(GLFW_KEY_RIGHT))
+                {   game->move(RIGHT);
+                }
+                if(glfwGetKey(GLFW_KEY_LEFT))
+                {   game->move(LEFT);
+
+                }
+                if(glfwGetKey(GLFW_KEY_UP))
+                {   game->move(UP);
+
+                }
+                if(glfwGetKey(GLFW_KEY_DOWN))
+                {   game->move(DOWN);
+                }
+            }
+
+
+            status=game->run();                     //Einen weiteren Simulationsschritt durchführen
+            if(status<=0)   exit=1;                 //Gewonnen bzw. verloren --> Spielschleife abbrechen
+
+
+
             ///Animationen:
-
             //Movement-Info (drehende Animation) ausgeben:
                 help=0;
                 if(game->isMoving(OBJ_KUGEL))
@@ -153,27 +161,27 @@ int gameMain(GAME *game)
                 }
                 animationHandler.run(movementInfoAniID);
             //Level-Effekte:
-                animationHandler.run(LEVELEFFECT);  //beamer,
-                animationHandler.run(LEVELFIELD);   //lava,
-
+                animationHandler.run(LEVELEFFECT);  //kollission, lavafall,...
+                animationHandler.run(LEVELFIELD);   //beamer,lava
 
             game->print();                          //Level ausgeben
             animationHandler.print(0);              //Animationen ausgeben
 
-
+            firstLoopRun=0;
         }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
 
     logger(1,"Game ended\n");
 
-    if(DEBUG)
+
+    /*if(DEBUG)
     {   //für debugging-zwecke: warten, bis ESC gedrückt wurde
         do
         {   loopStart=clock();
             prepare_graphics();             //Grafiken vorbereiten
             game->print();
         }while(complete_graphics(loopStart,GAMESPEED));    //Abschlussarbeiten und Abbruch-Überprüfung
-    }
-    return 0;
+    }*/
+    return status;
 }
 
 
