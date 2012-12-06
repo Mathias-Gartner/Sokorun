@@ -9,14 +9,13 @@
 #include <time.h>
 #include <windows.h>
 #include "display.h"
+#include "globals.h"
 #include "graphics.h"
 #include "kugel.h"
 #include "levelclass.h"
 #include "lock.h"
 #include "logger.h"
 #include "transporter.h"
-
-extern TEXTURE leveltiles;
 
 
 bool freadToChar(FILE *datei,const char symbol)

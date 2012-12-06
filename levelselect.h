@@ -6,8 +6,20 @@
 class LEVELSELECT
 {
     public:
+        typedef struct str_levelfile
+        {
+            LEVEL* level;
+            char name[MAX_PATH];
+            char path[MAX_PATH];
+            HIGHSCORE score;
+
+            struct str_levelfile *prev;
+            struct str_levelfile *next;
+        } LEVELFILE;
+
         LEVELSELECT();
         ~LEVELSELECT();
+        static LEVELSELECT* GetCurrent() {if (_instance == NULL) new LEVELSELECT(); return _instance;}
         /*
             false: Auswahl abgebrochen, Rückkehr ins MainMenu
             true: Level ausgewählt, Name in GetLevelName
@@ -15,20 +27,15 @@ class LEVELSELECT
         int Select();
         void SwitchLevel(int jumpWidth);
         // Objects received by GetLevel() will be destroyed when SwitchLevel() is called.
-        LEVEL* GetLevel() {return currentLevel;}
-        char* GetLevelName() {return levelName;}
-        char* GetLevelPath() {return GetLevelPath(GetLevelName(), true);}
-        HIGHSCORE* getCurrentLevelScore() {return currentLevelScore;}
+        LEVELFILE* GetLevel() {return currentLevel;}
     private:
         bool isInputValid();
-        char* GetLevelPath(const char* levelName, bool appendExtension);
+        bool GetLevelPath(char* levelPath, const char* levelName, bool appendExtension);
+        static bool addLevelListEntry(char* levelFileName);
+        static LEVELSELECT* _instance;
         char* levelName;
-        char **levels;
-        char levelPath[MAX_PATH];
+        LEVELFILE* currentLevel;
         int levelCount;
-        LEVEL *currentLevel;
-        int currentLevelIndex;
-        HIGHSCORE *currentLevelScore;
 };
 
 #endif // LEVELSELECT_H_INCLUDED

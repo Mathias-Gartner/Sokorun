@@ -11,6 +11,9 @@ const char HIGHSCORE::path[] = "daten\\highscore\\";
 
 HIGHSCORE::HIGHSCORE(char* levelname)
 {
+    m_moves = 0;
+    m_time = {0, 0, 0};
+    m_timesplayed = 0;
     isLoaded = false;
 
     if (strlen(levelname)<MAX_PATH)

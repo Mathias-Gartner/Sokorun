@@ -242,7 +242,7 @@ int main(int argc,char* argv[])
 
     if (success)
     {
-        GAME *game=new GAME({50,50},40,levelselect->GetLevelPath());
+        GAME *game=new GAME({50,50},40,levelselect->GetLevel()->path);
         if(game->getStatus() != 0)
         {
             char *dateP,*timeP;
@@ -252,8 +252,11 @@ int main(int argc,char* argv[])
 
         gameMain(game);
 
-        /*HIGHSCORE *score = new HIGHSCORE(levelselect->GetLevelName());
-        score->Setmoves(100);
+        /*HIGHSCORE *score = levelselect->getCurrentLevelScore();
+        if (game->getMoves() < score->getMoves())
+            score->setMoves(game->getMoves());
+        if (game->getTime() < score->getTime())
+            score->setTime(game->getTime());
         score->Save();*/
     }
     else
