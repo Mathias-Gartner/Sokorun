@@ -12,9 +12,9 @@ class GAMEBACKGROUND
         AREA area;              //Soll-Ausgabefläche
 
 
-        float alpha;
+        double alpha;
 
-        int colorProgress;      //Zu wieviel % die neue Farbe g=nommen wird
+        double colorProgress;   //Zu wieviel % die neue Farbe g=nommen wird
 
         COLOR old;              //Letze Farbe
         COLOR final;            //Soll-Farbe
@@ -33,6 +33,7 @@ class GAMEBACKGROUND
         void print(int bx,bool printshine=1);   //Ausgabe. bx = X-position, bis zu der der Hintergrund ausgegeben werden soll (gilt nicht für shine)
         void setColor(COLOR _target);           //Neue, endgültige Farbe wählen
         void setSplashColor(COLOR _splash);     //Farbe einstellen, die kurzfristig verwendet werden soll
+        void reset();                           //Setzt den Hintergrund zurueck
 };
 
 class GAME : public LEVEL
@@ -40,6 +41,7 @@ class GAME : public LEVEL
     private:
         ///Allgemeine Zustandsdaten:
             int prepared;
+            bool levelfieldAnimationsPrepared;  //Gibt an, ob die Animationen für animierte Levelfelder bereits im Animationshanlder eingetragen wurden
         ///Levelobjekte:
             class AVATAR *avatar;
             class KUGEL  *kugelStartPointer;                //Verkettete Klasse
@@ -59,27 +61,30 @@ class GAME : public LEVEL
 
         ///Sonstiges:
             /*private Prototypen*/
-            void collision(POS position,DIRECTION richtung,COLOR color);                        //Erzeugt eine Aufprall-Animation
-
+            int collision(POS position,DIRECTION richtung,COLOR color);             //Erzeugt eine Aufprall-Animation (Rückgabewert: Animations-ID)
+            void prepareLevelfieldAnimations();                                     //Fügt die Animationen für animierte Levelfelder (zB. Lava) in den Animationshandler ein
     public:
         GAME(POS origin,int elsize,const char *LVLpath,const bool skipMinorErrors=0):   LEVEL(origin,elsize,LVLpath,skipMinorErrors), //Konstruktor der Oberklasse "LEVEL"
                                                                                         gamebackground(AREA{{0,0},{windX-GameLogWidth,windY}})
         {   prepared=0;
+            levelfieldAnimationsPrepared=0;                                         //Animationen für Levelfelder (zB. Lava) noch nicht erstellt
             avatar=NULL;
             kugelStartPointer=NULL;                                                 //Verkettete Kugel-Klasse beinhaltet keine Elemente
             lockStartPointer=NULL;                                                  //Verkettete Schloss-Klasse beinhaltet keine Elemente
+            transporterStartPointer=NULL;
 
             avatarAnimationCompleted=0;
             kugelAnimationCompleted=0;
         }
 
-        //void lavafallAnimation(POS position);                                                 //Ezrueg eine Animation für ein in die Lava gefallenes Objekt
-        void addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung=NONE,COLOR color=WHITE,int progress=0);    //Erzeugt eine Animation
+        //void lavafallAnimation(POS position);                                     //Erzeugt eine Animation für ein in die Lava gefallenes Objekt
+        int addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung=NONE,COLOR color=WHITE,double progress=0);    //Erzeugt eine Animation (Rückgabewert: Animations-ID)
 
 
         void addGameLogEvent(GameEventType type,DIRECTION richtung);                            //Event hinzufügen
 
         POS getTargetFieldCoord(POS position,DIRECTION richtung);                   //Gibt die Koorinaten des Nachbarfeldes, abhängig von der Richtung, zurück bzw. das Feld des Zielbeamers
+        bool getLevelfieldAnimationsPrepared();                                     //Abfragen, ob die Animierten Levelfelder bereits erstellt wurden
 
         void setupGameData();                                                       //Lädt die Leveldaten und Initialisiert alle Game-Daten (muss vor dem Spielen aufgerufen werden)
         void initBuildupAnimationSpecialElements();                                 //Animation für das Einblenden der Overlay-Elemente (zB. Avatar, Kugeln, Transporter+Schienen, Schlösser)
@@ -101,7 +106,7 @@ class GAME : public LEVEL
 
         void printPreview();                            //Vorschau anzeigen (inkl. Levelhintergrund)
         bool runBuildupAnimation();                     //Level aufbauen (inkl. Levelhintergrund)
-        void printFloor();                              //Spielfläche ausgeben (inkl. Levelhintergrund)
+        void printFloor(bool printAnimatedFields=0);    //Spielfläche ausgeben (inkl. Levelhintergrund)
         void setGameBackgroundSplashColor(COLOR splash);//kurzfristige Farbe setzen
 
         void setGameBackgroundColor(COLOR target);      //Setzt die Farbe des Leuchtens im Spielhintergrund
@@ -127,6 +132,7 @@ class GAME : public LEVEL
         bool isPauseButtonClicked();                    //Gibt zurück, ob der Pause-Button seit dem letzten Aufruf gedrückt worden ist (im Gamelog)
 
         ~GAME();                                        //Destruktor (Speicherfreigabe usw.)
+        void clearGameData();                           //Löscht alle Spieledaten, damit diese später wieder neu geladen werden können
 
         void cleanupKugeln();                           //Alle Kugeln, die zum löschen markiert wurden jetzt löschen
 

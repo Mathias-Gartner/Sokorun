@@ -41,62 +41,124 @@ void prepare_GameLoop()//Wird vor dem betreten der Spiele- und Anzeigeschleife a
     glAlphaFunc(GL_GREATER,0.1f);
     glEnable(GL_ALPHA_TEST);
 
-    /*int width, height;
-    glfwGetWindowSize(&width,&height);
-    glViewport( 0, 0, width, height );              //set Origin (außerhalb kann nicht gezeichnet werden)
-    glOrtho(0,windowSize.x,0,windowSize.y,0,128);   //2D-Modus; z-Koordinate wird nicht verwendet
-    */
-
     graphicMode=DRAWING;
+    cleanupFrameArray();            //Frame-Array leeren
 }
 
 void prepare_graphics()//Wird zu beginn jedes Durchgangs in der Spiele- und Anzeigeschleife aufgerufen
 {
     static int width, height;       //Tatsächliche Fentergröße in Pixel
-
-    if(AutoAdjustWindowSize)        //Seitenverhältnisse kontrollieren
-    {   glfwGetWindowSize(&width,&height);
-        if((float)width/(float)height != ((float)windowSize.x / (float)windowSize.y))
+    glfwGetWindowSize(&width,&height);
+    if(AutoAdjustWindowSize)        //Seitenverhältnisse kontrollieren (coordPixel==0 --> Fenster=minimiert)
+    {
+        if(coordPixel==0 || (float)width/(float)height != ((float)windowSize.x / (float)windowSize.y))
         {   width = ((float)windowSize.x / (float)windowSize.y) * height;
             glfwSetWindowSize(width,height);
             coordPixel=(float)width/windowSize.x;
-            glViewport( 0, 0, width, height );              //set Origin (außerhalb kann nicht gezeichnet werden)
         }
-
     }
+
     height = height > 0 ? height : 1;
+    glViewport( 0, 0, width, height );              //set Origin (außerhalb kann nicht gezeichnet werden) -Muss an dieser Position stellen, da beim minimieren und wiederherstellen sonst die Anzeige schwarz sein könnte
 
     glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );         //Hintergrundfarbe
     glClear(GL_COLOR_BUFFER_BIT);
-    //glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0,windowSize.x,0,windowSize.y,0,128);   //2D-Modus; z-Koordinate wird nicht verwendet
     glMatrixMode(GL_MODELVIEW);                     //auf Standard-Matrix umschalten
 
     getMousePos(&mouse);                            //Mauskoordinaten erhalten
-    //mouse.run();                                    //Mausdaten aktualisieren
-
+    //Sleep(20);
 }
 
 
-//Übergabeparameter:
-//  1.) loopStart           [time]  Zeitpunkt, zu dem die Spiele- und Anzeigeschleife in diesen Durchgang gestartet ist
-//  (2) loopSpeed           [ms]    Wielange ein Schleifendurchgang dauern muss
 //Rückgabewert:
 //  -)  Abbruchbedingung    [bool]  Ob die Schleife abgebrochen werden soll (false) oder weiterlaufen darf (true)
-int complete_graphics(long loopStart,unsigned int loopSpeed=10)//Wird am Ende jedes Durchgangs in der Spiele- und Anzeigeschleife aufgerufen
+int complete_graphics()//Wird am Ende jedes Durchgangs in der Spiele- und Anzeigeschleife aufgerufen
 {   if(kbhit()){getch();system("CLS");}             //Ein Tastendruck in der Konsole führt zum löschen des Inhalts
 
     glfwSwapBuffers();                              //erzeugte Grafikdaten ausgeben
-    static int td;
-    td=loopSpeed-(clock()-loopStart);
 
-    if(TIMEDEBUGOUTPUT) printf("%4dms -> ",(int)(clock()-loopStart));
+    static char abnorm=0;
+    int prevIndex=frameArrayIndex;
 
-    if(td-1 > 0){Sleep(td-1);}                      //Grob, Blockiert das Programm --> Statt 100% CPU-Auslasten nur noch 10% (Stand: Ver. 13.11.2012)
-    while(clock()-loopStart<(int)loopSpeed);        //genaue, gleichmäßige Geschwindigkeit garantieren
+    //Künstlich verzögern (für schnelle PCs)
+        static int ms;
+        ms=clock()-frameArray[frameArrayIndex];  //Anz. der ms der letzten Schleife
+        if(TIMEDEBUGOUTPUT) printf("%d ms",ms);
+        if(ms<2)
+        {   Sleep(2-ms);
+            if(TIMEDEBUGOUTPUT) printf("   slowing down: %d ms",(2-ms));
+        }
+        if(TIMEDEBUGOUTPUT)printf("\n");
+    //Indizes erhöhen:
+        ++frameArrayIndex%=(frameArraySize+1);
+        if(frameArrayIndex==lastFrameArrayIndex)    //Nur erhöhen, wenn das Array voll ist. (Die ersten frameArraySize Durchgänge nicht)
+            ++lastFrameArrayIndex%=(frameArraySize+1);
+    //Anz. der bisherigen Werte herausfinden:
+        int valueAnz=frameArrayIndex-lastFrameArrayIndex;
+        if(valueAnz<0)  valueAnz=frameArraySize;    //Array ist voll
 
-    if(TIMEDEBUGOUTPUT) printf("%4dms (soll: %4dms)\n",(int)(clock()-loopStart),loopSpeed);
+    //akt. Index mit Wert füllen:
+        frameArray[frameArrayIndex]=clock();
+        //printf("akt.: %d (%5d); oldest: %d(%5d)  --> %d values, %d\n",frameArrayIndex,frameArray[frameArrayIndex],lastFrameArrayIndex,frameArray[lastFrameArrayIndex], valueAnz    ,(frameArray[frameArrayIndex]-frameArray[lastFrameArrayIndex]));
+
+        //Starke abweichungen erfassen un  korrigieren (wenn zB. die Fenstergröße verändert wird):
+        if(frameArray[frameArrayIndex] - frameArray[prevIndex] > 10000.0f/FPS)   //unrealistischer Wert (10-fach  höher) - das Spiel muss pausiert worden sein
+        {   if(abnorm<3)//Wenn 3x eine Abweichung gemessen wurde: Miteinberechnen, da sie regelmäßig vorkommt
+            {   abnorm++;
+                logger(1,"FPS-calculation: Ignoring unrealistic value (loop-cycle=%dms @ %4.1ffps). Buffersize: %d",frameArray[frameArrayIndex] - frameArray[prevIndex],FPS,valueAnz);
+                //Abweichung berechnen:
+                    int inc=(frameArray[frameArrayIndex]-frameArray[prevIndex])-(1000.0f/FPS);
+                //Alle bisherigen Werte um die abweichung erhöhen:
+                    int i=lastFrameArrayIndex;
+                    while(i!=frameArrayIndex)
+                    {   frameArray[i]+=inc;
+                        i++;
+                        if(i>frameArraySize)
+                        {   i=0;
+                        }
+                    }
+            }
+        }else if(abnorm>0)
+            abnorm--;
+
+    //FPS berechnen:
+        FPS=(1000*valueAnz)/(double)(frameArray[frameArrayIndex]-frameArray[lastFrameArrayIndex]);
+        if(FPS<15)
+        {   FPS=15;
+            static bool once=1;
+            if(once)
+            {   once=0;
+                error("complete_graphics()","Die Spielgeschwindigkeit hat das Limit von 15fps unterschritten. Um die Physik nicht zu gefaehrden wird die Berechnungsgrundlage nicht weiter abgesenkt. Diese Meldung wird nicht mehr angezeigt");
+            }
+        }
+        if(FPS>5000)
+        {   FPS=5000;
+            static bool once=1;
+            if(once)
+            {   once=0;
+                 error("complete_graphics()","Die Spielgeschwindigkeit hat das Limit von 5.000fps ueberschritten. Um die Physik nicht zu gefaehrden wird die Spielgeschwindigkeit erhoeht. Diese Meldung wird nicht mehr angezeigt");
+            }
+        }
+
+    if(TIMEDEBUGOUTPUT)
+    {   char title[64];
+        sprintf(title,"SokoRun  -  %4.1ffps",FPS);
+        glfwSetWindowTitle(title);          //Fenstername
+    }
+
+    /*if(TIMEDEBUGOUTPUT)
+    {   static int num=0;
+        static int sum=0;
+        sum+=(int)(clock()-loopStart);
+        num++;
+        if(num==20)
+        {   printf("~%4.1fms\n",((float)sum/num));
+            sum=0;
+            num=0;
+        }
+    }*/
 
     return (/* !glfwGetKey(GLFW_KEY_ESC) &&*/glfwGetWindowParam(GLFW_OPENED));//Abbruchbedingung
 }

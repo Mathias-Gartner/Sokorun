@@ -61,7 +61,7 @@ class GAMELOG
 
             //Für das nach-unten-schieben bei einem neuen Event:
 
-            int progress;                               //Scoll-Fortschritt ind % (0-100)
+            double progress;                            //Scoll-Fortschritt ind % (0-100)
 
 
         ///BUTTONS:

@@ -19,7 +19,7 @@ AVATAR::AVATAR(GAME *gamePointer,POS *originPointer,int *elsizePointer,POS *leve
     elsize=elsizePointer;                       //Größe eines Elementes/Feldes
     levelSize=levelSizePointer;                 //Levelgröße
 
-    deathProgress=0;                            //Avatar=nicht tot
+    death=0;                                    //Avatar=nicht tot
 
     if(*elsize<1)
     {   error("AVATAR::AVATAR()","Fehler - Die Elementgroesse ist zu niedrig - der Inhalt des Pointers wird auf 40 gesetzt- elsize=%d",*elsize);
@@ -40,7 +40,7 @@ AVATAR::AVATAR(GAME *gamePointer,POS *originPointer,int *elsizePointer,POS *leve
 
 
 void AVATAR::print()
-{   if(deathProgress!=0)                                                //Avatar=Tot
+{   if(death!=0)                                                //Avatar=Tot
     {   return;
     }
     game->printMovingObject(&movement,position,TILE_AVATAR);
@@ -72,7 +72,7 @@ void AVATAR::print()
 
 void AVATAR::move(DIRECTION richtung,bool _userinput=0)
 {   if(richtung==NONE)  return;                                         //Nicht bewegen (kommt vor, wenn der Avatar am Eis steht und nicht rutscht)
-    if(deathProgress>0) return;                                         //Avatar bereits tot
+    if(death!=0) return;                                         //Avatar bereits tot
 
     if(isMoving())
     {   /*Avatar kann sich nicht bewegen weil er bereits in bewegung wird*/
@@ -105,10 +105,11 @@ void AVATAR::move(DIRECTION richtung,bool _userinput=0)
 
 void AVATAR::run()                                                              //Führt einen Simulationsschritt durch
 {
-    if(deathProgress>0)                                                         //Avatar=Tot
-    {   deathProgress+=DIEINGSPEED;
+    if(death!=0)                                                                 //Avatar=Tot
+    {   /*deathProgress+=DIEINGSPEED;
         if(deathProgress>=100)                                                  //Jetzt das Spiel beenden
             deathProgress=100;
+        */
         return;
     }
 
@@ -122,14 +123,14 @@ void AVATAR::run()                                                              
             movement.blocking=1;
             //Wenn nein, wird automatisch innerhalb dieses if's wieder abgeblockt und im nächsten Durchgang landet man hier
         }else
-            movement.progress+=movement.moving*WALKING_SPEED;                       //Vor bzw. Zurück Bewegen
+            movement.progress+=movement.moving*AVATAR_SPEED;                    //Vor bzw. Zurück Bewegen
 
 
         POS next=game->getTargetFieldCoord(position,movement.richtung);
 
 
 
-        if(movement.moving==1 && movement.richtung!=BEAM && movement.progress >= Wkey && movement.progress < Wkey+WALKING_SPEED)//Bei genau diesem Schritt könnte ein Schlüssel berührt und das Schloss geöffnert werden
+        if(movement.moving==1 && movement.richtung!=BEAM && movement.progress >= Wkey && movement.progress < Wkey+AVATAR_SPEED)//Bei genau diesem Schritt könnte ein Schlüssel berührt und das Schloss geöffnert werden
         {   LOCK *touchedLock=game->KeyOnField(next);
             if(touchedLock != NULL)
             {   game->openLock(touchedLock);                                        //Öffnet (=löscht) das Schloss
@@ -137,7 +138,7 @@ void AVATAR::run()                                                              
             }
         }
 
-        if(movement.moving==1 && movement.richtung!=BEAM && movement.progress >= Wkgl && movement.progress < Wkgl+WALKING_SPEED)//Bei genau diesem Schritt könnte angestoßen werden
+        if(movement.moving==1 && movement.richtung!=BEAM && movement.progress >= Wkgl && movement.progress < Wkgl+AVATAR_SPEED)//Bei genau diesem Schritt könnte angestoßen werden
         {   KUGEL *touchedKugel=game->KugelOnField(next,NULL);
 
             if(touchedKugel != NULL)                                                //Im nächsten Feld ist eine Kugel
@@ -223,14 +224,14 @@ void AVATAR::run()                                                              
             case tr: move(turnRight(movement.lastRichtung)); break;     //Nach rechts (90° im Uhrzeigersinn) weiterruthschen
             case tl: move(turnLeft (movement.lastRichtung)); break;     //Nach links (90° gegen Uhrzeigersinn) weiterruthschen
             case dt:{   /*Tödlich*/
+                        death=-1;
                         int feld=game->getField(position);              //Feldtyp herausfinden
                         switch(feld)
-                        {   case TILE_LAVA:     game->addFieldEffect(position,AVATARLAVA); break;                /*lava*/
+                        {   case TILE_LAVA:     death=game->addFieldEffect(position,AVATARLAVA); break;                /*lava*/
                             default:            error("AVATAR::run()","Ubekanntes, toedliches Feld. Es wird keine Animations ausgegeben. feld: %d",feld);
                         }
                         game->addGameLogEvent(AVATARDEATH, NONE);             //Ereignis berichten
                         game->addGameLogEvent(GAMEOVER, NONE);                //Ereignis berichten
-                        deathProgress=1;                                //Den Avatar zu Tode verurteilen
                     }break;
             case fx: /*do nothing*/ break;
             case nm: /*do nothing*/ break;
@@ -242,7 +243,7 @@ void AVATAR::run()                                                              
 
 void AVATAR::stopMovementTo(POS pos,int limit)                         //Wenn sich der Avatar gerade auf dieses Feld zubewegt: abprallen lassen
 {
-    if(movement.moving==1 && deathProgress==0)
+    if(movement.moving==1 && death==0)
     {   if(poscmp(pos,game->getTargetFieldCoord(position,movement.richtung)))       //Der Avatar bewegt sich auf dieses Feld zu
         {   if(movement.progress>=limit)
             {   movement.moving=-1;                                     //sofort abprallen
@@ -256,7 +257,7 @@ void AVATAR::stopMovementTo(POS pos,int limit)                         //Wenn si
 }
 
 void AVATAR::killOnField(POS pos)                                       //tötet den Avatar, wenn er die übergebene Position blockiert
-{   if(deathProgress>0) return;                                         //bereits tot
+{   if(death!=0) return;                                                //bereits tot
 
     bool kill=0;                                                        //Zwischenspeicher ob der Avatar getötet werden soll
     if(movement.moving==0 || movement.progress<=100-OccupiedLimit)      //Avatar befindet sich am eigenen position-Feld
@@ -272,16 +273,15 @@ void AVATAR::killOnField(POS pos)                                       //tötet 
 
     if(kill)
     {   int feld=game->getField(position);              //Feldtyp herausfinden
-        game->addFieldEffect(position,AVATARKILL,((movement.moving==0)?NONE:movement.richtung),WHITE,movement.progress);
+        death=game->addFieldEffect(position,AVATARKILL,((movement.moving==0)?NONE:movement.richtung),WHITE,movement.progress);  //Den Avatar zu Tode verurteilen
         game->addGameLogEvent(AVATARDEATH, NONE);             //Ereignis berichten
         game->addGameLogEvent(GAMEOVER, NONE);                //Ereignis berichten
-        deathProgress=1;                                //Den Avatar zu Tode verurteilen
     }
 }
 
 bool AVATAR::AvatarOnField(POS pos)                                     //Überprüft, ob der Avatar dieses Feld blockiert
 {
-    if(deathProgress>0) return 0;                                       //Avatar bereits tot
+    if(death!=0) return 0;                                              //Avatar bereits tot
 
     if(movement.moving==0 || movement.progress<=100-OccupiedLimit)      //Avatar befindet sich am eigenen position-Feld
     {   if(poscmp(pos,position))                                        //=gesuchte Position
@@ -309,13 +309,14 @@ bool AVATAR::AvatarOnField(POS pos)                                     //Überpr
 
 bool AVATAR::isMoving()                                                 //gibt zurück, ob sich der Avatar gerade bewegt
 {
-    if(deathProgress>0 || movement.moving==0 || (movement.moving==-1 && propRicCmp(movement.richtung,game->getFieldProperty(OBJ_AVATAR,position))))
+    if(death!=0 || movement.moving==0 || (movement.moving==-1 && propRicCmp(movement.richtung,game->getFieldProperty(OBJ_AVATAR,position))))
         return 0;
     return 1;
 }
 
 bool AVATAR::isDead()                                                   //Gibt zurück ob der Avatar tot ist, und die Todesanimation abgeschlossen ist (DeatchProgress>=100)
-{   if(deathProgress>=100)
+{
+    if(death!=0 && !animationHandler.isActive(death))                   //Animation abgeschlossen
         return 1;
     return 0;
 }

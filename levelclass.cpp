@@ -68,6 +68,8 @@ LEVEL::LEVEL(POS _origin,int _elsize,const char *LVLpath="",const bool skipMinor
     lockOriginStart=NULL;               //Keine Schlösser in der verketteten Liste
     transporterOriginStart=NULL;        //Keine Transporter in der Verketteten Liste
 
+    resetDisplayList();                 //Display-Liste löschen
+
     if(strcmp(LVLpath,"")!=0)           //Levelpfad zum laden übergeben
     {   loadLevel(LVLpath,skipMinorErrors);   //Level aus der Datei laden (Es wird die sichere Methode verwendet)
     }
@@ -86,6 +88,7 @@ void LEVEL::loadLevel(const char *LVLpath,const bool skipMinorErrors=0)         
 void LEVEL::cleanup()   //Setzt alle Leveldaten zurück und gibt den Speicher wieder frei der reserviert wurde
 {   //Muss zB. nach dem Ladeversuch eines fehlerhaften Levels ausgeführt werden
     status=0;
+    resetDisplayList();                 //Displayliste löschen/zurücksetzen
 
     //Verkettete Liste mit Kugeln freigeben:
     {   KUGELorigin *p=kugelOriginStart,*q;
@@ -366,7 +369,7 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
 
                 p->next=transporterOriginStart;
 
-                p->start=NULL;  //Noch unbekannt
+                p->start=NULL;          //Noch unbekannt
 
                 if(freadToChar(level,'[')) {free(p);return 1;} if(fscanf(level,"%d]",&length) != 1){ error("LEVEL::loadLevel()","Transporter: Anzahl der Positionsdaten konnte nicht geladen werden. Nummer: %d",i+1);free(p);return 1; }   //Anzahl der Positionsdaten
                         if(length<2) {error("LEVEL::loadLevel()","Transporter: Das Schienennetz (Laenge) ist zu kurz. Nummer: %d; Laenge: %d",i+1,length); free(p); return 11;}         //zu Kurzes Schienennetz
@@ -449,7 +452,8 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
                 if(i<NtransAnz) p->type=0;  //Normaler Transporter
                 else            p->type=1;  //Tödlicher Transporter
                 p->reverse=bidirectional;   //Der Transporter darf nur umkehren, wenn er Bidirektional ist (in diesem Levelformat)
-                p->speed=1+rand()%20;
+                p->startDirection=0;        //Nach vorne losbewegen
+                p->speed=1+((rand()%20-10)/15.0);
 
                 transporterOriginStart=p;   //Transporter am Anfang anhängen
                 //outputType aller Elemente berechnen:
@@ -457,8 +461,6 @@ int LEVEL::levelloader(const char *LVLpath,const bool skipMinorErrors=0)//skipMi
                 {   return 17;  //Fehler im Schienennetz
                 }
             }
-
-
 
     ///SCHLÖSSER:
             if(lockOriginStart!=NULL)
@@ -642,14 +644,14 @@ bool LEVEL::runBuildupAnimation()
     }
     if(animationType==0)//Noch unbekannt
     {   srand(clock());
-        animationType=(rand()%3)+1;
+        animationType=3;//(rand()%3)+1;
     }
     if(animationType==1)
     {   if(buildupAnimationProgress==0)
         {   srand(clock());                                         //Zufallszahlen generieren
             buildupAnimationOrigin={rand()%size.x,rand()%size.y};   //Ursprung auf einen Zufallswert setzen
         }
-        buildupAnimationProgress++;
+        buildupAnimationProgress+=LEVELBUILDUP_ANI_SPEED;
 
         buildupAnimationCompleted=1;                    //Zur überprüfung, ob die Animation abgeschlossen wurde
         for(int y=0;y<size.y;y++)
@@ -676,7 +678,7 @@ bool LEVEL::runBuildupAnimation()
         {   srand(clock());                                         //Zufallszahlen generieren
             variation=rand()%8;
         }
-        buildupAnimationProgress+=5;
+        buildupAnimationProgress+=LEVELBUILDUP_ANI_SPEED*5;
         for(int i=0;i<buildupAnimationProgress;i++)
         {   int x,y;
             if((variation&0x01) != 0)   //Erst waagrecht, dann senkrecht
@@ -709,9 +711,9 @@ bool LEVEL::runBuildupAnimation()
             }
             srand(clock());                             //Zufallszahlen generieren
         }
-        buildupAnimationProgress+=2;
+        buildupAnimationProgress=1;//=LEVELBUILDUP_ANI_SPEED;
         //weitere Felder, die angezeigt werde sollen, suchen:
-        for(int i=0;i<3;i++)
+        for(int i=0;i<LEVELBUILDUP_ANI_SPEED*5;i++)
         {   variation=0;                                //Verwendung als Timeout (um eine endlosschleife zu verhindern)
             do
             {   pos.x=rand()%size.x;
@@ -753,7 +755,7 @@ void LEVEL::printPreview()
     {   error("LEVEL::printPreview()","Das Level darf nicht ausgegeben werden, da es keine gueltigen Daten enthaelt. status=%d",status);
         return;
     }
-    printFloor();
+    printFloor(true);
     //Danach:
     //*******
     //
@@ -822,36 +824,50 @@ void LEVEL::printTransporter()                              //Gibt alle Schienen
 }
 
 
+void  LEVEL::resetDisplayList()                                            //Die Displayliste für den Levelboden wird neu erstellt (weil sich das Level geändert hat. zB. wenn eine Blockkugel in die Lava fällt)
+{   if(gamefloorPrepared)
+    {   glDeleteLists(gamefloor,1);
+        gamefloorPrepared=0;
+    }
+}
 
-void LEVEL::printFloor()
+void LEVEL::printFloor(bool printAnimatedFields)
 {
     if(status!=1)
     {   error("LEVEL::printFloor()","Das Level darf nicht ausgegeben werden, da es keine gueltigen Daten enthaelt. status=%d",status);
         return;
     }
-    /* * /
-    if(!gamefloorPrepared)
-    {   gamefloor = glGenLists(1);
+
+    /* */
+    if(!gamefloorPrepared || (printAnimatedFields != glListIncludesAnimatedFields))
+    {   resetDisplayList();
+
+        gamefloor = glGenLists(1);
 
         glNewList(gamefloor,GL_COMPILE_AND_EXECUTE);
             for(int y=0;y<size.y;y++)
             {   for(int x=0;x<size.x;x++)
-                {   printFloorElement(spielfeld[y][x],{x,y});
+                {   if(!(printAnimatedFields==0 && (spielfeld[y][x]==TILE_LAVA)))     //Diese Elemente werden animiert
+                    {   printFloorElement(spielfeld[y][x],{x,y});
+                    }
                 }
             }
         glEndList();
         gamefloorPrepared=1;
+
+        glListIncludesAnimatedFields=printAnimatedFields;
     }else
     {   glCallList(gamefloor);
     }
 
-
     /*/
     for(int y=0;y<size.y;y++)
     {   for(int x=0;x<size.x;x++)
-        {   printFloorElement(spielfeld[y][x],{x,y});
+        {   if(element==TILE_LAVA)  return;     //Diese Elemente werden animiert
+            printFloorElement(spielfeld[y][x],{x,y});
         }
     }/* */
+
 }
 
 void LEVEL::printKugelnAtOrigins()

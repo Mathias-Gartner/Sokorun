@@ -108,14 +108,14 @@ int KUGEL::run(int targeted)                                            //Führt 
                 movement.blocking=1;
                 //Wenn nein, wird automatisch innerhalb dieses if's wieder abgeblockt und im nächsten Durchgang landet man hier
             }else
-            {   movement.progress+=movement.moving*WALKING_SPEED;               //Vor bzw. Zurück Bewegen
+            {   movement.progress+=movement.moving*KUGEL_SPEED;         //Vor bzw. Zurück Bewegen
             }
             POS targetField=game->getTargetFieldCoord(position,movement.richtung);  //Zielfeld bestimmen
 
             ///Auf Hindernisse überprüfen: (limit nicht darauf ausgelegt)
             if(movement.moving==1)
             {
-                if(movement.progress >= Wkgl && movement.progress < Wkgl+WALKING_SPEED)//Bei genau diesem Schritt könnte eine Kugel berührt werden
+                if(movement.progress >= Wkgl && movement.progress < Wkgl+KUGEL_SPEED)//Bei genau diesem Schritt könnte eine Kugel berührt werden
                 {   KUGEL *touchedKugel=game->KugelOnField(targetField,this);
                     if(touchedKugel != NULL)                                    //Im nächsten Feld ist eine Kugel
                     {   ///IM NÄCHSTEN FELD IST EINE KUGEL --> Abprallen
@@ -129,7 +129,7 @@ int KUGEL::run(int targeted)                                            //Führt 
                     }
                 }
 
-                if(movement.blocking||(movement.progress >= Wava && movement.progress < Wava+WALKING_SPEED))//Bei genau diesem Schritt könnte der Avatar berührt werden
+                if(movement.blocking||(movement.progress >= Wava && movement.progress < Wava+KUGEL_SPEED))//Bei genau diesem Schritt könnte der Avatar berührt werden
                 {   if(game->AvatarOnField(targetField))                  //Im nächsten Feld ist der Avatar
                     {   ///IM NÄCHSTEN FELD IST DER AVATAR --> Abprallen
                         movement.moving=-1;                                     //Die Kugel prallt sofort ab (Der Avatar der sich im nächsten Feld befindet wird sich nicht bewegen)

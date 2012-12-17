@@ -15,8 +15,7 @@ class AVATAR
             POS *levelSize;             //Levelgröße
 
         ///Daten:
-            int deathProgress;          //Wenn der Avatar Tot ist: Todes-Animation (1-100%)
-                //0: Der Avatar ist noch nicht Tot
+            int death;                  //Wenn der Avatar Tot ist: Animations-ID, oder -1 (wenn es keine Animation gibt);   0: Der Avatar ist noch nicht Tot
 
             POS position;
             MOVEMENT movement;          //Bewegung des Avatars

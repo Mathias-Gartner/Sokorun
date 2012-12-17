@@ -6,9 +6,9 @@
 
 enum ANITYPE
 {
-    BASIC,
-    LEVELFIELD,
-    LEVELEFFECT,
+    //BASIC,
+    LEVELFIELD,         //zB. Lava
+    LEVELEFFECT,        //zB. Lavablase
     OBJECTBUILDUP,      //Beim Aufbauen des Levels: Einblendeanimationen von Objekten
     MOVEMENTINFO        //Im Spiel: drehendes Element, dass anzeigt dass sich der Avatar und/oder eine Kugel bewegen
 };
@@ -56,7 +56,7 @@ class ANIMATION
                 //2: Nein - vom Anfang wiederholen
                 //3: Nach Ende der Simulation wird sie gestoppt und das letzte Bild immer wieder ausgegeben
 
-            float speed;                        //Animationsgeschwindigkeit (% pro Simulationsschritt)
+            double speed;                        //Animationsgeschwindigkeit (% pro Simulationsschritt)
                 //0: manuelle Erhöhung
 
         ///Ausgabeeinstellungen:
@@ -87,7 +87,7 @@ class ANIMATION
     public:
         ANIMATION(ANITYPE _anitype,int _identification,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay=WHITE);//Erstellung einer neuen Animation
 
-        void setProgress(int newProgress);                  //Fortschritt manuell ändern
+        void setProgress(double newProgress);               //Fortschritt manuell ändern
         void setSpritePos(POS _spritePos);                  //Sprite ändern
 
         //void setSpriteArea(fAREA _spriteArea);              //spriteArea setzen
@@ -96,6 +96,7 @@ class ANIMATION
         ANITYPE getAnitype();                               //Gibt den Animationstypen zurück
         int getType();                                      //Gibt den Animationstyp zurück
         int getReverse();                                   //Gibt den Reverse-Wert zurück
+        const AREA* getOutputArea();                        //Gibt einen Pointer auf das Ausgabegebiet zurück
         bool isFinished();                                  //Gibt zurück, ob die Animation bereits abgeschlossen wurde (1=ja)
 
         void setNextPointer(ANIMATION* _next);              //Pointer setzen
@@ -118,8 +119,10 @@ class ANIMATIONGROUP                                        //Verwaltet mehrere 
         //void setSpriteArea(int identification,fAREA _spriteArea);   //spriteArea setzen (zB. zum spiegeln)
         void setSpritePos(int identification,POS _spritePos);        //Sprite ändern
 
-        //int getAnimationAnz(ANITYPE group);                 //Gibt die Anzahl der Animationen mit diesem Typ zurück
         int getActiveAnimationAnz(ANITYPE group);           //Gibt die Anzahl der Animationen mit diesem Typ zurück, welche noch nicht abgeschlossen sind
+        bool isActive(int identification);                  //Gibt zurück, ob die gesuchte Animation noch aktiv ist
+
+        int findAnimation(ANITYPE group,AREA output);       //Sucht diese Animation und gibt die ID zurück
 
         void print(int identification);                     //Gibt alle Animationen einer bestimmten ID aus (0=ALLE)
         bool run(int identification);                       //Simuliert alle Animationen einer bestimmten ID (0=ALLE) (gibt zurück ob ein Element fertig ist und gelöscht wurde)

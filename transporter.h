@@ -31,7 +31,7 @@ struct TRANSPORTERorigin
                                 //bool bidirectional;         //1: Transporter fährt hin+zurück; 0: Transporter fährt nur in eine Richtung
     RAIL *origin;               //Zeigt auf das Gleis, auf dem sich der Transporter am Anfang befindet
 
-    int speed;                  //Geschwindigkeit (in %, wieviel der Strecke der Transporter in einem Durchgang zurücklegt)
+    double speed;               //Geschwindigkeit (im Verhältnis zum Avatar. 1: selbe Geschwindigkeit wie Avatar, 2: doppelte Geschwindigkeit))
     bool startDirection;        //In welche Richtung sich der Transporter am Anfang bewegt. 0=Nach vorne (next-Pointer); 1=Zurück (prev-Pointer)
     bool reverse;               //Gibt an, ob sich der Transporter in beide Richtungen bewegen darf (1: ja; 0: nein. Der Transporter bleibt bei einem Hinderniss stehen bis dieses verschwindet)
 

@@ -12,8 +12,13 @@
 #include "logger.h"
 #include "pausemenue.h"
 
-
-int gameMain(GAME *game)    //Rückgabewert: Anzahl der Kugeln die noch gefehlt haben, um das Level zu gewinnen. Wenn -1: Game Over
+//Rückgabewerte:
+//  >=0     Anzahl der Kugeln die noch gefehlt haben, um das Level zu gewinnen
+//  -1:     Game Over
+//  -2:     Level abgebrochen. -> Level neu starten
+//  -3:     Level abgebrochen. -> nächstes Level starten
+//  -4:     Level abgebrochen. -> Zurück zur Levelauswahl
+int gameMain(GAME *game)
 {
 
     ///GAME-Klasse vorbereiten:
@@ -36,54 +41,51 @@ int gameMain(GAME *game)    //Rückgabewert: Anzahl der Kugeln die noch gefehlt h
 
 
             game->setDisplayOptions(padd,fieldSize);    //Spielfeld platzieren und Größe einstellen
-            game->setupGameData();                  //Spieldaten aus den Leveldaten laden
-            if(!game->isPrepared())                 //Fehler - Spiel kann nicht gespielt werden
+            game->setupGameData();                      //Spieldaten aus den Leveldaten laden
+            if(!game->isPrepared())                     //Fehler - Spiel kann nicht gespielt werden
             {   return -1;
             }
+
+            //if(!game->getLevelfieldAnimationsPrepared())
+            //    game->prepareLevelfieldAnimations();    //Animierte Levelfelder hinzufügen
         }
 
     ///Variablen initialisieren:
         bool exit=0;
-        long loopStart;
 
     ///Builup-Animation durchführen:
         prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
         do
-        {   loopStart=clock();
-            prepare_graphics();                 //Grafiken vorbereiten
+        {   prepare_graphics();                 //Grafiken vorbereiten
             game->printGameLogBackground();     //Gamelog-Bereich markieren
             if(game->runBuildupAnimation())
                 exit=1;
             if(glfwGetKey(GLFW_KEY_SPACE))
                 exit=1;
-        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
+        }while(complete_graphics() && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
         exit=0;
 
-    ///Spezial-Elemnte einblenden:
+    ///Spezial-Elemente einblenden:
         game->initBuildupAnimationSpecialElements();        //Für jedes Objekt eine Einblendeanimation generieren und zum Animationshanlder hinzufügen
         prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
         do
-        {   loopStart=clock();
-            prepare_graphics();                 //Grafiken vorbereiten
+        {   prepare_graphics();                 //Grafiken vorbereiten
             game->printGameLogBackground();     //Gamelog-Bereich markieren
-            game->printFloor();
+            game->printFloor(true);             //Spielfläche ausgeben
 
             animationHandler.run(OBJECTBUILDUP);
             animationHandler.print(OBJECTBUILDUP);
             if(animationHandler.getActiveAnimationAnz(OBJECTBUILDUP)<=0)  //Alle Animationen abgeschlossen
                 exit=1;
-        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
+        }while(complete_graphics() && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
         exit=0;
         animationHandler.remove(OBJECTBUILDUP); //Animationen löschen
 
     ///Preview:
-    {   //char pressed=glfwGetKey(GLFW_KEY_RIGHT)||glfwGetKey(GLFW_KEY_LEFT)||glfwGetKey(GLFW_KEY_UP)||glfwGetKey(GLFW_KEY_DOWN);
-
-        BUTTON start({{GAMELOG_X+GAMELOGPADDING,windY/2-20},{windX-GAMELOGPADDING,windY/2+20}},0,3,10,CYAN,"Spiel starten",20,YELLOW);
+    {   BUTTON start({{GAMELOG_X+GAMELOGPADDING,windY/2-20},{windX-GAMELOGPADDING,windY/2+20}},0,3,10,CYAN,"Spiel starten",20,YELLOW);
         prepare_GameLoop();                     //Für die Spiel-/Anzeigeschleife vorbereiten
         do
-        {   loopStart=clock();
-            prepare_graphics();                 //Grafiken vorbereiten
+        {   prepare_graphics();                 //Grafiken vorbereiten
             game->printGameLogBackground();     //Gamelog-Bereich markieren
 
             game->printPreview();
@@ -95,7 +97,7 @@ int gameMain(GAME *game)    //Rückgabewert: Anzahl der Kugeln die noch gefehlt h
 
             start.print();
 
-        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
+        }while(complete_graphics() && !exit);           //Abschlussarbeiten und Abbruch-Überprüfung
         exit=0;
     }
     game->setGameBackgroundColor({1.0,1.0,0.5});       //Gelbes Hintergrundleuchten
@@ -112,17 +114,10 @@ int gameMain(GAME *game)    //Rückgabewert: Anzahl der Kugeln die noch gefehlt h
         int status;                         //Zur statusabfrage von GAMECLASS::run() --> zeigt an, ob WIN oder GAME OVER
 
 
-        movementInfoAniID=animationHandler.add(MOVEMENTINFO,1/*drehen*/,1,0,100,2,1,&levelanimations,{0,11},{{windX-movementInfoSize/2,windY-movementInfoSize/2},{movementInfoSize,-1}});
+        movementInfoAniID=animationHandler.add(MOVEMENTINFO,1/*drehen*/,1,0,100,2,MOVEMENTINFO_SPEED,&levelanimations,{0,11},{{windX-movementInfoSize/2,windY-movementInfoSize/2},{movementInfoSize,-1}});
         prepare_GameLoop();                 //Für die Spiel-/Anzeigeschleife vorbereiten
         do
-        {   loopStart=clock();
-            prepare_graphics();             //Grafiken vorbereiten
-
-            if(game->isPauseButtonClicked())    //Pausemenü öffnen
-            {   //MessageBox(NULL,"Pause gibts noch nicht","Funktion noch nicht implementiert",MB_OK|MB_ICONWARNING);
-                pauseMenue(game);
-            }
-
+        {   prepare_graphics();             //Grafiken vorbereiten
 
             if(firstLoopRun!=1)
             {   ///POSITION MIT TASTATUR VERÄNDERN:
@@ -164,22 +159,35 @@ int gameMain(GAME *game)    //Rückgabewert: Anzahl der Kugeln die noch gefehlt h
                 animationHandler.run(LEVELEFFECT);  //kollission, lavafall,...
                 animationHandler.run(LEVELFIELD);   //beamer,lava
 
+
             game->print();                          //Level ausgeben
-            animationHandler.print(0);              //Animationen ausgeben
+
+
+
+            if(game->isPauseButtonClicked())    //Pausemenü öffnen
+            {   help=pauseMenue(game);
+                switch(help)
+                {   case 0: break;                    //fortsetzen
+                    case 1: status=-2;  exit=1; break;//Level neu starten
+                    case 2: status=-3;  exit=1; break;//Nächstes Level
+                    case 3: status=-4;  exit=1; break;//Levelselect
+                    default: error("gameMain()","Das Pausemenue hat einen ungueltigen Rueckgabeparameter zurueckgegeben. Wert: %d",help);
+                }
+            }
+
 
             firstLoopRun=0;
-        }while(complete_graphics(loopStart,GAMESPEED) && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
+        }while(complete_graphics() && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
 
-    logger(1,"Game ended\n");
+    logger(1,"Spiel mit Status %d beendet\n",status);
 
 
     /*if(DEBUG)
     {   //für debugging-zwecke: warten, bis ESC gedrückt wurde
         do
-        {   loopStart=clock();
-            prepare_graphics();             //Grafiken vorbereiten
+        {   prepare_graphics();             //Grafiken vorbereiten
             game->print();
-        }while(complete_graphics(loopStart,GAMESPEED));    //Abschlussarbeiten und Abbruch-Überprüfung
+        }while(complete_graphics());        //Abschlussarbeiten und Abbruch-Überprüfung
     }*/
     return status;
 }

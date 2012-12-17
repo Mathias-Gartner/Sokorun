@@ -1,8 +1,8 @@
 #ifndef LEVELCLASS_H_INCLUDED
 #define LEVELCLASS_H_INCLUDED
 
+#include <gl/glfw.h>
 #include "definitions.h"
-
 
 ///SPIELFELDWERTE: VERALTET
 /*
@@ -68,6 +68,12 @@ class LEVEL{
             POS origin;                         //Urpsrungs-Koordinate, an denen das Level ausgegebenw wird (links-unten)
             int elsize;                         //Größe eines Feldes bei der Ausgabe
 
+
+            //Für die Displayliste des Levelbodens:
+            GLuint gamefloor;                   //Display Liste
+            bool gamefloorPrepared;
+            bool glListIncludesAnimatedFields;  //Ob animierte Felder ebenfalls in der Displayliste ausgegeben werden
+
         ///Level-Metadaten:
             char path[256];                     //Pfad der Leveldatei (falls das Level aus dem Editor kommt: kein Pfad)
             char CreateDate[256];               //Erstelldatum der Leveldatei
@@ -90,7 +96,7 @@ class LEVEL{
             unsigned char variation;            //Zum variieren der Variationen
             char* visible;
 
-            int buildupAnimationProgress;       //Fortschritts-zähler
+            double buildupAnimationProgress;    //Fortschritts-zähler
             POS buildupAnimationOrigin;         //Ursprungsposition von wo aus die Animation erfolgt
             bool buildupAnimationCompleted;     //Zur Überprüfung, ob die Animation fertig ist
 
@@ -105,6 +111,7 @@ class LEVEL{
 
             bool calculateRailOutputType(struct RAIL *start);//Setzt die Outputtypes für jedes Schienenelement (Ecke/Linie/Endstück/...)
 
+            void resetDisplayList();                                            //Die Displayliste für den Levelboden wird neu erstellt (weil sich das Level geändert hat. zB. wenn eine Blockkugel in die Lava fällt)
     public:
 
         ///Level laden:
@@ -126,7 +133,7 @@ class LEVEL{
             //--- Komplette Ausgabe
             void printPreview();                                //Ausgabe des gesametem Levels
             //--- Teile der Ausgabe
-            void printFloor();                                  //Spielfläche ausgeben
+            void printFloor(bool printAnimatedFields=0);        //Spielfläche ausgeben
             void printTransporter();                            //Gibt alle Schienenwege aus
             void printKugelnAtOrigins();                        //Kugeln an den Startpositionen ausgeben
             void printAvatarAtOrigin();                         //Speilfigur an der Startposition ausgeben

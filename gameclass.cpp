@@ -40,81 +40,15 @@ void GAME::setupGameData()
         {   transporterStartPointer=new class TRANSPORTER(this,&origin,&elsize,&size,t,/*next-pointer=startpointer*/transporterStartPointer);    //Am Anfang einfügen
             t=t->next;
         }
+    prepareLevelfieldAnimations(),      //Animierte Felder erzeugen
 
     prepared=1;
 }
 
-
-void GAME::initBuildupAnimationSpecialElements()    //Animation-Handler aktualisieren um Overlay-Elemente animiert aufzubauen
+void GAME::clearGameData()              //Löscht alle Spieledaten, damit diese später wieder neu geladen werden können
 {
-    POS pos;
-    ///TRANSPORTER
-        char num;
-        bool mirrorX,mirrorY;
-        AREA output;
-        TRANSPORTERorigin *t=transporterOriginStart;
-        while(t!=NULL)
-        {   //Transporter
-            pos.x=origin.x+((t->origin)->position).x* elsize;
-            pos.y=origin.y+(size.y-((t->origin)->position).y-1)* elsize;
-            if(t->type==0)  num=TILE_TRANSPORTER;
-            else            num=TILE_DEATHTRANSPORTER;
-            animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,6/*speed*/,&leveltiles,{num%8,num/8},{pos,{pos.x+elsize,pos.y+elsize}},((t->type==0)?TRANSPORTER_COLOR:DEATHTRANSPORTER_COLOR));
-
-            //Schienen
-            bool startAllowed=1;
-            RAIL *r=t->start;
-            while(r!=NULL && (r!=t->start||startAllowed))
-            {   startAllowed=0;
-                pos.x=origin.x+r->position.x* elsize;
-                pos.y=origin.y+(size.y-r->position.y-1)* elsize;
-
-                getRailOutputInformation(r->outputType,&num,&mirrorX,&mirrorY);
-                     if(!mirrorX && !mirrorY)/*Normal*/  output={{pos.x,pos.y},{pos.x+elsize,pos.y+elsize}};
-                else if(!mirrorX &&  mirrorY)/* >Y < */  output={{pos.x,pos.y+elsize},{pos.x+elsize,pos.y}};
-                else if( mirrorX && !mirrorY)/* >X < */  output={{pos.x+elsize,pos.y},{pos.x,pos.y+elsize}};
-                else                         /* >XY< */  output={{pos.x+elsize,pos.y+elsize},{pos.x,pos.y}};
-
-                animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,6/*speed*/,&leveltiles,{num%8,num/8},output,((t->type==0)?TRANSPORTER_COLOR:DEATHTRANSPORTER_COLOR));
-                r=r->next;
-            }
-            t=t->next;
-        }
-    ///KUGELN
-        KUGELorigin *p=kugelOriginStart;
-        while(p!=NULL)
-        {   pos.x=origin.x+p->origin.x* elsize;
-            pos.y=origin.y+(size.y-p->origin.y-1)* elsize;
-            if(p->type==1)  animationHandler.add(OBJECTBUILDUP,2,1, 28,31, 3,6/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});//Braune Kugel (Typ 1)
-            else            animationHandler.add(OBJECTBUILDUP,2,1, 32,35, 3,6/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});
-            p=p->next;
-        }
-    ///AVATAR
-        pos.x=origin.x+avatarOrigin.x* elsize;
-        pos.y=origin.y+(size.y-avatarOrigin.y-1)* elsize;
-        animationHandler.add(OBJECTBUILDUP,2,1, 36,39, 3,6/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});
-    ///SCHLÖSSER
-        LOCKorigin *l=lockOriginStart;
-        while(l!=NULL)
-        {   pos.x=origin.x+(l->lock).x* elsize;
-            pos.y=origin.y+(size.y-(l->lock).y-1)* elsize;
-            animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,6/*speed*/,&leveltiles,{TILE_LOCK%8,TILE_LOCK/8},{pos,{pos.x+elsize,pos.y+elsize}},l->color);
-
-            pos.x=origin.x+(l->key).x* elsize;
-            pos.y=origin.y+(size.y-(l->key).y-1)* elsize;
-            animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,6/*speed*/,&leveltiles,{TILE_KEY%8,TILE_KEY/8},{pos,{pos.x+elsize,pos.y+elsize}},l->color);
-            l=l->next;
-        }
-
-    return;
-}
-
-
-GAME::~GAME()
-{   //Der LEVEL-Destruktor wird ebenfalls aufgerufen
     if(prepared)
     {   delete gamelog;
-
         delete avatar;
 
         ///Die verketteten Objekte der Klasse KUGEL löschen:
@@ -141,7 +75,150 @@ GAME::~GAME()
                 t=lt;
             }
             transporterStartPointer=NULL;
+        ///Animationen entfernen:
+            animationHandler.remove(LEVELFIELD);
+            animationHandler.remove(LEVELEFFECT);
+            animationHandler.remove(OBJECTBUILDUP);
+            animationHandler.remove(MOVEMENTINFO);
+            levelfieldAnimationsPrepared=0;                                         //Animationen für Levelfelder (zB. Lava) noch nicht erstellt
+        ///Blockierte Lava wiederherstellen:
+            for(int y=0;y<size.y;y++)
+            {   for(int x=0;x<size.x;x++)
+                {   if(spielfeld[y][x]==TILE_BLOCKEDLAVA)
+                        spielfeld[y][x]=TILE_LAVA;
+                }
+            }
+        ///Displayliste zurücksetzen:
+            resetDisplayList();
+        ///Hintergrund zurücksetzen:
+             gamebackground.reset();                                                //Setzt den Hintergrund zurueck
+        ///Variablen neu initialisieren:
+            avatarAnimationCompleted=0;
+            kugelAnimationCompleted=0;
+
+        prepared=0;
+        logger(1,"\"GAME::clearGameData()\":  Die Game-Daten wurden erfolgreich geloescht. prepared=%d",prepared);
+    }else
+    {   error("GAME::clearGameData()","Die Spieledaten wurden nicht vorbereitet und koennen daher auch nicht zurueckgesetzt werden");
     }
+}
+
+void GAME::prepareLevelfieldAnimations()                 //Fügt die Animationen für animierte Levelfelder (zB. Lava) in den Animationshandler ein
+{   if(levelfieldAnimationsPrepared)
+    {   error("LEVEL::prepareLevelfieldAnimations()","Die Animationen fuer Levelfelder wurden bereits erstellt");
+        return;
+    }
+    for(int y=0;y<size.y;y++)
+    {   for(int x=0;x<size.x;x++)
+        {   if(spielfeld[y][x]==TILE_LAVA)
+            {   POS pos;
+                pos.x=origin.x+x*elsize;
+                pos.y=origin.y+(size.y-y-1)*elsize;
+                animationHandler.add(LEVELFIELD,2,0,0,6,1,LAVAFLOW_SPEED/*speed*/,&lavaflow,{0,0},{pos,{pos.x+elsize,pos.y+elsize}});
+            }
+        }
+    }
+}
+
+void GAME::initBuildupAnimationSpecialElements()    //Animation-Handler aktualisieren um Overlay-Elemente animiert aufzubauen
+{
+    POS pos;
+    ///TRANSPORTER
+        char num;
+        bool mirrorX,mirrorY;
+        AREA output;
+        TRANSPORTERorigin *t=transporterOriginStart;
+        while(t!=NULL)
+        {   //Transporter
+            pos.x=origin.x+((t->origin)->position).x* elsize;
+            pos.y=origin.y+(size.y-((t->origin)->position).y-1)* elsize;
+            if(t->type==0)  num=TILE_TRANSPORTER;
+            else            num=TILE_DEATHTRANSPORTER;
+            animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,BUILDUP_SPCLELEM_SPEED/*speed*/,&leveltiles,{num%8,num/8},{pos,{pos.x+elsize,pos.y+elsize}},((t->type==0)?TRANSPORTER_COLOR:DEATHTRANSPORTER_COLOR));
+
+            //Schienen
+            bool startAllowed=1;
+            RAIL *r=t->start;
+            while(r!=NULL && (r!=t->start||startAllowed))
+            {   startAllowed=0;
+                pos.x=origin.x+r->position.x* elsize;
+                pos.y=origin.y+(size.y-r->position.y-1)* elsize;
+
+                getRailOutputInformation(r->outputType,&num,&mirrorX,&mirrorY);
+                     if(!mirrorX && !mirrorY)/*Normal*/  output={{pos.x,pos.y},{pos.x+elsize,pos.y+elsize}};
+                else if(!mirrorX &&  mirrorY)/* >Y < */  output={{pos.x,pos.y+elsize},{pos.x+elsize,pos.y}};
+                else if( mirrorX && !mirrorY)/* >X < */  output={{pos.x+elsize,pos.y},{pos.x,pos.y+elsize}};
+                else                         /* >XY< */  output={{pos.x+elsize,pos.y+elsize},{pos.x,pos.y}};
+
+                animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,BUILDUP_SPCLELEM_SPEED/*speed*/,&leveltiles,{num%8,num/8},output,((t->type==0)?TRANSPORTER_COLOR:DEATHTRANSPORTER_COLOR));
+                r=r->next;
+            }
+            t=t->next;
+        }
+    ///KUGELN
+        KUGELorigin *p=kugelOriginStart;
+        while(p!=NULL)
+        {   pos.x=origin.x+p->origin.x* elsize;
+            pos.y=origin.y+(size.y-p->origin.y-1)* elsize;
+            if(p->type==1)  animationHandler.add(OBJECTBUILDUP,2,1, 28,31, 3,BUILDUP_SPCLELEM_SPEED/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});//Braune Kugel (Typ 1)
+            else            animationHandler.add(OBJECTBUILDUP,2,1, 32,35, 3,BUILDUP_SPCLELEM_SPEED/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});
+            p=p->next;
+        }
+    ///AVATAR
+        pos.x=origin.x+avatarOrigin.x* elsize;
+        pos.y=origin.y+(size.y-avatarOrigin.y-1)* elsize;
+        animationHandler.add(OBJECTBUILDUP,2,1, 36,39, 3,BUILDUP_SPCLELEM_SPEED/*speed*/,&levelanimations,POS{-1,-1},{pos,{pos.x+elsize,pos.y+elsize}});
+    ///SCHLÖSSER
+        LOCKorigin *l=lockOriginStart;
+        while(l!=NULL)
+        {   pos.x=origin.x+(l->lock).x* elsize;
+            pos.y=origin.y+(size.y-(l->lock).y-1)* elsize;
+            animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,BUILDUP_SPCLELEM_SPEED/*speed*/,&leveltiles,{TILE_LOCK%8,TILE_LOCK/8},{pos,{pos.x+elsize,pos.y+elsize}},l->color);
+
+            pos.x=origin.x+(l->key).x* elsize;
+            pos.y=origin.y+(size.y-(l->key).y-1)* elsize;
+            animationHandler.add(OBJECTBUILDUP,3,0,0,100,3,BUILDUP_SPCLELEM_SPEED/*speed*/,&leveltiles,{TILE_KEY%8,TILE_KEY/8},{pos,{pos.x+elsize,pos.y+elsize}},l->color);
+            l=l->next;
+        }
+
+    return;
+}
+
+
+GAME::~GAME()
+{   //Der LEVEL-Destruktor wird ebenfalls aufgerufen
+    if(prepared)
+    {   clearGameData();                            //Befindet sich deshalb in diesem if, damit keine Fehlermeldung ausgegeben wird, wenn die Spieldaten nicht vorbereitet sind
+    }
+//    {   delete gamelog;
+//
+//        delete avatar;
+//
+//        ///Die verketteten Objekte der Klasse KUGEL löschen:
+//            KUGEL *k=kugelStartPointer,*lk;
+//            while(k!=NULL)
+//            {   lk=k->getNextObject();
+//                delete k;
+//                k=lk;
+//            }
+//            kugelStartPointer=NULL;
+//        ///Die verketteten Objekte der Klasse LOCK löschen:
+//            LOCK *l=lockStartPointer,*ll;
+//            while(l!=NULL)
+//            {   ll=l->getNextObject();
+//                delete l;
+//                l=ll;
+//            }
+//            lockStartPointer=NULL;
+//        ///Die verketteten Objekte der Klasse TRANSPORTER löschen:
+//            TRANSPORTER *t=transporterStartPointer,*lt;
+//            while(t!=NULL)
+//            {   lt=t->getNextObject();
+//                delete t;
+//                t=lt;
+//            }
+//            transporterStartPointer=NULL;
+//    }
 }
 
 void GAME::EnablePauseButton(bool enable)                       //Ativiert/Deaktiviert den Pause-Button im Gamelog
@@ -159,6 +236,10 @@ POS GAME::getTargetFieldCoord(POS position,DIRECTION richtung)  //Gibt die Koori
         default: error("getFieldCoord()","Die uebergebene Richtung ist ungueltig. Es wird die Position (-1x-1) zurueckgegeben. richtung=%d",richtung);
     }
     return POS{-1,-1};//Fehler
+}
+
+bool GAME::getLevelfieldAnimationsPrepared()               //Abfragen, ob die Animierten Levelfelder bereits erstellt wurden
+{   return levelfieldAnimationsPrepared;
 }
 
 void GAME::printMovingObject(MOVEMENT *movement,POS position,int spriteNum,POS beamTarget)      //Gibt ein Objekt am Spielfeld aus, dass sich darauf bewegen kann
@@ -215,11 +296,11 @@ void GAME::printMovingObject(MOVEMENT *movement,POS position,int spriteNum,POS b
 }
 
 
-void GAME::addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung,COLOR color,int progress)//Erzeugt eine Animation
+int GAME::addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung,COLOR color,double progress)//Erzeugt eine Animation
 {
     ///Effekte, die durch eigene Unterprogramme realisiert wurden:
     switch(effect)
-    {   case COLLISION:     collision(position,richtung,color); return;
+    {   case COLLISION:     return collision(position,richtung,color);
         default: break;
     }
 
@@ -242,17 +323,18 @@ void GAME::addFieldEffect(POS position,FIELDEFFECT effect,DIRECTION richtung,COL
 
 
     switch(effect)
-    {   case LAVAFALL:      animationHandler.add(LEVELEFFECT,2,0,0,9,0,6/*speed*/,&lavafall,{-1,-1},fieldCoord);  break;
-        case AVATARLAVA:    animationHandler.add(LEVELEFFECT,2,0,24,27,0,2/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
-        case KUGELLAVA:     animationHandler.add(LEVELEFFECT,2,0,20,23,0,2/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
-        case AVATARKILL:    animationHandler.add(LEVELEFFECT,2,0,36,39,0,6/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
-        case KUGELKILL:     animationHandler.add(LEVELEFFECT,2,0,32,35,0,6/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
-        case KUGELBLOCKKILL:animationHandler.add(LEVELEFFECT,2,0,28,31,0,6/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
+    {   case LAVAFALL:      return animationHandler.add(LEVELEFFECT,2,0,0,9,0,LAVAFALL_ANI_SPEED/*speed*/,&lavafall,{-1,-1},fieldCoord);  break;
+        case AVATARLAVA:    return animationHandler.add(LEVELEFFECT,2,0,24,27,0,LAVA_KILLANI_SPEED/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
+        case KUGELLAVA:     return animationHandler.add(LEVELEFFECT,2,0,20,23,0,LAVA_KILLANI_SPEED/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
+        case AVATARKILL:    return animationHandler.add(LEVELEFFECT,2,0,36,39,0,KILLANI_SPEED/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
+        case KUGELKILL:     return animationHandler.add(LEVELEFFECT,2,0,32,35,0,KILLANI_SPEED/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
+        case KUGELBLOCKKILL:return animationHandler.add(LEVELEFFECT,2,0,28,31,0,KILLANI_SPEED/*speed*/,&levelanimations,{-1,-1},fieldCoord);  break;
         default:    error("GAME::addFieldEffect()","Unbekannter Anitamionseffekt uebergeben. Animation wird nicht durchgefuehrt. effect=%d",effect);
     }
+    return -1;
 }
 
-void GAME::collision(POS position,DIRECTION richtung,COLOR color)                   //Erzeugt eine Aufprall-Animation
+int GAME::collision(POS position,DIRECTION richtung,COLOR color)                   //Erzeugt eine Aufprall-Animation
 {
     TEXTURE *p=&crashAnimationX;
 
@@ -266,19 +348,10 @@ void GAME::collision(POS position,DIRECTION richtung,COLOR color)               
         case DOWN:  output={{position.x         ,position.y+elsize},{position.x+elsize,position.y+elsize/2}}; p=&crashAnimationY;   break;
         case LEFT:  output={{position.x+elsize/2,position.y},       {position.x+elsize,position.y+elsize  }}; break;
         case RIGHT: output={{position.x+elsize/2,position.y},       {position.x       ,position.y+elsize  }}; break;
-        default: return;//Keine Animation
+        default: return -1;//Keine Animation
     }
-    animationHandler.add(LEVELEFFECT,2,0,0,3,0,5/*speed*/,p,{-1,-1},output,color);
+    return animationHandler.add(LEVELEFFECT,2,0,0,3,0,COLISSIONANI_SPEED/*speed*/,p,{-1,-1},output,color);
 }
-
-//void GAME::lavafallAnimation(POS position)                                                //Ezrueg eine Animation für ein in die Lava gefallenes Objekt
-//{
-//    position.x=origin.x+(position.x-0.5)*elsize;
-//    position.y=origin.y+(size.y-position.y-0.5-1)*elsize;
-//
-//    animationHandler.add(LEVELEFFECT,2,0,0,9,0,6/*speed*/,&lavafall,{-1,-1},{position,{position.x+elsize*2,position.y+elsize*2}});
-//}
-
 
 
 void GAME::print()
@@ -292,6 +365,12 @@ void GAME::print()
     gamelog->print();               //Logger ausgeben
 
     printFloor();
+    animationHandler.print(LEVELFIELD);         //Animationen ausgeben
+    animationHandler.print(LEVELEFFECT);        //Animationen ausgeben
+    animationHandler.print(MOVEMENTINFO);       //Animationen ausgeben
+    animationHandler.print(LEVELEFFECT);        //Animationen ausgeben
+
+
     if(transporterStartPointer!=NULL)  transporterStartPointer->print();      //Gibt alle Transporter (und deren Schienennetz) aus
     if(kugelStartPointer!=NULL) kugelStartPointer->print();     //Gibt alle Kugeln aus der Liste aus
     avatar->print();                //Gibt die Spielfigur aus
@@ -415,7 +494,16 @@ void GAME::makeLavaSecure(POS position)                     //Lavafeld mit Block
     if(spielfeld[position.y][position.x]!=TILE_LAVA)        //Keine Lava
     {   error("GAME::makeLavaSecure()","Das Spielfeld enthaelt an der uebergebenen Position keine Lava. Position: (%dx%d) Wert: %d",position.x,position.y,spielfeld[position.y][position.x]);
     }else
-        spielfeld[position.y][position.x]=TILE_BLOCKEDLAVA; //Mit Block versperren
+    {   spielfeld[position.y][position.x]=TILE_BLOCKEDLAVA; //Mit Block versperren
+        resetDisplayList();
+        POS pos;
+        pos.x=origin.x+position.x* elsize;
+        pos.y=origin.y+(size.y-position.y-1)* elsize;
+        animationHandler.remove( animationHandler.findAnimation(LEVELFIELD ,{pos,{pos.x+elsize,pos.y+elsize}}) ); //Die Lavaanimation an dieser Position finden und löschen
+        pos.x=origin.x+(position.x-0.5f)* elsize;
+        pos.y=origin.y+(size.y-position.y-1.5f)* elsize;
+        animationHandler.remove( animationHandler.findAnimation(LEVELEFFECT,{pos,{pos.x+2*elsize,pos.y+2*elsize}}) ); //Die Lavafallanimation, wenn sie existiert, an dieser Position finden und löschen
+    }
 }
 
 void GAME::addGameLogEvent(GameEventType type,DIRECTION richtung=NONE)              //Event hinzufügen
@@ -484,9 +572,30 @@ bool GAME::runBuildupAnimation()
     return LEVEL::runBuildupAnimation();
 }
 
-void GAME::printFloor()                                     //Spielfläche ausgeben (inkl. Levelhintergrund)
+void GAME::printFloor(bool printAnimatedFields)             //Spielfläche ausgeben (inkl. Levelhintergrund)
 {   gamebackground.print(gamelog->getxpos());               //Hintergrund auch ausgeben
-    LEVEL::printFloor();
+    LEVEL::printFloor(printAnimatedFields);
+
+
+    //if(rand()%40==0)
+    {   static int x=0,y=0;
+        int timeout=0;
+        do
+        {   x+=rand()%size.x;
+            x%=size.x;
+            y+=rand()%size.y;
+            y%=size.y;
+            timeout++;
+        }while(timeout<8 && spielfeld[y][x]!=TILE_LAVA);
+
+        if(spielfeld[y][x]==TILE_LAVA && rand()%15==0)
+        {   POS pos;
+            pos.x=origin.x+x*elsize;
+            pos.y=origin.y+(size.y-y-1)*elsize;
+
+            animationHandler.add(LEVELEFFECT,2,0,0,15,0,LAVABLUBB_SPEED/*speed*/,&lavablubb,{0,0},{pos,{pos.x+elsize,pos.y+elsize}});
+        }
+    }
 }
 
 void GAME::setGameBackgroundSplashColor(COLOR splash)       //kurzfristige Farbe setzen
@@ -537,25 +646,27 @@ bool GAME::isPauseButtonClicked()                       //Gibt zurück, ob der Pa
 /// KLASSE GAMEBACKGROUND ************************************************************************************************************
 /// ==================================================================================================================================
 
-
-
-
-
-GAMEBACKGROUND::GAMEBACKGROUND(AREA _area)
-{   area=_area;
-
+void GAMEBACKGROUND::reset()                           //Setzt den Hintergrund zurueck
+{
     alpha=0;
 
     final=WHITE;
     old=final;
 
-    splashProgress=0;   //Keine Splash-Farbe
+    splashProgress=0;
+}
+
+
+GAMEBACKGROUND::GAMEBACKGROUND(AREA _area)
+{
+    area=_area;
+    reset();
 }
 
 void GAMEBACKGROUND::print(int bx,bool printshine)
 {   gamebackground.print({area.a,{bx,area.b.y}},{{0.0,0.0},{(bx-area.a.x)/128.0f,(area.b.y-area.a.y)/128.0f}},WHITE); //Hintergrundbild ausgeben
     if(printshine)
-    {   colorProgress+=5;
+    {   colorProgress+=GAME_BG_SHINE_COLOR_SPEED;
         if(colorProgress>100)
         {   colorProgress=100;
         }
@@ -584,10 +695,10 @@ void GAMEBACKGROUND::print(int bx,bool printshine)
 
         COLOR current;
         if(colorProgress<100 || splashProgress>0)//Noch nicht die neue Farbe
-            current={old.r+(target.r-old.r)*colorProgress/100.0f,old.g+(target.g-old.g)*colorProgress/100.0f,old.b+(target.b-old.b)*colorProgress/100.0f};
+            current={old.r+(float)((target.r-old.r)*colorProgress/100.0f),old.g+(float)((target.g-old.g)*colorProgress/100.0f),old.b+(float)((target.b-old.b)*colorProgress/100.0f)};
         else current=target;
 
-        alpha+=0.005;
+        alpha+=GAME_BG_SHITE_ALPHA_SPEED;
         if(alpha>1.0)   alpha=1.0;
 
         shine.print(area,stdTextArea,current,alpha);
@@ -600,7 +711,7 @@ void GAMEBACKGROUND::setColor(COLOR _final)             //Neue, endgültige Farbe
     {   target={final.r+(splash.r-final.r)*splashProgress/100.0f,final.g+(splash.g-final.g)*splashProgress/100.0f,final.b+(splash.b-final.b)*splashProgress/100.0f};
     }
 
-    old={old.r+(target.r-old.r)*colorProgress/100.0f,old.g+(target.g-old.g)*colorProgress/100.0f,old.b+(target.b-old.b)*colorProgress/100.0f};
+    old={old.r+(float)((target.r-old.r)*colorProgress/100.0f),old.g+(float)((target.g-old.g)*colorProgress/100.0f),old.b+(float)((target.b-old.b)*colorProgress/100.0f)};
 
     final=_final;
     colorProgress=0;

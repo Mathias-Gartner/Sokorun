@@ -170,7 +170,7 @@ void GAMELOG::print()                                       //Kümmert sich um di
             normalFont.printf({GAMELOG_X,y},taLEFT,"%d",playtime);
         else
         {   char txt[20];
-            getTimeString(txt,playtime*GAMESPEED);
+            getTimeString(txt,playtime*(1000.0f/FPS));
             normalFont.printf({GAMELOG_X,y},taLEFT,txt);
         }
 
@@ -203,7 +203,7 @@ void GAMELOG::print()                                       //Kümmert sich um di
         int endXpos=windX-GAMELOGPADDING;   //Ende der Box
 
 
-    progress+=15;        //Scroll-Geschindigkeit
+    progress+=GAMELOG_SCROLL_SPEED;        //Scroll-Geschindigkeit
     if(progress>100)    //Overflow vermeiden, wenn länger kein scrollen vorkommt
         progress=100;
 
@@ -251,7 +251,7 @@ void GAMELOG::print()                                       //Kümmert sich um di
             {   y=y-GAMELOGBOXHEIGHT+GAMELOGPADDING*1.5;
 
                 char txt[20];
-                getTimeString(txt,p->time[(p->size)-1]*GAMESPEED);
+                getTimeString(txt,p->time[(p->size)-1]*(1000.0f/FPS));
                 normalFont.printf({endXpos-GAMELOGPADDING*2,y},taRIGHT,txt);
             }
 

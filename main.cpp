@@ -51,29 +51,32 @@ int main(int argc,char* argv[])
 //
 //        if (success)
 //        {
-            GAME *game=new GAME({50,50},40,/*levelselect->GetLevelPath()*/"daten/level/transporter3.lvl");
+            GAME *game=new GAME({50,50},40,/*levelselect->GetLevelPath()*/"daten/level/test.lvl");
             if(game->getStatus() != 0)
             {
                 char *dateP,*timeP;
                 game->getMetaData(&dateP,&timeP);
                 logger(1,"Das Level wurde erfolgreich geladen. Levelpfad: %s, Erstelldatum: %s, Erstellzeitpunkt: %s",game->getLevelPath(),dateP,timeP);
             }
+            int status;
+            do
+            {   status=gameMain(game);
+                if(status<0)        logger(1,"Spiel verloren");
+                else if(status==0)  logger(1,"Spiel gewonnen");
+                else                logger(1,"Spiel abgebrochen");
+                game->clearGameData();  //Alle Daten wieder löschen
+            }while(status==-2);
 
-            int status=gameMain(game);
-            if(status<0)        logger(1,"Spiel verloren");
-            else if(status==0)  logger(1,"Spiel gewonnen");
-            else                logger(1,"Spiel abgebrochen");
 
 
-
-//            /*HIGHSCORE *score = new HIGHSCORE(levelselect->GetLevelName());
-//            score->Setmoves(100);
-//            score->Save();*/
+            /*HIGHSCORE *score = new HIGHSCORE(levelselect->GetLevelName());
+            score->Setmoves(100);
+            score->Save();*/
 //        }
 //        else
 //        {
 //            logger (true, "LevelSelect canceled, show main menu");
-//            return;
+//            return 0;
 //        }
 //    }
 

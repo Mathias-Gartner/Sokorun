@@ -50,7 +50,7 @@
 void init_window();                                                                                 //Initialisiert das Spiel
 void prepare_GameLoop();                                                                            //Wird vor dem betreten der Spiele- und Anzeigeschleife aufgerufen
 void prepare_graphics();                                                                            //Wird zu beginn jedes Durchgangs in der Spiele- und Anzeigeschleife aufgerufen
-int complete_graphics(long loopStart,unsigned int loopSpeed);                                       //Wird am Ende jedes Durchgangs in der Spiele- und Anzeigeschleife aufgerufen
+int complete_graphics();                                                                            //Wird am Ende jedes Durchgangs in der Spiele- und Anzeigeschleife aufgerufen
 void cleanup();                                                                                     //Wird beim beenden des Programms aufgerufen
 void switchGraphicMode(GRAPHICMODES target);                                                        //Schaltet den Grafikmodus um (Zeichnen/Texturen)
 void markArea(AREA gebiet,COLOR farbe);                                                             //Umrandet ein Gebiet

@@ -3,9 +3,11 @@
 //Jakob Maier
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "animation.h"
 #include "definitions.h"
 #include "graphics.h"
+#include "globals.h"
 #include "logger.h"
 
 ANIMATION::ANIMATION(ANITYPE _anitype,int _identification,int _type,bool _richtung,int _start,int _end,int _reverse,float _speed,TEXTURE *_texture,POS _spritePos,AREA _output,COLOR _overlay)//Erstellung einer neuen Animation
@@ -52,12 +54,11 @@ ANIMATION::ANIMATION(ANITYPE _anitype,int _identification,int _type,bool _richtu
         return;
     }
     reverse=_reverse;
-    if(_speed>100)
+    /*if(_speed>100)
     {   error("ANIMATION::ANIMATION()","Ungueltige Geschwindigkeit uebergeben. speed wird auf den Maximalwert 100 gesetzt. _speed=%d",_speed);
         _speed=100;
-    }
+    }*/
     speed=_speed;
-
     output=_output;
     overlay=_overlay;
     if(colorcmp(overlay,BLACK) && type==0)   overlay=WHITE;//Umbessern
@@ -70,7 +71,7 @@ ANIMATION::ANIMATION(ANITYPE _anitype,int _identification,int _type,bool _richtu
     finished=0;
 }
 
-void ANIMATION::setProgress(int newProgress)                  //Fortschritt manuell ändern
+void ANIMATION::setProgress(double newProgress)                  //Fortschritt manuell ändern
 {   if(type==2)
     {   if(newProgress<0||newProgress>100)
             error("ANIMATION::setProgress()","Ungueltiger Fortschrittswert uebergeben. newProgress=%d",newProgress);
@@ -117,7 +118,6 @@ void ANIMATION::print_T2()                                      //Ausgabefunktio
 {   /** BILDFOLGE **/
 
     //Feststellen, welche Bildnummer ausgegeben werden soll:
-
     int spriteAnz=end-start+1;                                  //Anzahl der Sprites die verwendet werden
     int spriteNum=start+progress/(100/spriteAnz);
     if(spriteNum>=end)  spriteNum=end;                          //bei 100% wird ein ungültiges Bild errechnet (0-100% möglich --> 101 Möglichkeiten)
@@ -144,7 +144,7 @@ bool ANIMATION::isFinished()                                    //Gibt zurück, o
 bool ANIMATION::run()                                           //Simulationsschritt durchführen. Rückgabewert=1: Simulation in eine Richtung abgeschlossen, beim nächsten Durchgang wiederholt sich alles
 {   if(finished && (reverse==3||reverse==0))  return 1;         //Keine Simulation mehr
     if(richtung)//Rückwärts
-    {   progress-=speed;
+    {   progress-=(speed/FPS);
         if(type==2)
         {   if(progress<=0)
             {   if(reverse==1)      {progress=0; richtung=0;}
@@ -160,7 +160,7 @@ bool ANIMATION::run()                                           //Simulationssch
             return 1;
         }
     }else//Vorwärts
-    {   progress+=speed;
+    {   progress+=(speed/FPS);
         if(type==2)//Texturen
         {   if(progress>=100)
             {   if(reverse==1)      {progress=100; richtung=1;}
@@ -197,6 +197,10 @@ int ANIMATION::getReverse()                                     //Gibt den Rever
 
 ANITYPE ANIMATION::getAnitype()                                 //Gibt den Animationstypen zurück
 {   return anitype;
+}
+
+const AREA* ANIMATION::getOutputArea()                          //Gibt einen Pointer auf das Ausgabegebiet zurück
+{   return &output;
 }
 
 //void ANIMATION::setSpriteArea(fAREA _spriteArea)                //spriteArea setzen
@@ -259,6 +263,20 @@ ANIMATIONGROUP::~ANIMATIONGROUP()                               //Destruktor - L
 //    }
 //}
 
+int ANIMATIONGROUP::findAnimation(ANITYPE group,AREA output)     //Sucht diese Animation und gibt die ID zurück
+{
+    ANIMATION *p=start;
+    while(p!=NULL)
+    {   if(group==0 || p->getAnitype()==group)
+        {   const AREA *aniOutput=p->getOutputArea();
+            if(poscmp(output.a,aniOutput->a) && poscmp(output.b,aniOutput->b))  //Gefunden
+                return p->getIdentification();
+        }
+        p=p->getNextPointer();                                  //Nächstes Element
+    }
+}
+
+
 void ANIMATIONGROUP::setSpritePos(int identification,POS _spritePos)        //spritePosition ändern
 {
     ANIMATION *p=start;
@@ -312,7 +330,6 @@ bool ANIMATIONGROUP::run(ANITYPE group)                         //Simuliert alle
 {
     ANIMATION *p=start,*last=NULL;
     bool deleted=0;                                             //Ob ein Element gelöscht wurde
-
     while(p!=NULL)
     {   if(p->getAnitype()==group)
         {
@@ -356,6 +373,19 @@ int ANIMATIONGROUP::getActiveAnimationAnz(ANITYPE group)        //Gibt die Anzah
         p=p->getNextPointer();                                  //Nächstes Element
     }
     return anz;
+}
+
+bool ANIMATIONGROUP::isActive(int identification)               //Gibt zurück, ob die gesuchte Animation noch aktiv ist
+{
+    ANIMATION *p=start;
+    while(p!=NULL)
+    {   if(p->getIdentification()==identification)
+        {   if(p->isFinished()) return 0;
+            else                return 1;
+        }
+        p=p->getNextPointer();                                  //Nächstes Element
+    }
+    return 0;
 }
 
 void ANIMATIONGROUP::remove(ANITYPE group)                      //Löscht alle Animationen einer bestimmten Gruppe aus der Liste

@@ -5,10 +5,33 @@
     #define ImgDebug 0              //Ob Debug-Funktionen, die im Grafik-Fenster ausgegeben werden angewandt werden sollen
     #define TIMEDEBUGOUTPUT 0       //Ob die Zeit/Spielschleifenruchlauf ausgegeben werden soll
 
+/** SPIELGESCHWINDIGKEIT **/
+    #define frameArraySize 100           //Größe des Ringbuffers. Gibt an, aus wievielen Werten der Durchschnitt berechnet wird
+
+    #define AVATAR_SPEED (400.0f/FPS)           //Geschwindigkeit des Avatars und berechnungsgrundlage aller anderen Werte. Gibt den Fortschritt an, der pro Sekunde zurückgelegt wird (zB. 200% --> 2Felder/sekunde)
+
+    #define KUGEL_SPEED AVATAR_SPEED
+
+
+    #define GAME_BG_SHINE_COLOR_SPEED   (AVATAR_SPEED*0.75)         //Geschwindigkeit beim Farbwechsels beim Shine im Spielhintergrund
+    #define GAME_BG_SHITE_ALPHA_SPEED   (AVATAR_SPEED/1300.0f)      //Geschwindigkeit beim Transparenz erhöhen beim einblenden des Shines zum Spielbeginn
+    #define GAMELOG_SCROLL_SPEED    (AVATAR_SPEED*2.25f)            //Scroll-Geschwindigkeit für die Event-Boxen beim Gamelog
+
+/** ANIMATIONSGESCHWINDIGKEITEN **/     //Müssen unabhängig von AVATAR_SPEED und FPS definiert werden, da die abhängigkeit der FPS im Porigrammcode selbst erzeugt wird ("animation.cpp", "ANIMATION::run()")
+    #define COLISSIONANI_SPEED (200.0f)         //Geschwindigkeit der Kolissionsanimation
+    #define MOVEMENTINFO_SPEED (27.0f)          //Geschwindigkeit des sich drehenen Movement-Infos
+    #define LAVAFLOW_SPEED     (55.0f)          //Geschwindigkeit der Lavabewegung
+    #define LAVABLUBB_SPEED    (100.0f)         //Geschwindigkeit einer Lavablase
+
+
+    #define BUILDUP_SPCLELEM_SPEED (133.0f)     //Die Einblende geschwindigkeit von Spezialelementen (Avatar, Kugeln, Schienen, Schlösser, Transporter,...)
+    #define LAVAFALL_ANI_SPEED (333.0f)         //Geschwindigkeit der Animation, wenn eine Blockkugel in die Lava fällt
+    #define LAVA_KILLANI_SPEED (133.0f)         //Geschindigkeit, wenn ein Element durch Lava zerstört wird
+    #define KILLANI_SPEED (133.0f)              //Geschindigkeit, wenn ein Element zerstört wird (zB. durch tödl. Transporter)
+
+    #define LEVELBUILDUP_ANI_SPEED (1.3f)       //Geschwindigkeit der Level-Buildup-Animation
 
 /** EINSTELLUNGEN **/
-    #define GAMESPEED 20                        //Anz. der ms, die ein Spieleschleifendurchgang braucht
-
     #define AutoAdjustWindowSize 1              //Ob bei jeder Loop, in der die Anzeige aktualisiert wird, auch die Fenstergröße angepasst werden soll
 
     #define fontFamilyAnzahl 1
@@ -50,9 +73,8 @@
 
 
 /** GAME-EINSTELLUNGEN **/
-    #define WALKING_SPEED  10                   //Wieviele % innerhalb eines Simulationszyklusses zurückgelegt werden (Um ein Objekt von einem Feld in ein anderes zu bewegen sind 100% notwendig) bei 2 sind also 50 Simulationszyklen notwendig, bis das Objekt von einem Feld ins nächste kommt
+    //#define WALKING_SPEED  13                   //Wieviele % innerhalb eines Simulationszyklusses zurückgelegt werden (Um ein Objekt von einem Feld in ein anderes zu bewegen sind 100% notwendig) bei 2 sind also 50 Simulationszyklen notwendig, bis das Objekt von einem Feld ins nächste kommt
     #define OccupiedLimit Wkgl                  //Zuwieviel % sich ein Objekt in einem Feld befinden muss, damit dieses belegt ist (MUSS Wkgl sein: falls sich 2 Objekte in ein gleiches Feld zum gleichen Zeitpunkt bewegen kommt es sonst zu einer Überlagerung)
-    #define DIEINGSPEED 5                       //Wenn der Avatar tot ist: wie lange das Spiel noch fortgesetzt werden soll und wie lange die Todes-Animation angezeigt werden soll (1-100%, dieser Wert gibt an wie große die Schritte sein sollen)
 
     #define RAILTRACKS_VISIBILITY_NXT 0.33f     //Um wieviel % die Sichtbarkeit eines Schienenstücks abnimmt - für die nächsten Schienen
     #define RAILTRACKS_VISIBILITY_PRV 1.0f      //Um wieviel % die Sichtbarkeit eines Schienenstücks abnimmt - für die bereits passierten Schienen
@@ -109,7 +131,7 @@
     struct MOVEMENT{            //Bewegung für Objekte, die sich am Spielfeld bewegen
         int moving;             //0: Keine Bewegung; 1: Vorwärtsbewegung; -1: rückwärts - er bewegt sich bereits wieder zurück weil er wo abgeprallt ist
         DIRECTION richtung;     //Richtung, in die sich das Objekt bewegt
-        int progress;           //Wie weit sich das Objekt schon bewegt hat
+        double progress;        //Wie weit sich das Objekt schon bewegt hat
         int limit;              //Wie weit sich das Objekt bewegen kann bevor es umkehrt
 
         bool blocking;          //1: Das Objekt blockiert  (Wird von einem Spezialfeld oder ähnlichem in ein anderes Feld geschoben dass aber nicht betreten werden kann. Dadurch ist das abprallen auch nicht möglich)
@@ -209,8 +231,8 @@
         };  //Erster Index: Objekt-Typ (Datenwerte siehe Struktur "OBJEKT").
 
 /** PROTOTYPEN **/
-
-    void transformY(POS* position);                                                                   //Die Y-Koordinate wird gespiegelt (Ursprung oben/unten vertauscht)
+    void cleanupFrameArray();                                                                       //Löscht den Inhalt des gesamten Framearrays
+    void transformY(POS* position);                                                                 //Die Y-Koordinate wird gespiegelt (Ursprung oben/unten vertauscht)
     bool coordInside(POS coord,AREA gebiet);                                                        //Meldet, ob sich die übergebenen Koordinaten innerhalb des übergebenen Gebiets befinden (zB. für "Maus über Bild?)
     void getMousePos(POS *coord);                                                                   //Gibt die Position der Maus im Koordinatensystem zurück
     void PosSizeToArea(AREA *data);                                                                 //Wandelt eine Struktur, die aus Position+Größe besteht um, in Startposition+Endposition

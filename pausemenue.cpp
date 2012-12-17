@@ -14,7 +14,6 @@
 // 3 - Levelselect aufrufen
 int pauseMenue(GAME *game)              //Pausemenü
 {
-    long loopStart;                     //Zum stoppen der Zeit
     game->EnablePauseButton(0);         //Pause-Button deaktivieren
 
     int exitStatus=-1;                  //=Rückgabewert
@@ -35,8 +34,7 @@ int pauseMenue(GAME *game)              //Pausemenü
 //
 //    ///LEVEL verkleinern
 //        do
-//        {   loopStart=clock();
-//            prepare_graphics();             //Grafiken vorbereiten
+//        {   prepare_graphics();             //Grafiken vorbereiten
 //
 //            progress+=13;
 //            if(progress>100)    progress=100;
@@ -48,7 +46,7 @@ int pauseMenue(GAME *game)              //Pausemenü
 //            game->setDisplayOptions(outputPos,elsize);
 //
 //            game->print();
-//        }while(complete_graphics(loopStart,GAMESPEED) && progress<100);    //Abschlussarbeiten und Abbruch-Überprüfung
+//        }while(complete_graphics() && progress<100);    //Abschlussarbeiten und Abbruch-Überprüfung
 
 
         #define PAUSEMENUEarea AREA{{150,175},{GAMELOG_X-150,windY-175}}                //Größe des Pausemenüs
@@ -74,8 +72,7 @@ int pauseMenue(GAME *game)              //Pausemenü
         cancel.assignKeyboardButton(0,GLFW_KEY_SPACE,GLFW_KEY_ESC);
 
         do
-        {   loopStart=clock();
-            prepare_graphics();             //Grafiken vorbereiten
+        {   prepare_graphics();             //Grafiken vorbereiten
 
             game->print();
 
@@ -97,14 +94,13 @@ int pauseMenue(GAME *game)              //Pausemenü
 
 
 
-        }while(complete_graphics(loopStart,GAMESPEED) && exitStatus<0);    //Abschlussarbeiten und Abbruch-Überprüfung
+        }while(complete_graphics() && exitStatus<0);    //Abschlussarbeiten und Abbruch-Überprüfung
 
 
 
 //    ///LEVEL vergrößern
 //        do
-//        {   loopStart=clock();
-//            prepare_graphics();             //Grafiken vorbereiten
+//        {    prepare_graphics();             //Grafiken vorbereiten
 //
 //            progress-=13;
 //            if(progress<0)    progress=0;
@@ -116,7 +112,7 @@ int pauseMenue(GAME *game)              //Pausemenü
 //            game->setDisplayOptions(outputPos,elsize);
 //
 //            game->print();
-//        }while(complete_graphics(loopStart,GAMESPEED) && progress>0);    //Abschlussarbeiten und Abbruch-Überprüfung
+//        }while(complete_graphics() && progress>0);    //Abschlussarbeiten und Abbruch-Überprüfung
 //
 //
 //    game->setDisplayOptions(OriginOutputPos,OriginElsize);

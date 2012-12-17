@@ -4,8 +4,25 @@
 //Allgemeine Funktionen
 
 #include <stdlib.h>
+#include <ctime>
 #include "definitions.h"
 #include "globals.h"
+
+
+
+void cleanupFrameArray()                //Löscht den Inhalt des gesamten Framearrays
+{   frameArray[0]=clock();
+    for(int i=1;i<frameArraySize;i++)
+    {   frameArray[i]=0;
+    }
+    frameArrayIndex=0;
+    lastFrameArrayIndex=0;
+    FPS=15;
+}
+
+
+
+
 
 bool poscmp(POS a,POS b)            //Vergleicht 2 Positionen auf übereinstimmung
 {   if(a.x==b.x&&a.y==b.y)

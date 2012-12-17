@@ -28,7 +28,6 @@ LEVELSELECT::LEVELSELECT()
 
 int LEVELSELECT::Select()
 {
-    long loopStart;
     BUTTON *prevButton = new BUTTON({{10, windY - 180}, {90, windY-130}}, 0, 3, 10, CYAN, "<", 20, YELLOW);
     BUTTON *nextButton = new BUTTON({{windX - 100, windY - 180}, {windX - 10, windY - 130}}, 0, 3, 10, CYAN, ">", 20, YELLOW);
     BUTTON *selectButton = new BUTTON({{windX - 200, 10}, {windX - 10, 60}}, 0, 3, 10, CYAN, "Spiel starten", 20, YELLOW);
@@ -46,9 +45,7 @@ int LEVELSELECT::Select()
     prepare_GameLoop();
 
     do
-    {
-        loopStart = clock();
-        prepare_graphics();
+    {   prepare_graphics();
 
         levelCaption->setText(GetLevelName());
 
@@ -76,7 +73,7 @@ int LEVELSELECT::Select()
             normalFont.setFontSize(20);
             normalFont.putString("Highscore",{highscoreOutput.a.x+(highscoreOutput.b.x-highscoreOutput.a.x)/2 , highscoreOutput.a.y + (highscoreOutput.b.y-highscoreOutput.a.y-20)/2},taLEFT); break;
         }*/
-    } while (complete_graphics(loopStart, GAMESPEED));
+    }while(complete_graphics());
 
     logger(true, "LEVELSELECT: Got false from complete_graphics(..). Returning -1.");
     return false;

@@ -26,7 +26,6 @@ TRANSPORTER::TRANSPORTER(GAME *gamePointer,POS *originPointer,int *elsizePointer
     //lastRichtung, blocking und limit wird nicht verwendet. moving kann nicht -1 sein (kein Abprallen möglich)
 
     direction=data->startDirection;             //Richtung, in die sich der Transporter los bewegt
-
     minVisibility=1.0f;
 }
 
@@ -162,11 +161,11 @@ void TRANSPORTER::print()
 }
 
 TRANSPORTER* TRANSPORTER::TransporterOnField(POS pos,TRANSPORTER *ignore)                       //Überprüft, ob sich auf dieser Position ein Transporter befindet
-{
-    if(this != ignore)
+{   if(this != ignore)
     {   //if(movement.moving==0 || (movement.moving!=0 && movement.progress<100-OccupiedLimit))  //Transporter ist (noch) im positions-Feld
         {   if(poscmp(pos,position->position))                                                  //=gesuchte Position
                 return this;                                                                    //Transporteradresse zurückgeben
+
         }
 
         if(movement.moving!=0 && movement.progress>=0)                              //Transporter befindet sich bereits auf nächstem Feld
@@ -175,17 +174,17 @@ TRANSPORTER* TRANSPORTER::TransporterOnField(POS pos,TRANSPORTER *ignore)       
                 return this;                                                                    //Transporteradresse zurückgeben
         }
     }
+
     if(next!=NULL)  return next->TransporterOnField(pos,ignore);                                //nächsten Transporter überprüfen
     else            return NULL;
 }
-
 
 void TRANSPORTER::run()                                                     //Führt einen Simulationsschritt durch
 {   if(minVisibility>0) minVisibility-=0.025;                               //Schienenelemente langsam ausblenden
 
 
     if(movement.moving==1)
-    {   movement.progress+=data->speed;                                     //weiter bewegen
+    {   movement.progress+=(AVATAR_SPEED*data->speed);                                      //weiter bewegen
 
 //        if(movement.progress>=OccupiedLimit && movement.progress<OccupiedLimit+data->speed) //Bei genau diesem Schritt könnte ein anderer Tranporter (od. ein spzialelement) diesen Transporter blockieren
 //        {
@@ -230,7 +229,6 @@ void TRANSPORTER::run()                                                     //Fü
                 timeout++;
             }while(next==NULL && timeout<2);                            //Wenn das Timeout 2 ist: beide Nachbarfelder sind blockiert. Oder es gibt nur ein Nachbarfeld und dieses ist blockiert
 
-
             if(next!=NULL)                                              //Der Transporter wird nicht blockiert (darf sich bewegen)
             {   //Weiter bewegen
                 movement.moving=1;
@@ -254,15 +252,22 @@ void TRANSPORTER::interactNormal()                                      //Lässt 
 }
 
 void TRANSPORTER::interactDeath()                                       //Lässt einen tödlichen Transporter mit anderen Elementen interargieren
-{
-    if(movement.moving==0 || (movement.moving!=0 && movement.progress<=100-OccupiedLimit))
+{   if(movement.moving==0 || (movement.moving!=0 && movement.progress<=100-OccupiedLimit))
     {   game->killObjectsOnField(position->position);                   //Alle Elemente an dieser Position vernichten
     }
     if(movement.moving!=0 && movement.progress>=OccupiedLimit)
     {   if(direction==0)
-        {   game->killObjectsOnField((position->next)->position);       //Alle Elemente der nächsten Position vernichten (next)
+        {   /*if(position->next==NULL)
+            {   error("TRANSPORTER::interactDeath(); next","Das Feld, in das sich der Transporter bewegt, hat die Adresse NULL");return;
+            }else*/
+            {   game->killObjectsOnField((position->next)->position);       //Alle Elemente der nächsten Position vernichten (next)
+            }
         }else
-        {   game->killObjectsOnField((position->prev)->position);       //Alle Elemente der nächsten Position vernichten (prev)
+        {   /*if(position->prev==NULL)
+            {   error("TRANSPORTER::interactDeath(); prev","Das Feld, in das sich der Transporter bewegt, hat die Adresse NULL");return;
+            }else*/
+            {   game->killObjectsOnField((position->prev)->position);       //Alle Elemente der nächsten Position vernichten (prev)
+            }
         }
     }
 }

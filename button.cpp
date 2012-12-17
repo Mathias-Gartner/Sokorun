@@ -12,99 +12,17 @@
 #include "logger.h"
 
 
-void getMousePos(POS *coord)      //Gibt die Position der Maus im Koordinatensystem zurück
+void getMousePos(POS *coord)    //Gibt die Position der Maus im Koordinatensystem zurück
 {   glfwGetMousePos(&(coord->x),&(coord->y));
     //Koordinatensystem umrechnen:
+    if(coordPixel==0)           //Fenster=minimiert
+    {   *coord={-1,-1};
+        return;
+    }
     coord->x/=coordPixel;
     coord->y/=coordPixel;
     transformY(coord);
 }
-
-//MOUSE::MOUSE()
-//{   buttonID[0]=BUTTON_NO_BUTTON;   //links
-//    buttonID[1]=BUTTON_NO_BUTTON;   //rechts
-//    buttonID[2]=BUTTON_NO_BUTTON;   //mitte
-//    clickedButtonID[0]=BUTTON_NO_BUTTON;
-//    clickedButtonID[1]=BUTTON_NO_BUTTON;
-//    clickedButtonID[2]=BUTTON_NO_BUTTON;
-//
-//    updateMousePos(&position);            //Mausposition erhalten
-//}
-//
-//void MOUSE::updateMousePos(POS *coord)      //Gibt die Position der Maus im Koordinatensystem zurück
-//{   glfwGetMousePos(&(coord->x),&(coord->y));
-//    //Koordinatensystem umrechnen:
-//    coord->x/=coordPixel;
-//    coord->y/=coordPixel;
-//    transformY(coord);
-//}
-//
-//POS MOUSE::getMousePos()                    //Gibt die Mausposition zurück
-//{
-//    return position;
-//}
-//
-//void MOUSE::run()                           //Muss am Anfang der Schleife aufgerufen werden, wird von prepare_graphics(); automatisch erledigt
-//{   updateMousePos(&position);              //Mausposition erhalten
-//    if(!glfwGetMouseButton(MBLEFT))     {   clickedButtonID[0]=buttonID[0];  buttonID[0]=BUTTON_NO_BUTTON; }   else clickedButtonID[0]=BUTTON_NO_BUTTON;
-//    if(!glfwGetMouseButton(MBRIGHT))    {   clickedButtonID[1]=buttonID[1];  buttonID[1]=BUTTON_NO_BUTTON; }   else clickedButtonID[1]=BUTTON_NO_BUTTON;
-//    if(!glfwGetMouseButton(MBMIDDLE))   {   clickedButtonID[2]=buttonID[2];  buttonID[2]=BUTTON_NO_BUTTON; }   else clickedButtonID[2]=BUTTON_NO_BUTTON;
-//}
-//
-//bool MOUSE::isHover(BUTTONID _buttonID,const AREA bereich)      //Gibt zurück, ob sich die Maus über einem Button befindet
-//{   if(coordInside(position,bereich))   return 1;
-//    return 0;
-//}
-//
-//bool MOUSE::isActive(BUTTONID _buttonID,const AREA bereich,MOUSEBUTTON mousebutton)     //Gibt zurück, ob sich die Maus MIT GEDRÜCKTER MAUSTASTE über einem Button befindet
-//{   if(coordInside(position,bereich) && glfwGetMouseButton(mousebutton))
-//    {   if(buttonID[mousebutton]==BUTTON_NO_BUTTON)//kein Button
-//            buttonID[mousebutton]=_buttonID;
-//        return 1;
-//    }
-//    return 0;
-//}
-//bool MOUSE::isClicked(BUTTONID _buttonID,MOUSEBUTTON mousebutton)    //Gibt zurück, ob der Button geklickt wurde (Maustaste losgelassen)
-//{   if(clickedButtonID[mousebutton]==_buttonID)
-//        return 1;
-//    return 0;
-//}
-//
-//int MOUSE::getButtonState(BUTTONID _buttonID,const AREA bereich,MOUSEBUTTON mousebutton)
-//{
-//    if(isClicked(_buttonID,mousebutton))  return 3;
-//    if(isActive(_buttonID,bereich,mousebutton))  return 2;
-//    if(isHover(_buttonID,bereich))  return 1;
-//    return 0;
-//}
-//
-//
-//COLOR getButtonOverlayColor(BUTTONID buttonID,AREA gebiet,BUTTONID mousebutton)         //Gibt eine Overlay-Farbe für einen Button zurück
-//{   switch(mousebutton)
-//    {   case MBLEFT:        if(mouse.isClicked(buttonID,MBLEFT)==2)
-//                            {   return {1.0,0.5,0.2}; break;            //tastenclick
-//                            }break;
-//
-//        case MBRIGHT:       if(mouse.isClicked(buttonID,MBRIGHT)==2)
-//                            {   return {1.0,0.5,0.2}; break;            //tastenclick
-//                            }break;
-//
-//        case MBMIDDLE:      if(mouse.isClicked(buttonID,MBRIGHT)==2)
-//                            {   return {0.2,0.5,1.0}; break;            //tastenclick
-//                            }break;
-//
-//        default: error("getButtonOverlayColor()","Unbekannter Button-Typ übergeben. mousebutton=%d",mousebutton);
-//    }
-//    if(mouse.isHover(buttonID,gebiet))                                  //Hover
-//        return {1,1,1};
-//
-//    return {0.7,0.7,0.7};                                               //nichts
-//}
-//
-//
-//
-//
-
 
 BUTTON::BUTTON(AREA _output,char _clickable)              //Typ 0 initialisieren
 {
