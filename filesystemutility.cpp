@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <windows.h>
 #include "filesystemutility.h"
 #include "logger.h"
@@ -19,9 +20,8 @@ bool FILESYSTEMUTILITY::DirectoryExists(const char* path)
 //Creates an array with all files in directory.
 //If everything works out, the function return a pointer to this array.
 //In an errornous case the function returns NULL
-char** FILESYSTEMUTILITY::EnumarateFiles(const char* directory, int* count)
+bool FILESYSTEMUTILITY::EnumarateFiles(const char* directory, int* count, AddFunction addFunction)
 {
-    char** filesArray;
     *count = 0; //set default value
 #ifdef _WINDOWS_H
     int i=0;
@@ -32,7 +32,7 @@ char** FILESYSTEMUTILITY::EnumarateFiles(const char* directory, int* count)
     if (strlen(directory) > MAX_PATH - 3)
     {
         error ("EnurmerateFiles: Path %s is too long!", directory);
-        return NULL;
+        return false;
     }
 
     //append wildcard
@@ -45,18 +45,24 @@ char** FILESYSTEMUTILITY::EnumarateFiles(const char* directory, int* count)
         return NULL;
 
     if (!(lpFindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-        filesArray = appendToArray(NULL, &i, &(lpFindFileData.cFileName[0]));
+    {
+        addFunction(lpFindFileData.cFileName);
+        i++;
+    }
 
     while (FindNextFile(findHandle, &lpFindFileData))
     {
         if (findHandle != INVALID_HANDLE_VALUE && !(lpFindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-            filesArray = appendToArray(filesArray, &i, &(lpFindFileData.cFileName[0]));
+        {
+            addFunction(lpFindFileData.cFileName);
+            i++;
+        }
     }
 
     FindClose(findHandle);
 
     *count = i;
-    return filesArray;
+    return true;
 #else //_WINDOWS_H
     //TODO: Linux implementation
     error("FILESYSTEMUTILITY::EnumerateFiles", "Not implemented!");

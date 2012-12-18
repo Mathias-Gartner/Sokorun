@@ -17,12 +17,12 @@ class HIGHSCORE
         virtual ~HIGHSCORE();
         void Load();
         void Save();
-        int Getmoves() { return m_moves; }
-        void Setmoves(int val) { m_moves = val; }
-        TIME Gettime() { return m_time; }
-        void Settime(TIME val) { m_time = val; }
-        int Gettimesplayed() { return m_timesplayed; }
-        void Settimesplayed(int val) { m_timesplayed = val; }
+        int getMoves() { return m_moves; }
+        void setMoves(int val) { m_moves = val; }
+        TIME getTime() { return m_time; }
+        void setTime(TIME val) { m_time = val; }
+        int getTimesPlayed() { return m_timesplayed; }
+        void setTimesPlayed(int val) { m_timesplayed = val; }
     protected:
     private:
         bool DirectoryExists(char* dir);
