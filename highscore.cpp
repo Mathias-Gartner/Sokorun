@@ -61,19 +61,63 @@ void HIGHSCORE::Save()
     char levelPath[strlen(path) + strlen(level) + 7];
     strcpy(levelPath, path);
     strcat(levelPath, level);
+    strcat(levelPath, ".score");
 
     if (!FILESYSTEMUTILITY::DirectoryExists(path))
         CreateDirectory(path, NULL);
 
-    /*if (!isLoaded)
-        Load();*/
-
     FILE* file = fopen(levelPath, "w");
     if (file != NULL)
     {
-        fprintf(file, "%d", m_timesplayed);
-        fprintf(file, "%d", m_moves);
-        fprintf(file, "%2d:%2d:%2d", m_time.Hours, m_time.Minutes, m_time.Seconds);
+        fprintf(file, "%d\n", m_timesplayed);
+        fprintf(file, "%d\n", m_moves);
+        fprintf(file, "%2d:%2d:%2d\n", m_time.Hours, m_time.Minutes, m_time.Seconds);
         fclose(file);
     }
+}
+
+void HIGHSCORE::setScoreFromGameLog(GAMELOG* gamelog)
+{
+    TIME time = longToScoreTime(gamelog->getPlayTime());
+    TIME currentTime = getTime();
+
+    if ((time.Hours < currentTime.Hours) ||
+        (time.Hours == currentTime.Hours && time.Minutes < currentTime.Minutes) ||
+        (time.Hours == currentTime.Hours && time.Minutes == currentTime.Minutes && time.Seconds < currentTime.Seconds) ||
+        (currentTime.Hours == 0 && currentTime.Minutes == 0 && currentTime.Seconds == 0))
+    {
+        setTime(time);
+    }
+    if (getMoves() == 0 || getMoves() > gamelog->getUserAvatarMoves())
+    {
+        setMoves(gamelog->getUserAvatarMoves());
+    }
+    Save();
+}
+
+TIME HIGHSCORE::longToScoreTime(long playtime)
+{
+    TIME time = {0, 0, 0};
+    if(playtime<60000)
+    {
+        time.Seconds = playtime/1000;
+    }
+    else
+    {
+        playtime/=1000;
+
+        if(playtime<3600)
+        {
+            time.Minutes = playtime/60;
+            time.Seconds = playtime%60;
+        }
+        else
+        {
+            time.Hours = playtime/3600;
+            long lastHour = playtime%3600;
+            time.Minutes = lastHour/60;
+            time.Seconds = lastHour%60;
+        }
+    }
+    return time;
 }

@@ -136,6 +136,8 @@ class GAME : public LEVEL
 
         void cleanupKugeln();                           //Alle Kugeln, die zum löschen markiert wurden jetzt löschen
 
+        //Access to events for score and replay
+        GAMELOG* getGameLog() { return gamelog; };
 };
 
 

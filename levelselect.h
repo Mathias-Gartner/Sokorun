@@ -26,9 +26,12 @@ class LEVELSELECT
             true: Level ausgewählt, Name in GetLevelName
         */
         int Select();
-        void SwitchLevel(int jumpWidth);
 
-        // Objects received by GetLevel() will be destroyed when SwitchLevel() is called.
+        //functions for calling levelselect programmaticly
+        bool SwitchLevel(int jumpWidth);
+        bool NextLevelAvailable();
+        bool PrevLevelAvailable();
+
         LEVELFILE* GetLevel() {return currentLevel;}
     private:
         bool isInputValid();

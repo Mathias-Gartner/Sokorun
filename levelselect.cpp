@@ -128,16 +128,33 @@ bool LEVELSELECT::isInputValid()
     return (currentLevel != NULL);
 }
 
-void LEVELSELECT::SwitchLevel(int jumpWidth)
+bool LEVELSELECT::NextLevelAvailable()
 {
+    return (GetLevel() != NULL && GetLevel()->next != NULL);
+}
+
+bool LEVELSELECT::PrevLevelAvailable()
+{
+    return (GetLevel() != NULL && GetLevel()->prev != NULL);
+}
+
+bool LEVELSELECT::SwitchLevel(int jumpWidth)
+{
+    bool success = true;
+
     if (jumpWidth<0)
     {
         for (int i=0; i>jumpWidth; i--)
         {
             if (currentLevel != NULL && currentLevel->prev != NULL)
+            {
                 currentLevel = currentLevel->prev;
+            }
             else
+            {
+                success = false;
                 break;
+            }
         }
     }
     else if (jumpWidth>0)
@@ -145,27 +162,21 @@ void LEVELSELECT::SwitchLevel(int jumpWidth)
         for (int i=0; i<jumpWidth; i++)
         {
             if (currentLevel != NULL && currentLevel->next != NULL)
+            {
                 currentLevel = currentLevel->next;
+            }
             else
+            {
+                success = false;
                 break;
+            }
         }
     }
-    /*currentLevelIndex = currentLevelIndex+jumpWidth;
-    logger(true, "LEVELSELECT: Switching level, increasing %d, new index %d", jumpWidth, currentLevelIndex);
-
-    if (currentLevelIndex < 0)
-        currentLevelIndex = 0;
-    if (currentLevelIndex >= levelCount)
-        currentLevelIndex = levelCount - 1;
-
-    levelName = levels[currentLevelIndex];*/
-
-    /*if (currentLevel != NULL)
-        delete currentLevel;
-    currentLevel = new LEVEL({windX/2+160, 160}, 17, GetLevelPath(), true);*/
 
     //reload highscore
     currentLevel->score = (GetLevel()->name);
+
+    return success;
 }
 
 bool LEVELSELECT::GetLevelPath(char* levelPath, const char* levelName, bool appendExtension)

@@ -27,6 +27,7 @@ GAMELOG::GAMELOG() :    show(GAMELOGshowBUTTONarea,0,&gamelogIcons,POS{0,3}),
 
     playtime=0;
     events=0;
+    useravatarmoves=0;
 
     displayGameLog=1;
 
@@ -59,6 +60,11 @@ void GAMELOG::run()
 void GAMELOG::addEvent(GameEventType type,DIRECTION richtung=NONE)                 //Event hinzufügen
 {
     events++;
+    if (type == USERAVATARMOVE)
+    {
+        useravatarmoves++;
+    }
+
     if(start!=NULL)
     {   if(start->type==type && start->size<GAMELOG_ICONS_PER_BOX)//selber Typ + noch Platz
         {   start->time[(int)(start->size)]=playtime;

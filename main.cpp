@@ -62,16 +62,15 @@ int main(int argc,char* argv[])
             do
             {   status=gameMain(game);
                 if(status<0)        logger(1,"Spiel verloren");
-                else if(status==0)  logger(1,"Spiel gewonnen");
+                else if(status==0)
+                {
+                    logger(1,"Spiel gewonnen");
+                    levelselect->GetLevel()->score.setScoreFromGameLog(game->getGameLog());
+                }
                 else                logger(1,"Spiel abgebrochen");
                 game->clearGameData();  //Alle Daten wieder löschen
             }while(status==-2);
 
-
-
-            /*HIGHSCORE *score = new HIGHSCORE(levelselect->GetLevelName());
-            score->Setmoves(100);
-            score->Save();*/
         }
         else
         {
