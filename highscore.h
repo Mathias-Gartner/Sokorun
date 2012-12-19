@@ -31,6 +31,7 @@ class HIGHSCORE
         int m_timesplayed;
         char level[MAX_PATH];
         bool isLoaded;
+        static const char path[];
 };
 
 #endif // HIGHSCORE_H_INCLUDED

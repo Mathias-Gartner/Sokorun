@@ -4,6 +4,7 @@
 //Versionsnummer gibts erst ab dem zusamenstellen von mehreren Blöcken
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "animation.h"
 #include "game.h"
 #include "gameclass.h"
@@ -42,16 +43,15 @@ int main(int argc,char* argv[])
 
 
 
+    LEVELSELECT *levelselect = new LEVELSELECT();
+    for(;;)
+    {
 
-//    LEVELSELECT *levelselect = new LEVELSELECT();
-//    for(;;)
-//    {
-//
-//        int success = levelselect->Select();
-//
-//        if (success)
-//        {
-            GAME *game=new GAME({50,50},40,/*levelselect->GetLevelPath()*/"daten/level/test.lvl");
+        int success = levelselect->Select();
+
+        if (success)
+        {
+            GAME *game=new GAME({50,50},40,levelselect->GetLevel()->path/*"daten/level/test.lvl"*/);
             if(game->getStatus() != 0)
             {
                 char *dateP,*timeP;
@@ -72,14 +72,15 @@ int main(int argc,char* argv[])
             /*HIGHSCORE *score = new HIGHSCORE(levelselect->GetLevelName());
             score->Setmoves(100);
             score->Save();*/
-//        }
-//        else
-//        {
-//            logger (true, "LevelSelect canceled, show main menu");
-//            return 0;
-//        }
-//    }
+        }
+        else
+        {
+            logger (true, "LevelSelect canceled, show main menu");
+            return 0;
+        }
+    }
 
+    delete levelselect;
     cleanup();  //Abschlussarbeiten vor dem Programmende
     return 0;
 

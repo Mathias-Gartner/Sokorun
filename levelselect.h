@@ -20,12 +20,14 @@ class LEVELSELECT
         LEVELSELECT();
         ~LEVELSELECT();
         static LEVELSELECT* GetCurrent() {if (_instance == NULL) new LEVELSELECT(); return _instance;}
+
         /*
             false: Auswahl abgebrochen, Rückkehr ins MainMenu
             true: Level ausgewählt, Name in GetLevelName
         */
         int Select();
         void SwitchLevel(int jumpWidth);
+
         // Objects received by GetLevel() will be destroyed when SwitchLevel() is called.
         LEVELFILE* GetLevel() {return currentLevel;}
     private:

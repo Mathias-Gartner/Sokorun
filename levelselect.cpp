@@ -65,19 +65,22 @@ LEVELSELECT::~LEVELSELECT()
 
 int LEVELSELECT::Select()
 {
-    long loopStart;
     BUTTON prevButton ({{10, windY - 180}, {90, windY-130}}, 0, 3, 10, CYAN, "<", 20, YELLOW);
     BUTTON nextButton ({{windX - 100, windY - 180}, {windX - 10, windY - 130}}, 0, 3, 10, CYAN, ">", 20, YELLOW);
     BUTTON selectButton ({{windX - 200, 10}, {windX - 10, 60}}, 0, 3, 10, CYAN, "Spiel starten", 20, YELLOW);
     BUTTON cancelButton ({{10, 10}, {190, 60}}, 0, 3, 10, CYAN, "Zurück", 20, YELLOW);
     BUTTON levelCaption ({{100, windY - 180}, {windX - 110, windY - 130}}, 3, 3, 10, CYAN, "(Levelname)", 20, YELLOW);
     AREA highscoreOutput {{100, 140}, {windX / 2 - 100, windY - 240}};
+    prevButton  .assignKeyboardButton(0,GLFW_KEY_LEFT ,'A');
+    nextButton  .assignKeyboardButton(0,GLFW_KEY_RIGHT,'D');
+    levelCaption.assignKeyboardButton(0,'S');
+    cancelButton.assignKeyboardButton(0,GLFW_KEY_ESC);
+    selectButton.assignKeyboardButton(0,GLFW_KEY_ENTER,GLFW_KEY_SPACE);
 
     prepare_GameLoop();
 
     do
     {
-        loopStart = clock();
         prepare_graphics();
 
         levelCaption.setText(GetLevel()->name);
@@ -116,7 +119,7 @@ int LEVELSELECT::Select()
         }
     } while (complete_graphics());
 
-    logger(true, "LEVELSELECT: Got false from complete_graphics(..). Returning -1.");
+    logger(true, "LEVELSELECT: Cancelled, Returning false.");
     return false;
 }
 
@@ -219,7 +222,7 @@ bool LEVELSELECT::addLevelListEntry(char* levelFileName)
     if (lastLevel != NULL)
         lastLevel->next = newLevel;
     strcpy(newLevel->name, levelFileName);
-    newLevel->name[strlen(newLevel->name)-4] = '\0'; //cut off fileextension
+    newLevel->name[strlen(newLevel->name)-4] = '\0'; //cut off fileextension (to get levelname)
     GetCurrent()->GetLevelPath(newLevel->path, newLevel->name, true);
     newLevel->score = (newLevel->name);
     newLevel->level = new LEVEL({(windX/2+160), 160}, 17, newLevel->path, true);

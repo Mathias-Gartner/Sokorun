@@ -17,9 +17,8 @@ bool FILESYSTEMUTILITY::DirectoryExists(const char* path)
 #endif //_WINDOWS_H
 }
 
-//Creates an array with all files in directory.
-//If everything works out, the function return a pointer to this array.
-//In an errornous case the function returns NULL
+//Calls addFunction for every file in a directory
+//In an errornous case the function returns false
 bool FILESYSTEMUTILITY::EnumarateFiles(const char* directory, int* count, AddFunction addFunction)
 {
     *count = 0; //set default value
@@ -94,7 +93,7 @@ char** FILESYSTEMUTILITY::appendToArray(char** filesArray, int* position, char* 
     }
 
     newArray[*position] = newEntryInstance;
-    newArray[*position][strlen(newEntryInstance)-4] = '\0'; //cut off fileextension
+    newArray[*position][strlen(newEntryInstance)-4] = '\0'; //cut off fileextension (for nicer name)
     (*position)++;
     return newArray;
 }
