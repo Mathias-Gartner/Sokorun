@@ -43,40 +43,43 @@ int main(int argc,char* argv[])
 
 
 
+    LEVELSELECT *levelselect = new LEVELSELECT();
+    for(;;)
+    {
 
-//    LEVELSELECT *levelselect = new LEVELSELECT();
-//    for(;;)
-//    {
-//
-//        int success = levelselect->Select();
-//
-//        if (success)
-//        {
+        int success = levelselect->Select();
 
-    char path[256];
-    int lvlnummer=4;
-
-    int gamestatus;
-    GAME *game=new GAME({50,50},40,"");//"/*levelselect->GetLevelPath()*/"daten/level/test.lvl");
-    do
-    {   lvlnummer++;
-        sprintf(path,"daten/level/%d.lvl",lvlnummer);
-        game->loadLevel(path);
-        if(game->getStatus() != 0)
+        if (success)
         {
-            char *dateP,*timeP;
-            game->getMetaData(&dateP,&timeP);
-            logger(1,"Das Level wurde erfolgreich geladen. Levelpfad: %s, Erstelldatum: %s, Erstellzeitpunkt: %s",game->getLevelPath(),dateP,timeP);
-        }
-        do
-        {   gamestatus=gameMain(game);
-            if(gamestatus==-1)        logger(1,"Spiel verloren");
-            else if(gamestatus==0)  logger(1,"Spiel gewonnen");
-            else                logger(1,"Spiel abgebrochen");
-            game->clearGameData();  //Alle Daten wieder löschen
-        }while(gamestatus==-2);//Level neu starten
-    }while(1);//gamestatus==-3);//Nächstes Level
+            GAME *game=new GAME({50,50},40,levelselect->GetLevel()->path/*"daten/level/test.lvl"*/);
+            if(game->getStatus() != 0)
+            {
+                char *dateP,*timeP;
+                game->getMetaData(&dateP,&timeP);
+                logger(1,"Das Level wurde erfolgreich geladen. Levelpfad: %s, Erstelldatum: %s, Erstellzeitpunkt: %s",game->getLevelPath(),dateP,timeP);
+            }
+            int status;
+            do
+            {   status=gameMain(game);
+                if(status<0)        logger(1,"Spiel verloren");
+                else if(status==0)
+                {
+                    logger(1,"Spiel gewonnen");
+                    levelselect->GetLevel()->score.setScoreFromGameLog(game->getGameLog());
+                }
+                else                logger(1,"Spiel abgebrochen");
+                game->clearGameData();  //Alle Daten wieder löschen
+            }while(status==-2);
 
+        }
+        else
+        {
+            logger (true, "LevelSelect canceled, show main menu");
+            return 0;
+        }
+    }
+
+    delete levelselect;
     cleanup();  //Abschlussarbeiten vor dem Programmende
     return 0;
 

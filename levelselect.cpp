@@ -2,7 +2,8 @@
 //Mathias Gartner
 //Levelauswahl
 
-#include <ctime>
+#include <stdio.h>
+#include <time.h>
 #include <windows.h>
 #include "button.h"
 #include "definitions.h"
@@ -10,111 +11,191 @@
 #include "globals.h"
 #include "graphics.h"
 #include "highscore.h"
+#include "levelclass.h"
 #include "levelselect.h"
 #include "logger.h"
 
+LEVELSELECT* LEVELSELECT::_instance = NULL;
+
 LEVELSELECT::LEVELSELECT()
 {
-    currentLevelIndex = 0;
-    levels = FILESYSTEMUTILITY::EnumarateFiles(GetLevelPath("", false), &levelCount);
-    if (levels == NULL)
+    if (_instance != NULL)
     {
-        logger(true, "WARN: No Levels available (Got NULL from FILESYSTEMUTILITY::EnumarateFiles)");
+        delete _instance;
+        _instance = NULL;
+    }
+    _instance = this;
+
+    currentLevel = NULL;
+
+    char levelPath[MAX_PATH];
+    GetLevelPath(levelPath, "", false);
+    if (FILESYSTEMUTILITY::EnumarateFiles(levelPath, &levelCount, &addLevelListEntry))
+    {
+        SwitchLevel(0);
     }
     else
-    {   switchLevel(0);
+    {
+        logger(true, "WARN: No levels available (Got false from FILESYSTEMUTILITY::EnumerateFiles)");
+    }
+}
+
+LEVELSELECT::~LEVELSELECT()
+{
+    if (currentLevel != NULL)
+    {
+        LEVELFILE* level = currentLevel;
+
+        //get first level
+        while (level->prev != NULL)
+        {
+            level = level->prev;
+        }
+
+        //delete all
+        while (level->next != NULL)
+        {
+            delete level->level;
+            level = level->next;
+            free(level->prev);
+            level->prev = NULL;
+        }
     }
 }
 
 int LEVELSELECT::Select()
 {
-    BUTTON *prevButton = new BUTTON({{10, windY - 180}, {90, windY-130}}, 0, 3, 10, CYAN, "<", 20, YELLOW);
-    BUTTON *nextButton = new BUTTON({{windX - 100, windY - 180}, {windX - 10, windY - 130}}, 0, 3, 10, CYAN, ">", 20, YELLOW);
-    BUTTON *selectButton = new BUTTON({{windX - 200, 10}, {windX - 10, 60}}, 0, 3, 10, CYAN, "Spiel starten", 20, YELLOW);
-    BUTTON *cancelButton = new BUTTON({{10, 10}, {190, 60}}, 0, 3, 10, CYAN, "Zurück", 20, YELLOW);
-    BUTTON *levelCaption = new BUTTON({{100, windY - 180}, {windX - 110, windY - 130}}, 3, 3, 10, CYAN, "(Levelname)", 20, YELLOW);
-    AREA highscoreOutput = {{20, 20}, {windX / 2, windY - 200}};
-
-    //Tastaturtasten zu den Buttons hinzufügen:
-        prevButton  ->assignKeyboardButton(0,GLFW_KEY_LEFT ,'A');
-        nextButton  ->assignKeyboardButton(0,GLFW_KEY_RIGHT,'D');
-        levelCaption->assignKeyboardButton(0,'S');
-        cancelButton->assignKeyboardButton(0,GLFW_KEY_ESC);
-        selectButton->assignKeyboardButton(0,GLFW_KEY_ENTER,GLFW_KEY_SPACE);
+    BUTTON prevButton ({{10, windY - 180}, {90, windY-130}}, 0, 3, 10, CYAN, "<", 20, YELLOW);
+    BUTTON nextButton ({{windX - 100, windY - 180}, {windX - 10, windY - 130}}, 0, 3, 10, CYAN, ">", 20, YELLOW);
+    BUTTON selectButton ({{windX - 200, 10}, {windX - 10, 60}}, 0, 3, 10, CYAN, "Spiel starten", 20, YELLOW);
+    BUTTON cancelButton ({{10, 10}, {190, 60}}, 0, 3, 10, CYAN, "Zurück", 20, YELLOW);
+    BUTTON levelCaption ({{100, windY - 180}, {windX - 110, windY - 130}}, 3, 3, 10, CYAN, "(Levelname)", 20, YELLOW);
+    AREA highscoreOutput {{100, 140}, {windX / 2 - 100, windY - 240}};
+    prevButton  .assignKeyboardButton(0,GLFW_KEY_LEFT ,'A');
+    nextButton  .assignKeyboardButton(0,GLFW_KEY_RIGHT,'D');
+    levelCaption.assignKeyboardButton(0,'S');
+    cancelButton.assignKeyboardButton(0,GLFW_KEY_ESC);
+    selectButton.assignKeyboardButton(0,GLFW_KEY_ENTER,GLFW_KEY_SPACE);
 
     prepare_GameLoop();
 
     do
-    {   prepare_graphics();
+    {
+        prepare_graphics();
 
-        levelCaption->setText(GetLevelName());
+        levelCaption.setText(GetLevel()->name);
 
         //handle clicks
-        if (cancelButton->clicked())
-            return false;
-        else if (selectButton->clicked() && isInputValid())
+        if (cancelButton.clicked())
+            break;
+        else if (selectButton.clicked() && isInputValid())
+        {
+            currentLevel->score.setTimesPlayed(currentLevel->score.getTimesPlayed() + 1);
             return true;
-        else if (prevButton->clicked() || levelCaption->clicked() == 2)
-            switchLevel(-1);
-        else if (nextButton->clicked() || levelCaption->clicked() == 1)
-            switchLevel(1);
+        }
+        else if (prevButton.clicked() || levelCaption.clicked() == 2)
+            SwitchLevel(-1);
+        else if (nextButton.clicked() || levelCaption.clicked() == 1)
+            SwitchLevel(1);
 
         //output
-        prevButton->print();
-        nextButton->print();
-        selectButton->print();
-        cancelButton->print();
-        levelCaption->print();
+        prevButton.print();
+        nextButton.print();
+        selectButton.print();
+        cancelButton.print();
+        levelCaption.print();
 
-        /*if (currentLevelScore != NULL)
+        if (currentLevel != NULL)
         {
-            drawBox(highscoreOutput,10,3,CYAN);
-            normalFont.setFontColor(YELLOW);
-            normalFont.setFontSize(20);
-            normalFont.putString("Highscore",{highscoreOutput.a.x+(highscoreOutput.b.x-highscoreOutput.a.x)/2 , highscoreOutput.a.y + (highscoreOutput.b.y-highscoreOutput.a.y-20)/2},taLEFT); break;
-        }*/
-    }while(complete_graphics());
+            drawBox({{windX/2 + 80, 140}, {windX - 110, windY - 240}}, 10, 3, WHITE);
+            currentLevel->level->printPreview();
 
-    logger(true, "LEVELSELECT: Got false from complete_graphics(..). Returning -1.");
+            TIME time = currentLevel->score.getTime();
+            drawBox(highscoreOutput,10,3,WHITE);
+            normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 40}, taLEFT, "Highscore");
+            normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 80}, taLEFT, "Züge: %d", currentLevel->score.getMoves());
+            normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 120}, taLEFT, "Zeit: %2d:%2d:%2d", time.Hours, time.Minutes, time.Seconds);
+            normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 160}, taLEFT, "%d mal gespielt", currentLevel->score.getTimesPlayed());
+        }
+    } while (complete_graphics());
+
+    logger(true, "LEVELSELECT: Cancelled, Returning false.");
     return false;
 }
 
 bool LEVELSELECT::isInputValid()
 {
-    return (levels != NULL && GetLevelName() != NULL);
+    return (currentLevel != NULL);
 }
 
-void LEVELSELECT::switchLevel(int jumpWidth)
+bool LEVELSELECT::NextLevelAvailable()
 {
-    currentLevelIndex = currentLevelIndex+jumpWidth;
-    logger(true, "LEVELSELECT: Switching level, increasing %d, new index %d", jumpWidth, currentLevelIndex);
-
-    if (currentLevelIndex < 0)
-        currentLevelIndex = 0;
-    if (currentLevelIndex >= levelCount)
-        currentLevelIndex = levelCount - 1;
-
-    levelName = levels[currentLevelIndex];
-
-    free(currentLevelScore);
-    currentLevelScore = new HIGHSCORE(GetLevelName());
+    return (GetLevel() != NULL && GetLevel()->next != NULL);
 }
 
-char* LEVELSELECT::GetLevelPath(const char* levelName, bool appendExtension)
+bool LEVELSELECT::PrevLevelAvailable()
 {
-    if (GetCurrentDirectory(MAX_PATH, &LEVELSELECT::levelPath[0]) != 0)
+    return (GetLevel() != NULL && GetLevel()->prev != NULL);
+}
+
+bool LEVELSELECT::SwitchLevel(int jumpWidth)
+{
+    bool success = true;
+
+    if (jumpWidth<0)
     {
-        if (strlen(LEVELSELECT::levelPath)+strlen(levelName) > MAX_PATH)
+        for (int i=0; i>jumpWidth; i--)
         {
-            error("LEVELSELECT::GetLevelName", "Path too long (longer than %d). (Path: %s%s)", MAX_PATH, LEVELSELECT::levelPath, levelName);
+            if (currentLevel != NULL && currentLevel->prev != NULL)
+            {
+                currentLevel = currentLevel->prev;
+            }
+            else
+            {
+                success = false;
+                break;
+            }
+        }
+    }
+    else if (jumpWidth>0)
+    {
+        for (int i=0; i<jumpWidth; i++)
+        {
+            if (currentLevel != NULL && currentLevel->next != NULL)
+            {
+                currentLevel = currentLevel->next;
+            }
+            else
+            {
+                success = false;
+                break;
+            }
+        }
+    }
+
+    //reload highscore
+    currentLevel->score = (GetLevel()->name);
+
+    return success;
+}
+
+bool LEVELSELECT::GetLevelPath(char* levelPath, const char* levelName, bool appendExtension)
+{
+    const char basePath[] = "\\daten\\level\\";
+
+    if (GetCurrentDirectory(MAX_PATH, levelPath) != 0)
+    {
+        if (strlen(levelPath)+strlen(basePath)+strlen(levelName) > MAX_PATH)
+        {
+            error("LEVELSELECT::GetLevelName", "Path too long (longer than %d). (Path: %s%s)", MAX_PATH, levelPath, levelName);
         }
         else
         {
-            strcat(LEVELSELECT::levelPath, "\\daten\\level\\");
-            strcat(LEVELSELECT::levelPath, levelName);
+            strcat(levelPath, basePath);
+            strcat(levelPath, levelName);
             if (appendExtension)
-              strcat(LEVELSELECT::levelPath, ".lvl");
-            return LEVELSELECT::levelPath;
+              strcat(levelPath, ".lvl");
+            return true;
         }
     }
     else
@@ -123,5 +204,41 @@ char* LEVELSELECT::GetLevelPath(const char* levelName, bool appendExtension)
     }
 
     exit (1); //Only valid filepaths will be returned. If anything goes wrong -> exit
-    return NULL;
+    return false;
+}
+
+bool LEVELSELECT::addLevelListEntry(char* levelFileName)
+{
+    if (strlen(levelFileName)+1 > MAX_PATH)
+    {
+        error("LEVELSELECT::addLevelListEntry", "Parameter levelFileName too long. Max length is MAX_PATH (%d).", MAX_PATH);
+        return false;
+    }
+
+    LEVELFILE *lastLevel = GetCurrent()->GetLevel();
+    LEVELFILE *newLevel;
+
+    //get last level
+    if (lastLevel != NULL)
+    {
+        while (lastLevel->next != NULL)
+        {
+            lastLevel = lastLevel->next;
+        }
+    }
+
+    newLevel = (LEVELFILE*)malloc(sizeof(LEVELFILE));
+    newLevel->prev = lastLevel;
+    newLevel->next = NULL;
+    if (lastLevel != NULL)
+        lastLevel->next = newLevel;
+    strcpy(newLevel->name, levelFileName);
+    newLevel->name[strlen(newLevel->name)-4] = '\0'; //cut off fileextension (to get levelname)
+    GetCurrent()->GetLevelPath(newLevel->path, newLevel->name, true);
+    newLevel->score = (newLevel->name);
+    newLevel->level = new LEVEL({(windX/2+160), 160}, 17, newLevel->path, true);
+
+    if (GetCurrent()->GetLevel() == NULL)
+        GetCurrent()->currentLevel = newLevel;
+    return true;
 }

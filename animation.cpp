@@ -274,6 +274,8 @@ int ANIMATIONGROUP::findAnimation(ANITYPE group,AREA output)     //Sucht diese A
         }
         p=p->getNextPointer();                                  //Nächstes Element
     }
+    logger(true, "Warning: findAnimation found no animation. Returned -1.");
+    return -1;
 }
 
 

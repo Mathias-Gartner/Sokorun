@@ -5,8 +5,10 @@
 class FILESYSTEMUTILITY
 {
     public:
+        typedef bool (*AddFunction)(char*);
+
         static bool DirectoryExists(const char* path);
-        static char** EnumarateFiles(const char* directory, int* count);
+        static bool EnumarateFiles(const char* directory, int* count, AddFunction addFunction);
     private:
         static char** appendToArray(char** filesArray, int* position, char* newEntry);
 };

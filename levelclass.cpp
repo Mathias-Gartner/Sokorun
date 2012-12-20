@@ -10,6 +10,7 @@
 #include "levelclass.h"
 #include "globals.h"
 #include "display.h"
+#include "globals.h"
 #include "graphics.h"
 #include "kugel.h"
 #include "lock.h"

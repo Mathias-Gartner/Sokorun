@@ -3,6 +3,7 @@
 
 #include "button.h"
 #include "definitions.h"
+#include "globals.h"
 
 
 enum GameEventType                                  //Alle Arten von Spieleevents die es gibt
@@ -48,6 +49,7 @@ class GAMELOG
 
         ///Daten zum Spiel:
             unsigned long playtime;                     //Spielzeit: Anzahl der Schleifendurchläufe bis jetzt
+            unsigned int useravatarmoves;
             unsigned int events;                        //Anzahl der bisherigen Events
 
             GameEvent *start;                           //Alle Events die je aufgetreten sind (erstes Element=neuestes Element)
@@ -92,6 +94,12 @@ class GAMELOG
 
         bool isPauseButtonClicked();                    //Gibt zurück, ob der Pause-Button seit dem letzten Aufruf gedrückt worden ist
         void EnablePauseButton(bool enable);            //Ativiert/Deaktiviert den Pause-Button
+
+        //property getter
+        GameEvent* getEventStart() { return start; };
+        unsigned int getEventCount() { return events; };
+        unsigned long getPlayTime() { return playtime*(1000.0f/FPS); };
+        unsigned int getUserAvatarMoves() { return useravatarmoves; };
 };
 
 
