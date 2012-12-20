@@ -49,7 +49,7 @@ bool freadPos(POS *pos,FILE *datei)
 }
 
 
-LEVEL::LEVEL(POS _origin,int _elsize,const char *LVLpath="",const bool skipMinorErrors=0)//skipMinorErrors: Wenn Levelfehler nicht zum abbruch führen sollen (für den Editor)
+LEVEL::LEVEL(POS _origin,int _elsize,const char *LVLpath,const bool skipMinorErrors)//skipMinorErrors: Wenn Levelfehler nicht zum abbruch führen sollen (für den Editor)
 {   status=0;                           //Keine gültigen Leveldaten vorhanden
     origin=_origin;                     //Position, wo das LEvel ausgegeben wird (links unten)
     if(_elsize>=1)
@@ -59,23 +59,15 @@ LEVEL::LEVEL(POS _origin,int _elsize,const char *LVLpath="",const bool skipMinor
         elsize=40;
     }
 
-    targetFieldAnz=0;                   //Anz. der Zielfelder = 0
-
-    animationType=0;                    //Animationstyp noch nicht definiert
-    buildupAnimationProgress=0;         //Animation noch nicht gestartet
-
-    kugelOriginStart=NULL;              //Keine Kugeln in der verketteten Liste
-    lockOriginStart=NULL;               //Keine Schlösser in der verketteten Liste
-    transporterOriginStart=NULL;        //Keine Transporter in der Verketteten Liste
-
-    resetDisplayList();                 //Display-Liste löschen
+    cleanup();                          //Daten zurücksetzen/initialisieren
 
     if(strcmp(LVLpath,"")!=0)           //Levelpfad zum laden übergeben
     {   loadLevel(LVLpath,skipMinorErrors);   //Level aus der Datei laden (Es wird die sichere Methode verwendet)
     }
 }
 
-void LEVEL::loadLevel(const char *LVLpath,const bool skipMinorErrors=0)            //Setzt die Daten im Speicher zurück und lädt ein Level
+
+void LEVEL::loadLevel(const char *LVLpath,const bool skipMinorErrors)            //Setzt die Daten im Speicher zurück und lädt ein Level
 {   cleanup();                          //Daten zurücksetzen und freigeben
 
     if(levelloader(LVLpath,skipMinorErrors)!=0)   //Level aus der Datei laden
@@ -87,10 +79,12 @@ void LEVEL::loadLevel(const char *LVLpath,const bool skipMinorErrors=0)         
 
 void LEVEL::cleanup()   //Setzt alle Leveldaten zurück und gibt den Speicher wieder frei der reserviert wurde
 {   //Muss zB. nach dem Ladeversuch eines fehlerhaften Levels ausgeführt werden
+
+
     status=0;
     resetDisplayList();                 //Displayliste löschen/zurücksetzen
 
-    //Verkettete Liste mit Kugeln freigeben:
+    ///Verkettete Liste mit Kugeln freigeben:
     {   KUGELorigin *p=kugelOriginStart,*q;
         while(p!=NULL)
         {   q=(p->next);
@@ -100,7 +94,7 @@ void LEVEL::cleanup()   //Setzt alle Leveldaten zurück und gibt den Speicher wie
         kugelOriginStart=NULL;
     }
 
-    //Verkettete Liste mit Schlössern freigeben:
+    ///Verkettete Liste mit Schlössern freigeben:
     {   LOCKorigin *p=lockOriginStart,*q;
         while(p!=NULL)
         {   q=(p->next);
@@ -110,7 +104,7 @@ void LEVEL::cleanup()   //Setzt alle Leveldaten zurück und gibt den Speicher wie
         lockOriginStart=NULL;
     }
 
-    //Verkettete Liste mit Transportern freigeben:
+    ///Verkettete Liste mit Transportern freigeben:
     {   TRANSPORTERorigin *p=transporterOriginStart,*q;
         while(p!=NULL)
         {   //Rail freigeben:
@@ -128,9 +122,14 @@ void LEVEL::cleanup()   //Setzt alle Leveldaten zurück und gibt den Speicher wie
         }
         transporterOriginStart=NULL;
     }
+
+    ///Variablen zurücksetzen:
+        targetFieldAnz=0;                   //Anz. der Zielfelder = 0
+
+        animationType=0;                    //Animationstyp noch nicht definiert
+        buildupAnimationProgress=0;         //Animation noch nicht gestartet
+
 }
-
-
 
 
 bool LEVEL::checkPos(const POS position)//Überprüft, ob sich die übergebenen Koordinaten im Spielfeld befinden (Wenn das Spielfeld 5x7 Felder gorß ist, ist (0x0) und (4x6) innerhalb, (3x7) aber außerhalb
@@ -139,6 +138,13 @@ bool LEVEL::checkPos(const POS position)//Überprüft, ob sich die übergebenen Koo
     return 1;
 }
 
+bool LEVEL::isFieldNull(const POS position) //Überprüft, ob der Feldtyp der übergebenen Position 0 ist, oder das Feld außerhalb des Spielfeldes ist
+{   if(checkPos(position))                  //Außerhalb des Spielfeldes
+        return 1;
+    if(spielfeld[position.y][position.x]==NULL)
+        return 1;
+    return 0;
+}
 
 int LEVEL::convertLevel()              //Konvertiert die Daten eines veralteten Levelformates
 {

@@ -4,6 +4,7 @@
 //Versionsnummer gibts erst ab dem zusamenstellen von mehreren Blöcken
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "animation.h"
 #include "game.h"
 #include "gameclass.h"
@@ -51,34 +52,30 @@ int main(int argc,char* argv[])
 //
 //        if (success)
 //        {
-            GAME *game=new GAME({50,50},40,/*levelselect->GetLevelPath()*/"daten/level/test.lvl");
-            if(game->getStatus() != 0)
-            {
-                char *dateP,*timeP;
-                game->getMetaData(&dateP,&timeP);
-                logger(1,"Das Level wurde erfolgreich geladen. Levelpfad: %s, Erstelldatum: %s, Erstellzeitpunkt: %s",game->getLevelPath(),dateP,timeP);
-            }
-            int status;
-            do
-            {   status=gameMain(game);
-                if(status<0)        logger(1,"Spiel verloren");
-                else if(status==0)  logger(1,"Spiel gewonnen");
-                else                logger(1,"Spiel abgebrochen");
-                game->clearGameData();  //Alle Daten wieder löschen
-            }while(status==-2);
 
+    char path[256];
+    int lvlnummer=4;
 
-
-            /*HIGHSCORE *score = new HIGHSCORE(levelselect->GetLevelName());
-            score->Setmoves(100);
-            score->Save();*/
-//        }
-//        else
-//        {
-//            logger (true, "LevelSelect canceled, show main menu");
-//            return 0;
-//        }
-//    }
+    int gamestatus;
+    GAME *game=new GAME({50,50},40,"");//"/*levelselect->GetLevelPath()*/"daten/level/test.lvl");
+    do
+    {   lvlnummer++;
+        sprintf(path,"daten/level/%d.lvl",lvlnummer);
+        game->loadLevel(path);
+        if(game->getStatus() != 0)
+        {
+            char *dateP,*timeP;
+            game->getMetaData(&dateP,&timeP);
+            logger(1,"Das Level wurde erfolgreich geladen. Levelpfad: %s, Erstelldatum: %s, Erstellzeitpunkt: %s",game->getLevelPath(),dateP,timeP);
+        }
+        do
+        {   gamestatus=gameMain(game);
+            if(gamestatus==-1)        logger(1,"Spiel verloren");
+            else if(gamestatus==0)  logger(1,"Spiel gewonnen");
+            else                logger(1,"Spiel abgebrochen");
+            game->clearGameData();  //Alle Daten wieder löschen
+        }while(gamestatus==-2);//Level neu starten
+    }while(1);//gamestatus==-3);//Nächstes Level
 
     cleanup();  //Abschlussarbeiten vor dem Programmende
     return 0;

@@ -17,6 +17,8 @@
     #define GAME_BG_SHITE_ALPHA_SPEED   (AVATAR_SPEED/1300.0f)      //Geschwindigkeit beim Transparenz erhöhen beim einblenden des Shines zum Spielbeginn
     #define GAMELOG_SCROLL_SPEED    (AVATAR_SPEED*2.25f)            //Scroll-Geschwindigkeit für die Event-Boxen beim Gamelog
 
+    #define GAMEEND_SPEED (AVATAR_SPEED*0.1)  //Geschwindigkeit/Dauer nach dem Ende des Spieles
+
 /** ANIMATIONSGESCHWINDIGKEITEN **/     //Müssen unabhängig von AVATAR_SPEED und FPS definiert werden, da die abhängigkeit der FPS im Porigrammcode selbst erzeugt wird ("animation.cpp", "ANIMATION::run()")
     #define COLISSIONANI_SPEED (200.0f)         //Geschwindigkeit der Kolissionsanimation
     #define MOVEMENTINFO_SPEED (27.0f)          //Geschwindigkeit des sich drehenen Movement-Infos

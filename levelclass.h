@@ -115,8 +115,8 @@ class LEVEL{
     public:
 
         ///Level laden:
-            LEVEL(POS origin,int elsize,const char *LVLpath,const bool skipMinorErrors);
-            void loadLevel(const char *LVLpath,const bool skipMinorErrors);    //Setzt die Daten im Speicher zurück und lädt ein anderes Level. Diese Methode ist sicher und erzeugt keinen Datenmüll
+            LEVEL(POS origin,int elsize,const char *LVLpath="",const bool skipMinorErrors=0);
+            void loadLevel(const char *LVLpath,const bool skipMinorErrors=0);    //Setzt die Daten im Speicher zurück und lädt ein anderes Level. Diese Methode ist sicher und erzeugt keinen Datenmüll
         ///Levelinformationen abfragen:
             //--- Status
             int getStatus();                                    //Statusinformationen erhalten
@@ -144,6 +144,7 @@ class LEVEL{
             void marker(POS position,COLOR color);              //Umrahmt ein bestimmtes Feld (Für debugging-Zwecke)
         ///Sonstiges
             bool checkPos(const POS position);                  //Überprüft, ob sich die aktuelle Position auf dem Spielfeld befindet (0=ja) (position muss >=0 und <size sein)
+            bool isFieldNull(const POS position);               //Überprüft, ob der Feldtyp der übergebenen Position 0 ist, oder das Feld außerhalb des Spielfeldes ist
             POS getTargetBeamer();                              //Gibt die Position des Zielbeamers zurück
             FIELDPROPERTY getFieldProperty(OBJEKT object,POS position);       //Gibt die Eigenschaften eines Feldes für ein bestimmtes Objekt zurück
             DIRECTION getRailDirection(POS a,POS b);                          //Gibt zurück in welche Richtung man sich von a aus bewegen muss, damit man b erreicht

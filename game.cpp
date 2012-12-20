@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <ctime>
 #include <stdio.h>
+#include <math.h>
+#define M_PI		3.14159265358979323846
 #include <windows.h>
 #include "animation.h"
 #include "globals.h"
@@ -60,7 +62,7 @@ int gameMain(GAME *game)
             game->printGameLogBackground();     //Gamelog-Bereich markieren
             if(game->runBuildupAnimation())
                 exit=1;
-            if(glfwGetKey(GLFW_KEY_SPACE))
+            if(glfwGetKey(GLFW_KEY_SPACE) || glfwGetKey(GLFW_KEY_ESC))
                 exit=1;
         }while(complete_graphics() && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
         exit=0;
@@ -76,6 +78,8 @@ int gameMain(GAME *game)
             animationHandler.run(OBJECTBUILDUP);
             animationHandler.print(OBJECTBUILDUP);
             if(animationHandler.getActiveAnimationAnz(OBJECTBUILDUP)<=0)  //Alle Animationen abgeschlossen
+                exit=1;
+            if(glfwGetKey(GLFW_KEY_SPACE) || glfwGetKey(GLFW_KEY_ESC))
                 exit=1;
         }while(complete_graphics() && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
         exit=0;
@@ -112,6 +116,9 @@ int gameMain(GAME *game)
         int help;
         bool firstLoopRun=1;                //Wenn die Game-Loop das erste mal durchlaufen wird: keine Usereingabe erlaubt. (Falls sich Kugeln am Anfang auf Spezialfeldern befinden darf sich die Spielfirgur nicht bewegen)
         int status;                         //Zur statusabfrage von GAMECLASS::run() --> zeigt an, ob WIN oder GAME OVER
+        double endingProgress=0;            //Nach dem Ende des Spiels wird dieser Counter erhöht. Beim erreichen eines Limits wird die Spielschleife beendet
+        int lastEndingProgress=0;           //Hiflsvariable für die End-Animation
+        POS hlp;                            //Hilfsvariable für die End-Animation
 
 
         movementInfoAniID=animationHandler.add(MOVEMENTINFO,1/*drehen*/,1,0,100,2,MOVEMENTINFO_SPEED,&levelanimations,{0,11},{{windX-movementInfoSize/2,windY-movementInfoSize/2},{movementInfoSize,-1}});
@@ -139,7 +146,13 @@ int gameMain(GAME *game)
 
 
             status=game->run();                     //Einen weiteren Simulationsschritt durchführen
-            if(status<=0)   exit=1;                 //Gewonnen bzw. verloren --> Spielschleife abbrechen
+            if(status<=0)                           //Gewonnen bzw. verloren --> Spielschleife abbrechen
+            {   endingProgress+=GAMEEND_SPEED;
+                if(endingProgress>=100)
+                {   endingProgress=100;
+                    exit=1;
+                }
+            }
 
 
 
@@ -162,8 +175,63 @@ int gameMain(GAME *game)
 
             game->print();                          //Level ausgeben
 
+            if(status==-1)                          //GAME OVER
+            {   double alpha=endingProgress*0.006f;
+
+                for(int i=lastEndingProgress;i<(int)endingProgress;i++)
+                {   hlp.x=rand()%MaxXsize;
+                    hlp.y=rand()%MaxYsize;
+                    if(!game->isFieldNull(hlp))
+                        game->addFieldEffect(hlp,LAVAFALL);
+                }
+                lastEndingProgress=endingProgress;
 
 
+
+                switchGraphicMode(DRAWING);
+                glBegin(GL_QUADS);          //Beginn des zeichenvorganges
+                        glColor4f(1.0f, 0.0f, 0.0f,alpha);   glVertex2f(0,0);
+                        glColor4f(1.0f, 0.0f, 0.0f, 0.0f);   glVertex2f(0,windY/2);
+                        glColor4f(1.0f, 0.0f, 0.0f, 0.0f);   glVertex2f(windX,windY/2);
+                        glColor4f(1.0f, 0.0f, 0.0f,alpha);   glVertex2f(windX,0);
+
+                        glColor4f(1.0f, 0.0f, 0.0f,alpha);   glVertex2f(0,windY);
+                        glColor4f(1.0f, 0.0f, 0.0f, 0.0f);   glVertex2f(0,windY/2);
+                        glColor4f(1.0f, 0.0f, 0.0f, 0.0f);   glVertex2f(windX,windY/2);
+                        glColor4f(1.0f, 0.0f, 0.0f,alpha);   glVertex2f(windX,windY);
+                glEnd();                    //Ende des Zeichnens
+
+                normalFont.setFontColor(RED);
+                normalFont.setFontSize(56);
+                int dist=sin(((int)endingProgress%17)/17.0f*M_PI)*60.0f;
+                normalFont.printf({( GAMELOG_X)/2,windY/2-28 +dist},taCENTER,"GAME");
+                normalFont.printf({(GAMELOG_X)/2,windY/2-28 -dist},taCENTER,"OVER");
+
+            }else if(status==0)                     //GEWONNEN
+            {   double fontSize=sin(endingProgress/100.0f*(M_PI*0.5))*150;
+                double alpha=endingProgress*0.004f;
+
+                switchGraphicMode(DRAWING);
+                glBegin(GL_QUADS);          //Beginn des zeichenvorganges
+                        glColor4f(0.0f, 1.0f, 0.0f,alpha);   glVertex2f(0,0);
+                        glColor4f(0.0f, 1.0f, 0.0f, 0.0f);   glVertex2f(0,windY/2);
+                        glColor4f(0.0f, 1.0f, 0.0f, 0.0f);   glVertex2f(windX,windY/2);
+                        glColor4f(0.0f, 1.0f, 0.0f,alpha);   glVertex2f(windX,0);
+
+                        glColor4f(0.0f, 1.0f, 0.0f,alpha);   glVertex2f(0,windY);
+                        glColor4f(0.0f, 1.0f, 0.0f, 0.0f);   glVertex2f(0,windY/2);
+                        glColor4f(0.0f, 1.0f, 0.0f, 0.0f);   glVertex2f(windX,windY/2);
+                        glColor4f(0.0f, 1.0f, 0.0f,alpha);   glVertex2f(windX,windY);
+                glEnd();                    //Ende des Zeichnens
+
+                if(endingProgress<20)       alpha=endingProgress/20.0f;
+                else if(endingProgress>60)  alpha=1.0f-((endingProgress-60)/40.0f);
+                else                        alpha=1.0;
+
+                normalFont.setFontColor({0,0.8,0},alpha);
+                normalFont.setFontSize(fontSize);
+                normalFont.printf({( GAMELOG_X)/2,windY/2-(int)(fontSize/2)},taCENTER,"GEWONNEN!");
+            }else
             if(game->isPauseButtonClicked())    //Pausemenü öffnen
             {   help=pauseMenue(game);
                 switch(help)
@@ -174,7 +242,6 @@ int gameMain(GAME *game)
                     default: error("gameMain()","Das Pausemenue hat einen ungueltigen Rueckgabeparameter zurueckgegeben. Wert: %d",help);
                 }
             }
-
 
             firstLoopRun=0;
         }while(complete_graphics() && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung

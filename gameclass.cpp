@@ -701,7 +701,7 @@ void GAMEBACKGROUND::print(int bx,bool printshine)
         alpha+=GAME_BG_SHITE_ALPHA_SPEED;
         if(alpha>1.0)   alpha=1.0;
 
-        shine.print(area,stdTextArea,current,alpha);
+        shine.print({area.a,{bx,area.b.y}},stdTextArea,current,alpha);
     }
 }
 void GAMEBACKGROUND::setColor(COLOR _final)             //Neue, endgültige Farbe wählen

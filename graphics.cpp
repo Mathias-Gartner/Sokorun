@@ -38,7 +38,7 @@ void prepare_GameLoop()//Wird vor dem betreten der Spiele- und Anzeigeschleife a
 {   //ALPHA-Werte Aktivieren (Transparenz):
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);   //Definition für das Überlagern von Bilddaten
     glEnable(GL_BLEND);                                 //Blend aktivieren
-    glAlphaFunc(GL_GREATER,0.1f);
+    glAlphaFunc(GL_GREATER,0.05f);
     glEnable(GL_ALPHA_TEST);
 
     graphicMode=DRAWING;
@@ -384,6 +384,7 @@ FONT::FONT(int fontFamilyNum)
 
     size=50;                    //Default-Schriftgröße
     color={1.0,1.0,1.0};        //Default-Farbe = weiß
+    alpha=1.0;                  //Sichtbar
 }
 
 void FONT::setFontSize(const int newSize)//Schriftgröße ändern
@@ -393,8 +394,19 @@ void FONT::setFontSize(const int newSize)//Schriftgröße ändern
         error("FONT::setFontSize()","Die Schriftgroesse ist ungueltig. newSize=%d",newSize);
 }
 
-void FONT::setFontColor(COLOR newColor)//Schriftfarbe ändern
+//void FONT::setAlpha(const double newAlpha)//Transparenz ändern
+//{   if(newAlpha>=0 && newAlpha<=1.0)
+//        alpha=newAlpha;
+//    else
+//        error("FONT::setFontSize()","Die Schriftgroesse ist ungueltig. newAlpha=%f",newAlpha);
+//}
+
+void FONT::setFontColor(COLOR newColor,double newAlpha)//Schriftfarbe und Transparenz ändern
 {   color=newColor;
+    if(newAlpha>=0 && newAlpha<=1.0)
+        alpha=newAlpha;
+    else
+        error("FONT::setFontColor()","Die Transparenz ist ungueltig. newAlpha=%f",newAlpha);
 }
 
 int FONT::putLetter(char letter,POS position)//Gibt ein Zeichen am Bildschirm aus (A-Z, a-z, 0-9, Sonderzeichen)
@@ -411,7 +423,7 @@ int FONT::putLetter(char letter,POS position)//Gibt ein Zeichen am Bildschirm au
     }
 
     if(mat.x>=0&&mat.y>=0)//Existiert
-    {   print(PosSizeToArea({position,{(int)(size*ratio),size}}),mat,color);
+    {   print(PosSizeToArea({position,{(int)(size*ratio),size}}),mat,color,alpha);
         return position.x+size*ratio*(font[fontFamily][mat.y][mat.x].width+0.05); //Nächste Buchstabenposition
     }
     else

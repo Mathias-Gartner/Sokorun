@@ -81,13 +81,7 @@ class TEXTURE
 
         void print(AREA display,POS spritePos,COLOR overlay,float alo,float aro, float alu,float aru);               //Ausgabe eines Sprites; Jede Texturkoordinate hat einen andren Alpha-Wert
 
-
-
-
         //void print(AREA display,POS spritePos,fAREA spriteArea,COLOR overlay,float alpha=1.0);      //Ausgabe eines Sprite-Teiles (zum drehen und spiegeln)
-
-
-
 
         void print(POS position,int size,POS spritePos,int angle,COLOR overlay,float alpha=1.0);     //Ausgabe eines Sprites mit einer Rotation
         int getSpriteAnz();     //Gibt die Anzahl der Sprites zurück die sich im Bild befinden
@@ -122,6 +116,7 @@ static const fontSymbol font[fontFamilyAnzahl][11][10]={{
 class FONT : public TEXTURE
 {   private:
         int size;                       //Schriftgröße
+        double alpha;                   //Transparenz
         COLOR color;                    //Textfarbe
         int fontFamily;                 //Schriftart
 
@@ -129,7 +124,7 @@ class FONT : public TEXTURE
     public:
         FONT(int fontFamilyNum);
         void setFontSize(const int newSize);//Schriftgröße ändern
-        void setFontColor(COLOR newColor);//Schriftfarbe ändern
+        void setFontColor(COLOR newColor,double newAlpha=1.0f);     //Schriftfarbe und Transparenz ändern
         int putLetter(char letter,POS position);//Gibt ein Zeichen am Bildschirm aus (A-Z, a-z, 0-9, Sonderzeichen)
         int getFontWidth(const char *text);//Gibt zurück, wieviel Platz ein Text in x-Richtung am Bildschirm brauchen würde (zB. für Zentrierte und Rechtsbündige Texte)
         int putString(const char *text,POS position,TEXTALIGN ausrichtung);           //Gibt einen Text aus
