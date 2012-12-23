@@ -3,6 +3,7 @@
 //Levelauswahl
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <windows.h>
 #include "button.h"
@@ -14,6 +15,8 @@
 #include "levelclass.h"
 #include "levelselect.h"
 #include "logger.h"
+
+bool strEndsWith(char* string, const char* suffix);
 
 LEVELSELECT* LEVELSELECT::_instance = NULL;
 
@@ -55,6 +58,7 @@ LEVELSELECT::~LEVELSELECT()
         //delete all
         while (level->next != NULL)
         {
+            level->score.Save();
             delete level->level;
             level = level->next;
             free(level->prev);
@@ -83,7 +87,17 @@ int LEVELSELECT::Select()
     {
         prepare_graphics();
 
-        levelCaption.setText(GetLevel()->name);
+        char levelCount[3];
+        char levelText[strlen(GetLevel()->name) + 8];
+        strcpy(levelText, GetLevel()->name);
+        strcat(levelText, " (");
+        sprintf(levelCount, "%d", GetLevel()->index + 1);
+        strcat(levelText, levelCount);
+        strcat(levelText, "/");
+        sprintf(levelCount, "%d", GetLevelCount());
+        strcat(levelText, levelCount);
+        strcat(levelText, ")");
+        levelCaption.setText(levelText);
 
         //handle clicks
         if (cancelButton.clicked())
@@ -136,6 +150,54 @@ bool LEVELSELECT::NextLevelAvailable()
 bool LEVELSELECT::PrevLevelAvailable()
 {
     return (GetLevel() != NULL && GetLevel()->prev != NULL);
+}
+
+int LEVELSELECT::GetLevelCount()
+{
+    int count = 1;
+    LEVELFILE* level = GetLevel();
+    if (level == NULL)
+        return 0;
+
+    //get first level
+    while (level->prev != NULL)
+    {
+        level = level->prev;
+    }
+    //count
+    while (level->next != NULL)
+    {
+        level = level->next;
+        count++;
+    }
+
+    return count;
+}
+
+bool LEVELSELECT::SelectLevel(int index)
+{
+    bool found = false;
+    LEVELFILE* level = GetLevel();
+    if (level == NULL)
+        return false;
+
+    //get first level
+    while (level->prev != NULL)
+    {
+        level = level->prev;
+    }
+
+    for (LEVELFILE* p = level; p != NULL; p = p->next)
+    {
+        if (p->index == index)
+        {
+            found = true;
+            currentLevel = p;
+            break;
+        }
+    }
+
+    return found;
 }
 
 bool LEVELSELECT::SwitchLevel(int jumpWidth)
@@ -215,6 +277,12 @@ bool LEVELSELECT::addLevelListEntry(char* levelFileName)
         return false;
     }
 
+    if (!strEndsWith(levelFileName, ".lvl"))
+    {
+        logger(true, "WARNING: Unknown file in level directory: %s", levelFileName);
+        return false;
+    }
+
     LEVELFILE *lastLevel = GetCurrent()->GetLevel();
     LEVELFILE *newLevel;
 
@@ -231,7 +299,15 @@ bool LEVELSELECT::addLevelListEntry(char* levelFileName)
     newLevel->prev = lastLevel;
     newLevel->next = NULL;
     if (lastLevel != NULL)
+    {
         lastLevel->next = newLevel;
+        newLevel->index = lastLevel->index+1;
+    }
+    else
+    {
+        newLevel->index = 0;
+    }
+
     strcpy(newLevel->name, levelFileName);
     newLevel->name[strlen(newLevel->name)-4] = '\0'; //cut off fileextension (to get levelname)
     GetCurrent()->GetLevelPath(newLevel->path, newLevel->name, true);
@@ -241,4 +317,15 @@ bool LEVELSELECT::addLevelListEntry(char* levelFileName)
     if (GetCurrent()->GetLevel() == NULL)
         GetCurrent()->currentLevel = newLevel;
     return true;
+}
+
+bool strEndsWith(char* string, const char* suffix)
+{
+    int stringLength, suffixLength;
+    stringLength = strlen(string);
+    suffixLength = strlen(suffix);
+     if(stringLength < suffixLength)
+    return false;
+
+    return strncmp(string + stringLength - suffixLength, suffix, suffixLength) == 0;
 }

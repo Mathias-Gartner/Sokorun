@@ -9,6 +9,7 @@ class LEVELSELECT
         typedef struct str_levelfile
         {
             LEVEL* level;
+            int index;
             char name[MAX_PATH];
             char path[MAX_PATH];
             HIGHSCORE score;
@@ -28,7 +29,9 @@ class LEVELSELECT
         int Select();
 
         //functions for calling levelselect programmaticly
+        int GetLevelCount();
         bool SwitchLevel(int jumpWidth);
+        bool SelectLevel(int index);
         bool NextLevelAvailable();
         bool PrevLevelAvailable();
 

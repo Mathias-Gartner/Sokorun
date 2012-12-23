@@ -43,6 +43,6 @@ float coordPixel=1.0f;      //Wieviele Pixel eine Koordinateneinheit am Bildschi
 
 int __COLOR = ccLIGHTGRAY | (ccBLACK<<4);
 
-/*const*/ char* const VERSION={"Ver. 0.0"};
+const char* const VERSION={"Ver. 0.0"};
 
 /*const*/ POS windowSize={1200,680};      //Fenstergröße - Anzahl der Koordinatenpunkte die erreicht werden können
