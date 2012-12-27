@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <ctime>
 #include "definitions.h"
 #include "gamelog.h"
 #include "graphics.h"
@@ -25,7 +26,8 @@ GAMELOG::GAMELOG() :    show(GAMELOGshowBUTTONarea,0,&gamelogIcons,POS{0,3}),
     pauseButtonEnable=1;
 
 
-    playtime=0;
+    //playtime=0;
+    startTime=clock();
     events=0;
     useravatarmoves=0;
 
@@ -48,13 +50,19 @@ GAMELOG::~GAMELOG()                                         //Destruktor
     }
 }
 
+unsigned long GAMELOG::getPlayTime()
+{
+    return clock()-startTime;/*playtime*(1000.0f/FPS);*/
+}
+
 void GAMELOG::EnablePauseButton(bool enable)                //Ativiert/Deaktiviert den Pause-Button
 {   pauseButtonEnable=enable;
 }
 
 
 void GAMELOG::run()
-{   playtime++;                                             //Weiterer Spielschleifendurchlauf
+{
+    //playtime+=(1/FPS);
 }
 
 void GAMELOG::addEvent(GameEventType type,DIRECTION richtung=NONE)                 //Event hinzufügen
@@ -67,7 +75,7 @@ void GAMELOG::addEvent(GameEventType type,DIRECTION richtung=NONE)              
 
     if(start!=NULL)
     {   if(start->type==type && start->size<GAMELOG_ICONS_PER_BOX)//selber Typ + noch Platz
-        {   start->time[(int)(start->size)]=playtime;
+        {   start->time[(int)(start->size)]=clock()-startTime;
             start->richtung[(int)(start->size)]=richtung;
             start->size++;
             return;
@@ -79,7 +87,7 @@ void GAMELOG::addEvent(GameEventType type,DIRECTION richtung=NONE)              
     GameEvent *neu=(GameEvent*)malloc(sizeof(GameEvent));
 
     neu->type=type;
-    neu->time[0]=playtime;
+    neu->time[0]=clock()-startTime;
     neu->richtung[0]=richtung;
     neu->size=1;
 
@@ -173,10 +181,10 @@ void GAMELOG::print()                                       //Kümmert sich um di
 
         y=windY-movementInfoSize/2-(movementInfoSize-5)/2;  //aktuelle y-Position
         if(coordInside(mouse,{{GAMELOG_X,y},{windX-movementInfoSize,y+movementInfoSize-5}}))
-            normalFont.printf({GAMELOG_X,y},taLEFT,"%d",playtime);
+            normalFont.printf({GAMELOG_X,y},taLEFT,"%dms",clock()-startTime);
         else
         {   char txt[20];
-            getTimeString(txt,playtime*(1000.0f/FPS));
+            getTimeString(txt,clock()-startTime);
             normalFont.printf({GAMELOG_X,y},taLEFT,txt);
         }
 
@@ -251,13 +259,13 @@ void GAMELOG::print()                                       //Kümmert sich um di
 
             if(coordInside(mouse,{{xpos,y-GAMELOGBOXHEIGHT},{endXpos,y}}))    //Maus in der Box
             {   y=y-GAMELOGBOXHEIGHT+GAMELOGPADDING*1.5;
-                normalFont.printf({endXpos-GAMELOGPADDING*2,y},taRIGHT,"%d",p->time[(p->size)-1]);
+                normalFont.printf({endXpos-GAMELOGPADDING*2,y},taRIGHT,"%dms",p->time[(p->size)-1]);
             }
             else
             {   y=y-GAMELOGBOXHEIGHT+GAMELOGPADDING*1.5;
 
                 char txt[20];
-                getTimeString(txt,p->time[(p->size)-1]*(1000.0f/FPS));
+                getTimeString(txt,p->time[(p->size)-1]/* *(1000.0f/FPS)*/);
                 normalFont.printf({endXpos-GAMELOGPADDING*2,y},taRIGHT,txt);
             }
 

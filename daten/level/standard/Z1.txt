@@ -1,0 +1,101 @@
+Goball														       © Ein Programm von Maier Jakob
+=====================================================================================================================================================
+Erstelldatum:		[07/25/09]
+Erstellzeitpunkt:	[21:57:46]				Weitere Informationen zu dieser Datei befinden sich unten
+=====================================================================================================================================================
+Rechte:			&§
+=====================================================================================================================================================
+
+Allgemein:
+**********
+
+Levelgroesse:		[15x15]					
+Goo-Position:		[01x01]					
+Kugel-Anzahl:		[04]					
+Kanonen-Anzahl:		[00]					
+Transporter-Anzahl:	[00]					
+Block-Anzahl (Gegner):	[00]	
+Schloesser:             [00]				
+
+=====================================================================================================================================================
+
+Kugel-Positionen:						(Anzahl der Datensätze: siehe Kugel-Anzahl oben)
+*****************
+
+Nr.: 	{01}	Pos.:	[13x13]
+Nr.: 	{02}	Pos.:	[14x13]
+Nr.: 	{03}	Pos.:	[13x12]
+Nr.: 	{04}	Pos.:	[12x05]
+
+=====================================================================================================================================================
+
+Level:
+******
+
+#00.23.23.23.23.23.23.23.23.23.23.23.23.23.00			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.26.26.26.26.26.26.26.26.26.25.26.21			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.25.26.26.26.26.25.26.26.26.26.26.21			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.26.26.26.26.26.26.26.26.26.26.25.21			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.26.26.26.26.26.26.26.26.26.26.26.21			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.26.26.26.26.26.26.26.26.26.26.26.21			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.26.26.25.26.26.26.26.26.25.26.26.21			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.26.26.26.26.26.26.26.26.26.26.26.21			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.26.26.26.26.26.26.26.26.26.26.26.21			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.26.26.26.26.26.26.25.26.26.26.26.21			(Anzahl: siehe Levelgroesse oben)
+#20.25.26.26.26.26.26.01.26.26.26.26.26.26.23			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.25.26.26.25.26.26.26.26.26.26.25.21			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.26.26.26.26.26.26.26.26.26.26.26.21			(Anzahl: siehe Levelgroesse oben)
+#20.26.26.26.26.26.26.26.26.26.26.26.25.26.21			(Anzahl: siehe Levelgroesse oben)
+#00.22.22.22.22.22.22.22.22.22.22.22.22.22.27			(Anzahl: siehe Levelgroesse oben)
+
+=====================================================================================================================================================
+
+Kanonen:							(Anzahl der Datensätze: siehe Kanonen-Anzahl oben)
+********
+
+
+Transporter:							(Anzahl der Datensätze: siehe Transporter-Anzahl oben)
+************
+
+
+Bloecke:							(Anzahl der Datensätze: siehe Block-Anzahl oben)
+********
+
+
+=====================================================================================================================================================
+
+Schlösser:							(Anzahl der Datensätze: siehe Schloss-Anzahl oben)
+**********
+
+
+=====================================================================================================================================================
+
+Auflösung:
+**********
+
+Beste Zeit:		[999999999]ms
+Wenigsten Bewegungen:	[999999999]
+
+=====================================================================================================================================================
+
+Zusatzinformationen:
+°°°°°°°°°°°°°°°°°°°°
+
+Levelname:		>Z1
+Geschrieben mit:	>Editor (Ver. 1.0)
+Ersteller:		>maja
+Sonstiges:
+	>(c) Maier Jakob	
+	>all rights reserved	
+	>---
+
+
+
+=====================================================================================================================================================
+Diese Datei ist fuer das Programm >Gooball< von Maier Jakob. Sie beinhaltet ein gesamtes Spiellevel.
+Geschrieben am 28.03.2009
+Warning! This file is Auto-Generated!
+
+Alle Daten sind Eigentum des Programmierers.
+(c) Maier Jakob
+all rights reserved 

@@ -1,0 +1,125 @@
+Gooball														       © Ein Programm von Maier Jakob
+=====================================================================================================================================================
+Erstelldatum:		[08/14/09]
+Erstellzeitpunkt:	[11:06:44]				Weitere Informationen zu dieser Datei befinden sich unten
+=====================================================================================================================================================
+Rechte:			&§
+=====================================================================================================================================================
+
+Allgemein:
+**********
+
+Levelgroesse:		[15x15]					
+Goo-Position:		[14x14]					
+Kugel-Anzahl:		[00]					
+Kanonen-Anzahl:		[28]					
+Transporter-Anzahl:	[00]					
+Block-Anzahl (Gegner):	[00]	
+Schloesser:             [00]				
+
+=====================================================================================================================================================
+
+Kugel-Positionen:						(Anzahl der Datensätze: siehe Kugel-Anzahl oben)
+*****************
+
+
+=====================================================================================================================================================
+
+Level:
+******
+
+#25.25.25.25.25.25.25.25.25.25.25.25.25.25.25			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.25			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.01.01.01			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.01.01.01.01.25.01.01			(Anzahl: siehe Levelgroesse oben)
+
+=====================================================================================================================================================
+
+Kanonen:							(Anzahl der Datensätze: siehe Kanonen-Anzahl oben)
+********
+
+Nr.:	{01}	Pos.:	[01x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{02}	Pos.:	[02x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{03}	Pos.:	[03x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{04}	Pos.:	[13x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{05}	Pos.:	[12x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{06}	Pos.:	[11x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{07}	Pos.:	[10x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{08}	Pos.:	[09x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{09}	Pos.:	[08x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{10}	Pos.:	[06x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{11}	Pos.:	[05x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{12}	Pos.:	[04x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{13}	Pos.:	[07x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{14}	Pos.:	[00x01]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{15}	Pos.:	[00x02]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{16}	Pos.:	[00x03]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{17}	Pos.:	[00x05]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{18}	Pos.:	[00x14]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{19}	Pos.:	[00x13]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{20}	Pos.:	[00x06]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{21}	Pos.:	[00x07]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{22}	Pos.:	[00x10]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{23}	Pos.:	[00x08]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{24}	Pos.:	[00x11]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{25}	Pos.:	[00x12]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{26}	Pos.:	[00x09]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{27}	Pos.:	[00x04]		Ausrichtung:	[3]	Energie:	[3]	Pause:	[01000]ms
+Nr.:	{28}	Pos.:	[14x00]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[01000]ms
+
+Transporter:							(Anzahl der Datensätze: siehe Transporter-Anzahl oben)
+************
+
+
+Bloecke:							(Anzahl der Datensätze: siehe Block-Anzahl oben)
+********
+
+
+=====================================================================================================================================================
+
+Schlösser:							(Anzahl der Datensätze: siehe Schloss-Anzahl oben)
+**********
+
+
+=====================================================================================================================================================
+
+Auflösung:
+**********
+
+Beste Zeit:		[999999999]ms
+Wenigsten Bewegungen:	[999999999]
+
+=====================================================================================================================================================
+
+Zusatzinformationen:
+°°°°°°°°°°°°°°°°°°°°
+
+Levelname:		>001
+Geschrieben mit:	>Editor (Ver. 1.0)
+Ersteller:		>maja
+Sonstiges:
+	>(c)Maier Jakob		
+	>all rights reserved	
+	>---
+
+
+
+=====================================================================================================================================================
+Diese Datei ist fuer das Programm >Gooball< von Maier Jakob. Sie beinhaltet ein gesamtes Spiellevel.
+Geschrieben am 28.03.2009
+Warning! This file is Auto-Generated!
+
+Alle Daten sind Eigentum des Programmierers.
+(c) Maier Jakob
+all rights reserved 

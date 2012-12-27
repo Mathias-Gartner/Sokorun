@@ -1,0 +1,98 @@
+Goball														       © Ein Programm von Maier Jakob
+=====================================================================================================================================================
+Erstelldatum:		[07/25/09]
+Erstellzeitpunkt:	[22:18:16]				Weitere Informationen zu dieser Datei befinden sich unten
+=====================================================================================================================================================
+Rechte:			&§
+=====================================================================================================================================================
+
+Allgemein:
+**********
+
+Levelgroesse:		[15x15]					
+Goo-Position:		[05x01]					
+Kugel-Anzahl:		[01]					
+Kanonen-Anzahl:		[00]					
+Transporter-Anzahl:	[00]					
+Block-Anzahl (Gegner):	[00]	
+Schloesser:             [00]				
+
+=====================================================================================================================================================
+
+Kugel-Positionen:						(Anzahl der Datensätze: siehe Kugel-Anzahl oben)
+*****************
+
+Nr.: 	{01}	Pos.:	[13x02]
+
+=====================================================================================================================================================
+
+Level:
+******
+
+#00.00.00.34.34.25.25.25.34.00.00.00.34.00.00			(Anzahl: siehe Levelgroesse oben)
+#34.00.34.34.25.26.12.26.25.34.34.00.00.35.00			(Anzahl: siehe Levelgroesse oben)
+#34.34.34.25.12.15.14.26.26.25.34.00.34.15.34			(Anzahl: siehe Levelgroesse oben)
+#00.34.25.15.01.26.01.13.15.13.25.34.00.15.34			(Anzahl: siehe Levelgroesse oben)
+#34.34.25.26.13.13.26.01.26.26.25.34.34.15.00			(Anzahl: siehe Levelgroesse oben)
+#34.25.26.13.26.26.12.14.15.26.01.25.34.15.00			(Anzahl: siehe Levelgroesse oben)
+#34.25.15.15.26.26.26.01.26.26.13.25.34.15.00			(Anzahl: siehe Levelgroesse oben)
+#00.25.26.26.12.01.12.12.15.15.26.25.34.15.34			(Anzahl: siehe Levelgroesse oben)
+#34.25.15.01.14.26.12.15.26.26.26.25.34.15.34			(Anzahl: siehe Levelgroesse oben)
+#34.25.26.12.12.26.26.26.01.12.26.25.34.15.34			(Anzahl: siehe Levelgroesse oben)
+#34.25.26.15.26.01.14.26.15.26.13.25.34.15.34			(Anzahl: siehe Levelgroesse oben)
+#00.34.25.26.14.26.01.13.15.26.25.34.34.15.34			(Anzahl: siehe Levelgroesse oben)
+#00.34.34.25.26.13.26.12.26.25.34.34.00.15.34			(Anzahl: siehe Levelgroesse oben)
+#00.00.00.34.25.26.24.26.25.34.34.00.34.27.34			(Anzahl: siehe Levelgroesse oben)
+#00.00.00.00.34.25.25.25.34.34.00.00.00.00.00			(Anzahl: siehe Levelgroesse oben)
+
+=====================================================================================================================================================
+
+Kanonen:							(Anzahl der Datensätze: siehe Kanonen-Anzahl oben)
+********
+
+
+Transporter:							(Anzahl der Datensätze: siehe Transporter-Anzahl oben)
+************
+
+
+Bloecke:							(Anzahl der Datensätze: siehe Block-Anzahl oben)
+********
+
+
+=====================================================================================================================================================
+
+Schlösser:							(Anzahl der Datensätze: siehe Schloss-Anzahl oben)
+**********
+
+
+=====================================================================================================================================================
+
+Auflösung:
+**********
+
+Beste Zeit:		[999999999]ms
+Wenigsten Bewegungen:	[999999999]
+
+=====================================================================================================================================================
+
+Zusatzinformationen:
+°°°°°°°°°°°°°°°°°°°°
+
+Levelname:		>C3
+Geschrieben mit:	>Editor (Ver. 1.0)
+Ersteller:		>maja
+Sonstiges:
+	>(c) Maier Jakob	
+	>all rights reserved	
+	>---
+
+
+
+=====================================================================================================================================================
+Diese Datei ist fuer das Programm >Gooball< von Maier Jakob. Sie beinhaltet ein gesamtes Spiellevel.
+Geschrieben am 28.03.2009
+Warning! This file is Auto-Generated!
+
+Alle Daten sind Eigentum des Programmierers.
+(c) Maier Jakob
+all rights reserved 

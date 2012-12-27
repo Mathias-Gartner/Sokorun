@@ -60,6 +60,12 @@ LEVEL::LEVEL(POS _origin,int _elsize,const char *LVLpath,const bool skipMinorErr
         elsize=40;
     }
 
+
+    kugelOriginStart=NULL;              //
+    lockOriginStart=NULL;               //
+    transporterOriginStart=NULL;        //
+
+
     cleanup();                          //Daten zurücksetzen/initialisieren
 
     if(strcmp(LVLpath,"")!=0)           //Levelpfad zum laden übergeben
@@ -81,14 +87,14 @@ void LEVEL::loadLevel(const char *LVLpath,const bool skipMinorErrors)           
 void LEVEL::cleanup()   //Setzt alle Leveldaten zurück und gibt den Speicher wieder frei der reserviert wurde
 {   //Muss zB. nach dem Ladeversuch eines fehlerhaften Levels ausgeführt werden
 
-
     status=0;
     resetDisplayList();                 //Displayliste löschen/zurücksetzen
 
     ///Verkettete Liste mit Kugeln freigeben:
     {   KUGELorigin *p=kugelOriginStart,*q;
         while(p!=NULL)
-        {   q=(p->next);
+        {
+            q=(p->next);
             free(p);
             p=q;
         }

@@ -114,7 +114,7 @@ void GAME::prepareLevelfieldAnimations()                 //Fügt die Animationen 
             {   POS pos;
                 pos.x=origin.x+x*elsize;
                 pos.y=origin.y+(size.y-y-1)*elsize;
-                animationHandler.add(LEVELFIELD,2,0,0,6,1,LAVAFLOW_SPEED/*speed*/,&lavaflow,{0,0},{pos,{pos.x+elsize,pos.y+elsize}});
+                animationHandler.add(LEVELFIELD,2,0,0,7,2,LAVAFLOW_SPEED/*speed*/,&lavaflow,{0,0},{pos,{pos.x+elsize,pos.y+elsize}});
             }
         }
     }
@@ -187,6 +187,7 @@ void GAME::initBuildupAnimationSpecialElements()    //Animation-Handler aktualis
 
 GAME::~GAME()
 {   //Der LEVEL-Destruktor wird ebenfalls aufgerufen
+
     if(prepared)
     {   clearGameData();                            //Befindet sich deshalb in diesem if, damit keine Fehlermeldung ausgegeben wird, wenn die Spieldaten nicht vorbereitet sind
     }
@@ -488,7 +489,7 @@ bool GAME::isMoving(OBJEKT object)                            //Gibt zurück, ob 
     error("GAME::isMoving()","Das Objekt, dass ueberprueft werden soll ist ungueltig. Es wird 0 (not moving) zurueckgegeben. object=%d",object);
     return 0;
 }
-
+#include <stdio.h>
 void GAME::makeLavaSecure(POS position)                     //Lavafeld mit Block befüllen (Dezimalwert des Spielfeldes ändern. Muss beim Neustart des Levels wieder Rückgängig gemacht werden)
 {
     if(spielfeld[position.y][position.x]!=TILE_LAVA)        //Keine Lava

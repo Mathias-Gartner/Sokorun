@@ -102,7 +102,6 @@ void AVATAR::move(DIRECTION richtung,bool _userinput=0)
     }
 }
 
-
 void AVATAR::run()                                                              //Führt einen Simulationsschritt durch
 {
     if(death!=0)                                                                 //Avatar=Tot
@@ -121,6 +120,7 @@ void AVATAR::run()                                                              
             movement.moving=1;
             //movement.progress=OccupiedLimit-1;//Damit das Zielfeld nicht von diesem Objekt blockiert wird (kommt vor, wenn mehrere Kugeln im Start-Beamer sind und der Avatar über den Zielbeamer fährt)
             movement.blocking=1;
+            movement.progress=Wkgl;
             //Wenn nein, wird automatisch innerhalb dieses if's wieder abgeblockt und im nächsten Durchgang landet man hier
         }else
             movement.progress+=movement.moving*AVATAR_SPEED;                    //Vor bzw. Zurück Bewegen
@@ -211,7 +211,9 @@ void AVATAR::run()                                                              
             userinput=0;
         }
 
-        if(movement.blocking && movement.moving!=-1)    movement.blocking=0;    //Der Avatar hat blockiert, wurde jetzt aber wieder freigegeben
+        if(movement.blocking && movement.moving!=-1)
+        {   movement.blocking=0;    //Der Avatar hat blockiert, wurde jetzt aber wieder freigegeben
+        }
     }
     if(movement.moving==0)                                              //Steht still --> prüfen, ob sich der Avatar auf einem Spezialfeld befindet
     {   switch(game->getFieldProperty(OBJ_AVATAR,position))             //Dieses Feld hat vlt. eine spezielle Eigenschaft

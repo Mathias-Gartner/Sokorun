@@ -20,6 +20,7 @@
 //  -2:     Level abgebrochen. -> Level neu starten
 //  -3:     Level abgebrochen. -> nächstes Level starten
 //  -4:     Level abgebrochen. -> Zurück zur Levelauswahl
+//  -5:     Spiel beenden
 int gameMain(GAME *game)
 {
 
@@ -115,7 +116,7 @@ int gameMain(GAME *game)
         int movementInfoType=0;             //Welcher Typ grade im Animationshandler eingestellt ist
         int help;
         bool firstLoopRun=1;                //Wenn die Game-Loop das erste mal durchlaufen wird: keine Usereingabe erlaubt. (Falls sich Kugeln am Anfang auf Spezialfeldern befinden darf sich die Spielfirgur nicht bewegen)
-        int status;                         //Zur statusabfrage von GAMECLASS::run() --> zeigt an, ob WIN oder GAME OVER
+        int status=-5;                      //Zur statusabfrage von GAMECLASS::run() --> zeigt an, ob WIN oder GAME OVER
         double endingProgress=0;            //Nach dem Ende des Spiels wird dieser Counter erhöht. Beim erreichen eines Limits wird die Spielschleife beendet
         int lastEndingProgress=0;           //Hiflsvariable für die End-Animation
         POS hlp;                            //Hilfsvariable für die End-Animation
@@ -126,7 +127,7 @@ int gameMain(GAME *game)
         do
         {   prepare_graphics();             //Grafiken vorbereiten
 
-            if(firstLoopRun!=1)
+            if(firstLoopRun!=1 && status>0)
             {   ///POSITION MIT TASTATUR VERÄNDERN:
                 if(glfwGetKey(GLFW_KEY_RIGHT))
                 {   game->move(RIGHT);
@@ -244,6 +245,7 @@ int gameMain(GAME *game)
             }
 
             firstLoopRun=0;
+
         }while(complete_graphics() && !exit);    //Abschlussarbeiten und Abbruch-Überprüfung
 
     logger(1,"Spiel mit Status %d beendet\n",status);

@@ -33,8 +33,7 @@
 ///OBJEKTE, DIE NUR EINMAL EXISTIEREN UND ÜBERALL VERWENDET WERDEN:
 
 
-                                                                       //Zur Verwendung mit der Maus
-
+//Akt. Problem: Level 0, blocked wird nicht zurückgesetzt
 int main(int argc,char* argv[])
 {
 
@@ -58,9 +57,10 @@ int main(int argc,char* argv[])
                 game->getMetaData(&dateP,&timeP);
                 logger(1,"Das Level wurde erfolgreich geladen. Levelpfad: %s, Erstelldatum: %s, Erstellzeitpunkt: %s",game->getLevelPath(),dateP,timeP);
             }
-            int status;
+            int status=-5;
             do
-            {   status=gameMain(game);
+            {
+                status=gameMain(game);
                 if(status<0)        logger(1,"Spiel verloren");
                 else if(status==0)
                 {
@@ -70,6 +70,7 @@ int main(int argc,char* argv[])
                 else                logger(1,"Spiel abgebrochen");
                 game->clearGameData();  //Alle Daten wieder löschen
             }while(status==-2);
+
 
         }
         else

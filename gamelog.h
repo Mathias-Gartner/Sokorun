@@ -34,8 +34,8 @@ struct GameEvent
 
 
     char size;                                      //Wieviele Daten in deisem Event gespeichet sind (1-GAMELOG_ICONS_PER_BOX)
-    unsigned long time[GAMELOG_ICONS_PER_BOX];                          //Wann es passiert ist
-    DIRECTION richtung[GAMELOG_ICONS_PER_BOX];                          //Für bewegungen
+    unsigned long time[GAMELOG_ICONS_PER_BOX];      //Wann es passiert ist
+    DIRECTION richtung[GAMELOG_ICONS_PER_BOX];      //Für bewegungen
 
     GameEvent *next;                                //Nächstes Element
 };
@@ -45,10 +45,13 @@ class GAMELOG
 {
     private:
         ///Status:
-            bool displayGameLog;                            //Ob der GameLog angezeigt wird (1=ja)
+            bool displayGameLog;                        //Ob der GameLog angezeigt wird (1=ja)
 
         ///Daten zum Spiel:
-            unsigned long playtime;                     //Spielzeit: Anzahl der Schleifendurchläufe bis jetzt
+            //unsigned int  minorPlaytime;                //Spielzeit: Anzahl der Frames bis jetzt, von 0-999; bei 1000: playtime++
+            //unsigned long playtime;                     //Spielzeit: Anzahl von 1000 Frames bis jetzt
+            unsigned long startTime;                    //Zeitpunkt des des Spielstarts (1. Frame)
+
             unsigned int useravatarmoves;
             unsigned int events;                        //Anzahl der bisherigen Events
 
@@ -96,10 +99,10 @@ class GAMELOG
         void EnablePauseButton(bool enable);            //Ativiert/Deaktiviert den Pause-Button
 
         //property getter
-        GameEvent* getEventStart() { return start; };
-        unsigned int getEventCount() { return events; };
-        unsigned long getPlayTime() { return playtime*(1000.0f/FPS); };
-        unsigned int getUserAvatarMoves() { return useravatarmoves; };
+        GameEvent* getEventStart() { return start; }
+        unsigned int getEventCount() { return events; }
+        unsigned long getPlayTime();
+        unsigned int getUserAvatarMoves() { return useravatarmoves; }
 };
 
 
