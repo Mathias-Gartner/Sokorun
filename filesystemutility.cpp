@@ -17,9 +17,19 @@ bool FILESYSTEMUTILITY::DirectoryExists(const char* path)
 #endif //_WINDOWS_H
 }
 
-//Calls addFunction for every file in a directory
+bool FILESYSTEMUTILITY::EnumerateFiles(const char* directory, int* count, AddFunction addFunction)
+{
+    return EnumarateFileSystem(directory, count, addFunction, false);
+}
+
+bool FILESYSTEMUTILITY::EnumerateDirectories(const char* directory, int* count, AddFunction addFunction)
+{
+    return EnumarateFileSystem(directory, count, addFunction, true);
+}
+
+//Calls addFunction for every file or directory in a directory
 //In an errornous case the function returns false
-bool FILESYSTEMUTILITY::EnumarateFiles(const char* directory, int* count, AddFunction addFunction)
+bool FILESYSTEMUTILITY::EnumarateFileSystem(const char* directory, int* count, AddFunction addFunction, bool directories)
 {
     *count = 0; //set default value
 #ifdef _WINDOWS_H
@@ -41,7 +51,7 @@ bool FILESYSTEMUTILITY::EnumarateFiles(const char* directory, int* count, AddFun
     logger(true, "DEBUG: EnumerateFiles: Calling FindFirstFile with parameter %s", dirWithWildcard);
     findHandle = FindFirstFile(dirWithWildcard, &lpFindFileData);
     if (findHandle == INVALID_HANDLE_VALUE)
-        return NULL;
+        return false;
 
     if (!(lpFindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
     {
@@ -51,10 +61,14 @@ bool FILESYSTEMUTILITY::EnumarateFiles(const char* directory, int* count, AddFun
 
     while (FindNextFile(findHandle, &lpFindFileData))
     {
-        if (findHandle != INVALID_HANDLE_VALUE && !(lpFindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+        if (findHandle != INVALID_HANDLE_VALUE)
         {
-            addFunction(lpFindFileData.cFileName);
-            i++;
+            if ((directories && (lpFindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+               || (!directories && !(lpFindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)))
+            {
+                if (addFunction(lpFindFileData.cFileName))
+                    i++;
+            }
         }
     }
 
@@ -65,7 +79,7 @@ bool FILESYSTEMUTILITY::EnumarateFiles(const char* directory, int* count, AddFun
 #else //_WINDOWS_H
     //TODO: Linux implementation
     error("FILESYSTEMUTILITY::EnumerateFiles", "Not implemented!");
-    return NULL;
+    return false;
 #endif //_WINDOWS_H
 }
 
