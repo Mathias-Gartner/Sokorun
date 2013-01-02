@@ -41,12 +41,18 @@ int main(int argc,char* argv[])
 
 
 
-
+    bool continueNextLevel = false;
     LEVELSELECT *levelselect = new LEVELSELECT();
     for(;;)
     {
 
-        int success = levelselect->Select();
+        bool success = true;
+        if (continueNextLevel && levelselect->NextLevelAvailable())
+            success = levelselect->SwitchLevel(1);
+        else
+            success = levelselect->Select();
+
+        continueNextLevel = false;
 
         if (success)
         {
@@ -65,9 +71,14 @@ int main(int argc,char* argv[])
                 else if(status==0)
                 {
                     logger(1,"Spiel gewonnen");
+                    continueNextLevel = true;
                     levelselect->GetLevel()->score.setScoreFromGameLog(game->getGameLog());
                 }
                 else                logger(1,"Spiel abgebrochen");
+
+                if(status==-3)
+                    continueNextLevel = true;
+
                 game->clearGameData();  //Alle Daten wieder löschen
             }while(status==-2);
 
