@@ -8,7 +8,8 @@ typedef struct
 {
     int Hours;
     int Minutes;
-    int Seconds;
+    double Seconds;
+    long clockTicks;
 } TIME;
 
 class HIGHSCORE
@@ -27,7 +28,7 @@ class HIGHSCORE
         void setTimesPlayed(unsigned int val) { m_timesplayed = val; }
     protected:
     private:
-        TIME longToScoreTime(long playtime);
+        TIME clockTicksToScoreTime(long clockTicks);
         unsigned int m_moves;
         TIME m_time;
         unsigned int m_timesplayed;

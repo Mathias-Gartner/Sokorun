@@ -2,7 +2,9 @@
 //
 //Highscore-Anzeige nach dem beenden des Spiels (nur, wenn das Spiel nicht vom Editor aufgerufen wurde)
 
+#include <math.h>
 #include <stdio.h>
+#include <time.h>
 #include "filesystemutility.h"
 #include "highscore.h"
 #include "logger.h"
@@ -48,8 +50,10 @@ void HIGHSCORE::Load()
         {
             fscanf(file, "%d", &m_timesplayed);
             fscanf(file, "%d", &m_moves);
-            fscanf(file, "%2d:%2d:%2d", &m_time.Hours, &m_time.Minutes, &m_time.Seconds);
+            //fscanf(file, "%2d:%2d:%2d", &m_time.Hours, &m_time.Minutes, &m_time.Seconds);
+            fscanf(file, "%ld", &m_time.clockTicks);
             fclose(file);
+            m_time = clockTicksToScoreTime(m_time.clockTicks);
             logger(true, "Higscore of level %s loaded.", level);
             isLoaded = true;
         }
@@ -71,14 +75,15 @@ void HIGHSCORE::Save()
     {
         fprintf(file, "%d\n", m_timesplayed);
         fprintf(file, "%d\n", m_moves);
-        fprintf(file, "%2d:%2d:%2d\n", m_time.Hours, m_time.Minutes, m_time.Seconds);
+        //fprintf(file, "%2d:%2d:%2d\n", m_time.Hours, m_time.Minutes, m_time.Seconds);
+        fprintf(file, "%ld", m_time.clockTicks);
         fclose(file);
     }
 }
 
 void HIGHSCORE::setScoreFromGameLog(GAMELOG* gamelog)
 {
-    TIME time = longToScoreTime(gamelog->getPlayTime());
+    TIME time = clockTicksToScoreTime(gamelog->getPlayTime());
     TIME currentTime = getTime();
 
     if ((time.Hours < currentTime.Hours) ||
@@ -95,28 +100,28 @@ void HIGHSCORE::setScoreFromGameLog(GAMELOG* gamelog)
     Save();
 }
 
-TIME HIGHSCORE::longToScoreTime(long playtime)
+TIME HIGHSCORE::clockTicksToScoreTime(long clockTicks)
 {
-    TIME time = {0, 0, 0};
-    if(playtime<60000)
+    TIME time = {0, 0, 0, clockTicks};
+    if(clockTicks<60000)
     {
-        time.Seconds = playtime/1000;
+        time.Seconds = (double)clockTicks/(double)CLOCKS_PER_SEC;
     }
     else
     {
-        playtime/=1000;
+        double tmpseconds = clockTicks/CLOCKS_PER_SEC;
 
-        if(playtime<3600)
+        if(tmpseconds<3600)
         {
-            time.Minutes = playtime/60;
-            time.Seconds = playtime%60;
+            time.Minutes = (int)tmpseconds/60;
+            time.Seconds = (int)tmpseconds%60;
         }
         else
         {
-            time.Hours = playtime/3600;
-            long lastHour = playtime%3600;
-            time.Minutes = lastHour/60;
-            time.Seconds = lastHour%60;
+            time.Hours = (int)tmpseconds/3600;
+            double lastHour = fmod(tmpseconds, 3600.0);
+            time.Minutes = (int)lastHour/60;
+            time.Seconds = fmod(lastHour, 60.0);
         }
     }
     return time;

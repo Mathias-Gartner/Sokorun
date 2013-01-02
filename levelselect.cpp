@@ -136,7 +136,7 @@ int LEVELSELECT::Select()
             drawBox(highscoreOutput,10,3,WHITE);
             normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 40}, taLEFT, "Highscore");
             normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 80}, taLEFT, "Züge: %d", currentLevel->score.getMoves());
-            normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 120}, taLEFT, "Zeit: %2d:%2d:%2d", time.Hours, time.Minutes, time.Seconds);
+            normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 120}, taLEFT, "Zeit: %02d:%02d:%05.2f", time.Hours, time.Minutes, time.Seconds);
             normalFont.printf({highscoreOutput.a.x + 20, highscoreOutput.b.y - 160}, taLEFT, "%d mal gespielt", currentLevel->score.getTimesPlayed());
         }
     } while (complete_graphics());
