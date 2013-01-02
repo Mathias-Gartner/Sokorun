@@ -1,0 +1,94 @@
+Gooball														       © Ein Programm von Maier Jakob
+=====================================================================================================================================================
+Erstelldatum:		[08/05/09]
+Erstellzeitpunkt:	[09:43:24]				Weitere Informationen zu dieser Datei befinden sich unten
+=====================================================================================================================================================
+Rechte:			&§
+=====================================================================================================================================================
+
+Allgemein:
+**********
+
+Levelgroesse:		[10x09]					
+Goo-Position:		[04x02]					
+Kugel-Anzahl:		[03]					
+Kanonen-Anzahl:		[00]					
+Transporter-Anzahl:	[00]					
+Block-Anzahl (Gegner):	[00]	
+Schloesser:             [00]				
+
+=====================================================================================================================================================
+
+Kugel-Positionen:						(Anzahl der Datensätze: siehe Kugel-Anzahl oben)
+*****************
+
+Nr.: 	{01}	Pos.:	[02x06]
+Nr.: 	{02}	Pos.:	[04x05]
+Nr.: 	{03}	Pos.:	[04x06]
+
+=====================================================================================================================================================
+
+Level:
+******
+
+#25.25.25.25.25.25.25.00.00.00               			(Anzahl: siehe Levelgroesse oben)
+#25.27.27.01.01.01.25.25.25.25               			(Anzahl: siehe Levelgroesse oben)
+#25.27.01.01.01.01.01.01.01.25               			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.25.25.25.25.01.01.25               			(Anzahl: siehe Levelgroesse oben)
+#25.25.25.25.01.01.25.01.25.25               			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.25.01.25.00               			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.01.01.01.01.25.00               			(Anzahl: siehe Levelgroesse oben)
+#25.01.01.01.25.01.01.01.25.00               			(Anzahl: siehe Levelgroesse oben)
+#25.25.25.25.25.25.25.25.25.00               			(Anzahl: siehe Levelgroesse oben)
+
+=====================================================================================================================================================
+
+Kanonen:							(Anzahl der Datensätze: siehe Kanonen-Anzahl oben)
+********
+
+
+Transporter:							(Anzahl der Datensätze: siehe Transporter-Anzahl oben)
+************
+
+
+Bloecke:							(Anzahl der Datensätze: siehe Block-Anzahl oben)
+********
+
+
+=====================================================================================================================================================
+
+Schlösser:							(Anzahl der Datensätze: siehe Schloss-Anzahl oben)
+**********
+
+
+=====================================================================================================================================================
+
+Auflösung:
+**********
+
+Beste Zeit:		[999999999]ms
+Wenigsten Bewegungen:	[999999999]
+
+=====================================================================================================================================================
+
+Zusatzinformationen:
+°°°°°°°°°°°°°°°°°°°°
+
+Levelname:		>002
+Geschrieben mit:	>Editor (Ver. 1.0)
+Ersteller:		>maja
+Sonstiges:
+	>(c) Maier Jakob			
+	>all rights reserved			
+	>---
+
+
+
+=====================================================================================================================================================
+Diese Datei ist fuer das Programm >Gooball< von Maier Jakob. Sie beinhaltet ein gesamtes Spiellevel.
+Geschrieben am 28.03.2009
+Warning! This file is Auto-Generated!
+
+Alle Daten sind Eigentum des Programmierers.
+(c) Maier Jakob
+all rights reserved 

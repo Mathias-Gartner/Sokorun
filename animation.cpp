@@ -147,7 +147,7 @@ bool ANIMATION::run()                                           //Simulationssch
     {   progress-=(speed/FPS);
         if(type==2)
         {   if(progress<=0)
-            {   if(reverse==1)      {progress=0; richtung=0;}
+            {   if(reverse==1)      {progress=(100.0f/(end-start+1)); richtung=0;}
                 else if(reverse==2)  progress=100;
                 else                {progress=0; finished=1;}   //reverse= 0/3
                 return 1;
@@ -162,8 +162,8 @@ bool ANIMATION::run()                                           //Simulationssch
     }else//Vorwärts
     {   progress+=(speed/FPS);
         if(type==2)//Texturen
-        {   if(progress>=100)
-            {   if(reverse==1)      {progress=100; richtung=1;}
+        {   if(progress>100)
+            {   if(reverse==1)      {progress=((100.0f/(end-start+1)) * (end-start));  richtung=1;}
                 else if(reverse==2)  progress=0;
                 else finished=1;
                 return 1;

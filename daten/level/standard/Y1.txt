@@ -1,0 +1,118 @@
+Gooball														       © Ein Programm von Maier Jakob
+=====================================================================================================================================================
+Erstelldatum:		[08/01/09]
+Erstellzeitpunkt:	[11:27:55]				Weitere Informationen zu dieser Datei befinden sich unten
+=====================================================================================================================================================
+Rechte:			&§
+=====================================================================================================================================================
+
+Allgemein:
+**********
+
+Levelgroesse:		[15x15]					
+Goo-Position:		[01x07]					
+Kugel-Anzahl:		[05]					
+Kanonen-Anzahl:		[16]					
+Transporter-Anzahl:	[00]					
+Block-Anzahl (Gegner):	[00]	
+Schloesser:             [00]				
+
+=====================================================================================================================================================
+
+Kugel-Positionen:						(Anzahl der Datensätze: siehe Kugel-Anzahl oben)
+*****************
+
+Nr.: 	{01}	Pos.:	[03x06]
+Nr.: 	{02}	Pos.:	[03x07]
+Nr.: 	{03}	Pos.:	[03x08]
+Nr.: 	{04}	Pos.:	[03x05]
+Nr.: 	{05}	Pos.:	[03x09]
+
+=====================================================================================================================================================
+
+Level:
+******
+
+#34.34.34.34.34.34.34.34.34.34.34.34.34.34.34			(Anzahl: siehe Levelgroesse oben)
+#25.34.25.34.25.34.25.34.25.34.25.34.25.34.25			(Anzahl: siehe Levelgroesse oben)
+#34.34.34.34.34.34.34.34.34.34.34.34.34.34.34			(Anzahl: siehe Levelgroesse oben)
+#34.34.34.34.34.34.34.34.34.34.34.34.34.34.34			(Anzahl: siehe Levelgroesse oben)
+#02.02.02.02.02.02.02.02.02.02.02.02.02.02.02			(Anzahl: siehe Levelgroesse oben)
+#02.24.25.01.01.25.01.25.01.25.01.01.25.24.02			(Anzahl: siehe Levelgroesse oben)
+#02.01.01.01.01.01.01.01.01.01.01.01.01.27.02			(Anzahl: siehe Levelgroesse oben)
+#02.01.01.01.01.01.01.01.01.01.01.01.35.27.02			(Anzahl: siehe Levelgroesse oben)
+#02.01.01.01.01.01.01.01.01.01.01.01.01.27.02			(Anzahl: siehe Levelgroesse oben)
+#02.24.25.01.01.25.01.25.01.25.01.01.25.24.02			(Anzahl: siehe Levelgroesse oben)
+#02.02.02.02.02.02.02.02.02.02.02.02.02.02.02			(Anzahl: siehe Levelgroesse oben)
+#34.34.34.34.34.34.34.34.34.34.34.34.34.34.34			(Anzahl: siehe Levelgroesse oben)
+#34.34.34.34.34.34.34.34.34.34.34.34.34.34.34			(Anzahl: siehe Levelgroesse oben)
+#25.34.25.34.25.34.25.34.25.34.25.34.25.34.25			(Anzahl: siehe Levelgroesse oben)
+#34.34.34.34.34.34.34.34.34.34.34.34.34.34.34			(Anzahl: siehe Levelgroesse oben)
+
+=====================================================================================================================================================
+
+Kanonen:							(Anzahl der Datensätze: siehe Kanonen-Anzahl oben)
+********
+
+Nr.:	{01}	Pos.:	[12x01]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{02}	Pos.:	[10x01]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{03}	Pos.:	[08x01]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{04}	Pos.:	[06x01]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{05}	Pos.:	[04x01]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{06}	Pos.:	[12x13]		Ausrichtung:	[0]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{07}	Pos.:	[10x13]		Ausrichtung:	[0]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{08}	Pos.:	[08x13]		Ausrichtung:	[0]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{09}	Pos.:	[06x13]		Ausrichtung:	[0]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{10}	Pos.:	[04x13]		Ausrichtung:	[0]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{11}	Pos.:	[14x13]		Ausrichtung:	[0]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{12}	Pos.:	[02x13]		Ausrichtung:	[0]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{13}	Pos.:	[00x13]		Ausrichtung:	[0]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{14}	Pos.:	[02x01]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{15}	Pos.:	[00x01]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[02000]ms
+Nr.:	{16}	Pos.:	[14x01]		Ausrichtung:	[1]	Energie:	[3]	Pause:	[02000]ms
+
+Transporter:							(Anzahl der Datensätze: siehe Transporter-Anzahl oben)
+************
+
+
+Bloecke:							(Anzahl der Datensätze: siehe Block-Anzahl oben)
+********
+
+
+=====================================================================================================================================================
+
+Schlösser:							(Anzahl der Datensätze: siehe Schloss-Anzahl oben)
+**********
+
+
+=====================================================================================================================================================
+
+Auflösung:
+**********
+
+Beste Zeit:		[999999999]ms
+Wenigsten Bewegungen:	[999999999]
+
+=====================================================================================================================================================
+
+Zusatzinformationen:
+°°°°°°°°°°°°°°°°°°°°
+
+Levelname:		>Y1
+Geschrieben mit:	>Editor (Ver. 1.0)
+Ersteller:		>maja
+Sonstiges:
+	>(c) Maier Jakob	
+	>all rights reserved	
+	>---
+
+
+
+=====================================================================================================================================================
+Diese Datei ist fuer das Programm >Gooball< von Maier Jakob. Sie beinhaltet ein gesamtes Spiellevel.
+Geschrieben am 28.03.2009
+Warning! This file is Auto-Generated!
+
+Alle Daten sind Eigentum des Programmierers.
+(c) Maier Jakob
+all rights reserved 

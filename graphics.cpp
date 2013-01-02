@@ -71,7 +71,6 @@ void prepare_graphics()//Wird zu beginn jedes Durchgangs in der Spiele- und Anze
     //Sleep(20);
 }
 
-
 //Rückgabewert:
 //  -)  Abbruchbedingung    [bool]  Ob die Schleife abgebrochen werden soll (false) oder weiterlaufen darf (true)
 int complete_graphics()//Wird am Ende jedes Durchgangs in der Spiele- und Anzeigeschleife aufgerufen
@@ -86,9 +85,9 @@ int complete_graphics()//Wird am Ende jedes Durchgangs in der Spiele- und Anzeig
         static int ms;
         ms=clock()-frameArray[frameArrayIndex];  //Anz. der ms der letzten Schleife
         if(TIMEDEBUGOUTPUT) printf("%d ms",ms);
-        if(ms<2)
-        {   Sleep(2-ms);
-            if(TIMEDEBUGOUTPUT) printf("   slowing down: %d ms",(2-ms));
+        if(ms<10)
+        {   Sleep(10-ms);
+            if(TIMEDEBUGOUTPUT) printf("   slowing down: %d ms",(10-ms));
         }
         if(TIMEDEBUGOUTPUT)printf("\n");
     //Indizes erhöhen:

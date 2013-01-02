@@ -66,9 +66,6 @@ class KUGEL* KUGEL::getNextObject()                  //Liefert die Adresse des n
     return 0;
 }*/
 
-
-
-
 void KUGEL::move(DIRECTION richtung)
 {   if(richtung==NONE || type<0)  return;                   //Nicht bewegen (kommt vor, wenn die Kugel am Eis steht und nicht rutscht, oder bereits zerstört wurde)
 
@@ -101,22 +98,24 @@ int KUGEL::run(int targeted)                                            //Führt 
         movement.blocking=0;                                                //Falls eine Kugel blockiert wird diese immer auf moving=1 und -1 gesetzt --> collision-Animation muss verhindert werden können
 
         if(movement.moving!=0)
-        {
-            if(movement.moving==-1 && propRicCmp(movement.richtung,game->getFieldProperty(OBJ_KUGEL,position))) //Die Kugel prallt (genau jetzt) ab, darf aber nicht zurückkehren, weil der Feldtyp die Bewegung sofort wieder starten würde. (Ansonsten wackeln die Kugeln immer hin und her)
+        {   POS targetField=game->getTargetFieldCoord(position,movement.richtung);  //Zielfeld bestimmen
+
+            if(movement.moving==-1 && propRicCmp(movement.richtung,game->getFieldProperty(OBJ_KUGEL,position)) /*&& /*nicht begehbar:* /!(game->isWalkable(OBJ_KUGEL,targetField)>movement.progress)*/) //Die Kugel prallt (genau jetzt) ab, darf aber nicht zurückkehren, weil der Feldtyp die Bewegung sofort wieder starten würde. (Ansonsten wackeln die Kugeln immer hin und her)
             {   //Prüfen, ob das Hinderniss bereits aus dem Weg ist und der Weg fortgesetzt werden darf:
                 movement.moving=1;
                 movement.blocking=1;
+                movement.progress=Wkgl;
                 //Wenn nein, wird automatisch innerhalb dieses if's wieder abgeblockt und im nächsten Durchgang landet man hier
             }else
             {   movement.progress+=movement.moving*KUGEL_SPEED;         //Vor bzw. Zurück Bewegen
             }
-            POS targetField=game->getTargetFieldCoord(position,movement.richtung);  //Zielfeld bestimmen
 
             ///Auf Hindernisse überprüfen: (limit nicht darauf ausgelegt)
             if(movement.moving==1)
             {
                 if(movement.progress >= Wkgl && movement.progress < Wkgl+KUGEL_SPEED)//Bei genau diesem Schritt könnte eine Kugel berührt werden
-                {   KUGEL *touchedKugel=game->KugelOnField(targetField,this);
+                {
+                    KUGEL *touchedKugel=game->KugelOnField(targetField,this);
                     if(touchedKugel != NULL)                                    //Im nächsten Feld ist eine Kugel
                     {   ///IM NÄCHSTEN FELD IST EINE KUGEL --> Abprallen
                         movement.moving=-1;                         //Die Kugel prallt sofort ab (Die Kugel die sich im nächsten Feld befindet wird sich nicht bewegen)
@@ -143,7 +142,7 @@ int KUGEL::run(int targeted)                                            //Führt 
             }
 
             ///Auf Abprallen wegen Feldtyp überprüfen: (limit bereits bekannt)
-            if(movement.moving==1 && movement.limit<100 && movement.progress>=movement.limit)          //Prüfen, ob die Kugel jetzt vlt. abprallt
+            if(movement.moving==1 && movement.limit<100 && movement.progress>=movement.limit && game->isWalkable(OBJ_KUGEL,targetField)<100)          //Prüfen, ob die Kugel jetzt vlt. abprallt
             {   movement.moving=-1;                                         //Abprallen
                 movement.progress=movement.limit;                           //Genau an die Kante setzen
                 if(!movement.blocking)
@@ -176,7 +175,10 @@ int KUGEL::run(int targeted)                                            //Führt 
                 }
             }
 
-            if(movement.blocking && movement.moving!=-1)    movement.blocking=0;    //Die Kugel hat blockiert, wurde jetzt aber wieder freigegeben
+            if(movement.blocking && movement.moving!=-1)
+            {   movement.blocking=0;    //Die Kugel hat blockiert, wurde jetzt aber wieder freigegeben
+            }
+
         }
         if(movement.moving==0)                                              //Steht still --> prüfen, ob sich der Avatar auf einem Spezialfeld befindet
         {   switch(game->getFieldProperty(OBJ_KUGEL,position))              //Dieses Feld hat vlt. eine spezielle Eigenschaft
