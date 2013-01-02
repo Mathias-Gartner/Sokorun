@@ -63,6 +63,7 @@ class LEVELSELECT
         void GetLevelPath(char* levelPath, const LEVELFILE* level);
         bool GetDirectoryPath(char* directoryPath, const char* directoryName);
         void LoadDirectory();
+        void ReloadHighscore();
         void FreeLevelList(LEVELFILE* listEntry);
         void FreeDirectoryList(LEVELDIRECTORY* listEntry);
 

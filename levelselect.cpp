@@ -73,9 +73,7 @@ int LEVELSELECT::Select()
     cancelButton .assignKeyboardButton(0,GLFW_KEY_ESC);
     selectButton .assignKeyboardButton(0,GLFW_KEY_ENTER,GLFW_KEY_SPACE);
 
-    //reload highscore
-    if (currentLevel != NULL)
-        currentLevel->score = (currentLevel->name);
+    ReloadHighscore();
 
     prepare_GameLoop();
 
@@ -83,8 +81,12 @@ int LEVELSELECT::Select()
     {
         prepare_graphics();
 
-        char levelText[strlen(GetLevel()->name) + 9];
-        sprintf(levelText, "%s (%d/%d)", GetLevel()->name, GetLevel()->index + 1, GetLevelCount());
+        char levelText[MAX_PATH];
+        if (GetLevel() != NULL)
+            sprintf(levelText, "%s (%d/%d)", GetLevel()->name, GetLevel()->index + 1, GetLevelCount());
+        else
+            strcpy(levelText, "[Kein Level vorhanden]");
+
         levelCaption.setText(levelText);
 
         const char* directoryName;
@@ -181,8 +183,7 @@ bool LEVELSELECT::SelectLevel(int index)
         }
     }
 
-    //reload highscore
-    currentLevel->score = (currentLevel->name);
+    ReloadHighscore();
 
     return found;
 }
@@ -222,8 +223,7 @@ bool LEVELSELECT::SwitchLevel(int offset)
         }
     }
 
-    //reload highscore
-    currentLevel->score = (currentLevel->name);
+    ReloadHighscore();
 
     return success;
 }
@@ -333,6 +333,12 @@ void LEVELSELECT::LoadDirectory()
     {
         logger(true, "WARN: No levels available (Got false from FILESYSTEMUTILITY::EnumerateFiles)");
     }
+}
+
+void LEVELSELECT::ReloadHighscore()
+{
+    if (currentLevel != NULL)
+        currentLevel->score = (currentLevel->name);
 }
 
 void LEVELSELECT::GetLevelPath(char* levelPath, const LEVELFILE* level)
