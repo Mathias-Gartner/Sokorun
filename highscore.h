@@ -15,7 +15,7 @@ typedef struct
 class HIGHSCORE
 {
     public:
-        HIGHSCORE(char* level);
+        HIGHSCORE(char* level, char* directory);
         virtual ~HIGHSCORE();
         void Load();
         void Save();
@@ -33,6 +33,7 @@ class HIGHSCORE
         TIME m_time;
         unsigned int m_timesplayed;
         char level[MAX_PATH];
+        char directory[MAX_PATH];
         bool isLoaded;
         static const char path[];
 };

@@ -338,7 +338,7 @@ void LEVELSELECT::LoadDirectory()
 void LEVELSELECT::ReloadHighscore()
 {
     if (currentLevel != NULL)
-        currentLevel->score = (currentLevel->name);
+        currentLevel->score = HIGHSCORE(currentLevel->name, currentLevel->directory->name);
 }
 
 void LEVELSELECT::GetLevelPath(char* levelPath, const LEVELFILE* level)
@@ -427,7 +427,7 @@ bool LEVELSELECT::addLevelListEntry(char* levelFileName)
     newLevel->name[strlen(newLevel->name)-4] = '\0'; //cut off fileextension (to get levelname)
     newLevel->directory = GetCurrent()->currentDirectory;
     GetCurrent()->GetLevelPath(newLevel->path, newLevel);
-    newLevel->score = (newLevel->name);
+    newLevel->score = HIGHSCORE(newLevel->name, newLevel->directory->name);
     newLevel->level = new LEVEL({(windX/2+160), 160}, 17, newLevel->path, true);
 
     if (GetCurrent()->GetLevel() == NULL)

@@ -11,7 +11,7 @@
 
 const char HIGHSCORE::path[] = "daten\\highscore\\";
 
-HIGHSCORE::HIGHSCORE(char* levelname)
+HIGHSCORE::HIGHSCORE(char* levelname, char* directoryname)
 {
     m_moves = 0;
     m_time = {0, 0, 0};
@@ -27,6 +27,15 @@ HIGHSCORE::HIGHSCORE(char* levelname)
         error("HIGHSCORE::HIGHSCORE", "FATAL: Parameter levelname is too long.");
         exit(1);
     }
+    if (strlen(directoryname)<MAX_PATH)
+    {
+        strcpy(directory, directoryname);
+    }
+    else
+    {
+        error("HIGHSCORE::HIGHSCORE", "FATAL: Parameter directoryname is too long.");
+        exit(1);
+    }
 
     Load();
 }
@@ -38,11 +47,10 @@ HIGHSCORE::~HIGHSCORE()
 
 void HIGHSCORE::Load()
 {
-    char filename[strlen(path) + strlen(level) + 7];
-    strcpy(filename, path);
-    strcat(filename, level);
-    strcat(filename, ".score");
+    char filename[strlen(path) + strlen(directory) + strlen(level) + 8];
+    sprintf(filename, "%s%s^%s.score", path, directory, level);
     isLoaded = false;
+
     if (FILESYSTEMUTILITY::DirectoryExists(path))
     {
         FILE* file = fopen(filename, "r");
@@ -62,10 +70,8 @@ void HIGHSCORE::Load()
 
 void HIGHSCORE::Save()
 {
-    char levelPath[strlen(path) + strlen(level) + 7];
-    strcpy(levelPath, path);
-    strcat(levelPath, level);
-    strcat(levelPath, ".score");
+    char levelPath[strlen(path) + strlen(directory) + strlen(level) + 8];
+    sprintf(levelPath, "%s%s^%s.score", path, directory, level);
 
     if (!FILESYSTEMUTILITY::DirectoryExists(path))
         CreateDirectory(path, NULL);
