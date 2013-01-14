@@ -161,7 +161,7 @@ int LEVEL::convertLevel()              //Konvertiert die Daten eines veralteten 
             {   case  0:
                 case  1: break;
                 case  2: spielfeld[y][x]= 5; break;
-                case  3: spielfeld[y][x]= 7; break;
+                case  3: spielfeld[y][x]= 6; break;
                 case  4: spielfeld[y][x]=15; break;
                 case  5: spielfeld[y][x]=14; break;
                 case  6: spielfeld[y][x]=12; break;
@@ -657,7 +657,7 @@ bool LEVEL::runBuildupAnimation()
     }
     if(animationType==0)//Noch unbekannt
     {   srand(clock());
-        animationType=3;//(rand()%3)+1;
+        animationType=(rand()%3)+1;
     }
     if(animationType==1)
     {   if(buildupAnimationProgress==0)

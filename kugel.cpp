@@ -211,7 +211,7 @@ int KUGEL::run(int targeted)                                            //Führt 
             }
         }
 
-        if(movement.moving==0)
+        if(movement.moving==0 && type==0)
         {   char field=game->getField(position);
             if(field==TILE_TARGET || field==TILE_FIXEDTARGET)
             {   targeted++;

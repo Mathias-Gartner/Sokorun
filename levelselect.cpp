@@ -498,13 +498,15 @@ void LEVELSELECT::FreeLevelList(LEVELFILE* listEntry)
         }
 
         //delete all
-        for (LEVELFILE* p = level; p != NULL; p = p->next)
+        while (level != NULL)
         {
-            p->score.Save();
-            delete p->level;
-            if (p->next != NULL)
-                p->next->prev = NULL;
-            free(p);
+            level->score.Save();
+            delete level->level;
+            LEVELFILE* freeLevel = level;
+            level = level->next;
+            free (freeLevel);
+            if (level != NULL)
+                level->prev = NULL;
         }
     }
 }
@@ -523,11 +525,13 @@ void LEVELSELECT::FreeDirectoryList(LEVELDIRECTORY* listEntry)
         }
 
         //delete all
-        for (LEVELDIRECTORY* p = directory; p != NULL; p = p->next)
+        while (directory != NULL)
         {
-            if (p->next != NULL)
-                p->next->prev = NULL;
-            free(p);
+            LEVELDIRECTORY* freeDirectory = directory;
+            directory = directory->next;
+            free (freeDirectory);
+            if (directory != NULL)
+                directory->prev = NULL;
         }
     }
 }
